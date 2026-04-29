@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { HeartIcon, EyeIcon } from "@phosphor-icons/react"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -8,11 +7,9 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import useVote from "@/hooks/use-vote"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   trackAiAssistantResultClick,
-  trackPresetEditClick,
   trackPresetPreview,
   trackPresetVoteClick,
 } from "@/lib/analytics-events"
@@ -110,17 +107,6 @@ export function PresetStyleOverviewCard2({
       })
     }
     setPreviewOpen(true)
-  }
-
-  function handleEditNavigate() {
-    trackPresetEditClick({ pagePath: pathname, presetCode: code })
-    if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "preset",
-        targetId: code,
-      })
-    }
   }
 
   function handleVoteClick() {
