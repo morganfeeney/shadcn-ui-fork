@@ -141,7 +141,7 @@ export function PresetStyleOverviewCard2({
             >
               <PresetCard2StyleOverview
                 initialCode={code}
-                className="h-full w-full overflow-auto"
+                className="h-full w-full overflow-hidden"
               />
             </div>
           </>
