@@ -11,12 +11,6 @@ export function TypographySpecimen({ type, font }: TypographySpecimenProps) {
   return (
     <div className="@container">
       <Card className="grid gap-1 @2xs:grid-cols-2">
-        <CardHeader className="grid gap-0 capitalize">
-          <div className="truncate text-xs text-foreground @2xs:text-sm">
-            {font}
-          </div>
-          <div className="truncate text-xs text-muted-foreground">{type}</div>
-        </CardHeader>
         <CardContent>
           <div
             className={cn(
@@ -26,6 +20,12 @@ export function TypographySpecimen({ type, font }: TypographySpecimenProps) {
             )}
           >
             Aa
+          </div>
+          <div className="-mt-1 grid gap-0.5 capitalize">
+            <div className="truncate text-sm text-foreground @2xs:text-base">
+              {font}
+            </div>
+            <div className="truncate text-xs text-muted-foreground">{type}</div>
           </div>
         </CardContent>
       </Card>
