@@ -4,18 +4,7 @@ import * as React from "react"
 
 import { Card, CardContent } from "@/components/poc/ui/card"
 
-import { FONTS } from "@/app/(create)/lib/fonts"
-
-function fontDisplayName(value: string): string {
-  const match = FONTS.find((f) => f.value === value)
-  if (match) {
-    return match.name
-  }
-  return value
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
-}
+import { getFontDisplayName } from "@/lib/preset"
 
 export type TypographySpecimenCardProps = {
   /** Body / UI font token (e.g. from decoded preset). */
@@ -32,13 +21,13 @@ export function TypographySpecimenCard({
   font,
   fontHeading,
 }: TypographySpecimenCardProps) {
-  const bodyLabel = fontDisplayName(font)
+  const bodyLabel = getFontDisplayName(font)
 
   const headingLabel = React.useMemo(() => {
     if (fontHeading === "inherit") {
       return "Inherit"
     }
-    const headingName = fontDisplayName(fontHeading)
+    const headingName = getFontDisplayName(fontHeading)
     return headingName !== bodyLabel ? headingName : "Inherit"
   }, [bodyLabel, fontHeading])
 

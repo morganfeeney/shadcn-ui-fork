@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/poc/ui/card"
-import { CardHeader } from "@/components/ui/card"
+import { getFontDisplayName } from "@/lib/preset"
 
 interface TypographySpecimenProps {
   type: "heading" | "body"
@@ -21,11 +21,13 @@ export function TypographySpecimen({ type, font }: TypographySpecimenProps) {
           >
             Aa
           </div>
-          <div className="-mt-1 grid gap-0.5 capitalize">
-            <div className="truncate text-sm text-foreground @2xs:text-base">
-              {font}
+          <div className="grid gap-0.5">
+            <div className="truncate text-sm text-muted-foreground @2xs:text-base">
+              {getFontDisplayName(font)}
             </div>
-            <div className="truncate text-xs text-muted-foreground">{type}</div>
+            <div className="truncate text-xs text-muted-foreground capitalize">
+              {type}
+            </div>
           </div>
         </CardContent>
       </Card>

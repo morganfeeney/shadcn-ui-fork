@@ -4,15 +4,11 @@ import * as React from "react"
 import type { PresetConfig } from "shadcn/preset"
 
 import { Card, CardContent } from "@/components/poc/ui/card"
-import { FONTS } from "@/app/(create)/lib/fonts"
+import { getFontDisplayName } from "@/lib/preset"
 import { STYLES } from "@/registry/styles"
 import { StyleOverviewTokenGrid } from "@/components/preset-swatch/components/cards/style-overview-tokens"
 
-function labelForFontValue(value: string): string {
-  const match = FONTS.find((f) => f.value === value)
-  if (match) {
-    return match.name
-  }
+function toTitleCase(value: string): string {
   return value
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -39,26 +35,11 @@ export function StyleOverview({
     [style]
   )
 
-  const currentFont = React.useMemo(
-    () => FONTS.find((f) => f.value === font),
-    [font]
-  )
+  const styleTitle = currentStyle?.title ?? toTitleCase(style)
 
-  const currentFontHeading = React.useMemo(
-    () =>
-      fontHeading === "inherit"
-        ? undefined
-        : FONTS.find((f) => f.value === fontHeading),
-    [font, fontHeading]
-  )
-
-  const styleTitle = currentStyle?.title ?? labelForFontValue(style)
-
-  const bodyDisplayName = currentFont?.name ?? labelForFontValue(font)
+  const bodyDisplayName = getFontDisplayName(font)
   const headingDisplayName =
-    fontHeading === "inherit"
-      ? undefined
-      : (currentFontHeading?.name ?? labelForFontValue(fontHeading))
+    fontHeading === "inherit" ? undefined : getFontDisplayName(fontHeading)
 
   const nameAfterDash =
     headingDisplayName && headingDisplayName !== bodyDisplayName

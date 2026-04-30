@@ -1,5 +1,4 @@
 import {
-  PRESET_FONTS,
   V1_CHART_COLOR_MAP,
   decodePreset,
   encodePreset,
@@ -7,6 +6,7 @@ import {
   type PresetConfig,
 } from "shadcn/preset"
 import { DEFAULT_CONFIG, getBaseColor, getThemesForBaseColor } from "@/registry/config"
+import { getFontDefinition } from "@/lib/font-definitions"
 
 export type ResolvedPreset = PresetConfig & {
   code: string
@@ -24,35 +24,6 @@ export function effectiveHeadingFont(
 ): string {
   return headingFont === "inherit" ? bodyFont : headingFont
 }
-
-const FONT_STACKS = {
-  inter: '"Inter", system-ui, sans-serif',
-  "noto-sans": '"Noto Sans", system-ui, sans-serif',
-  "nunito-sans": '"Nunito Sans", system-ui, sans-serif',
-  figtree: '"Figtree", system-ui, sans-serif',
-  roboto: '"Roboto", system-ui, sans-serif',
-  raleway: '"Raleway", system-ui, sans-serif',
-  "dm-sans": '"DM Sans", system-ui, sans-serif',
-  "public-sans": '"Public Sans", system-ui, sans-serif',
-  outfit: '"Outfit", system-ui, sans-serif',
-  "jetbrains-mono": '"JetBrains Mono", monospace',
-  geist: '"Geist", system-ui, sans-serif',
-  "geist-mono": '"Geist Mono", monospace',
-  lora: '"Lora", serif',
-  merriweather: '"Merriweather", serif',
-  "playfair-display": '"Playfair Display", serif',
-  "noto-serif": '"Noto Serif", serif',
-  "roboto-slab": '"Roboto Slab", serif',
-  oxanium: '"Oxanium", system-ui, sans-serif',
-  manrope: '"Manrope", system-ui, sans-serif',
-  "space-grotesk": '"Space Grotesk", system-ui, sans-serif',
-  montserrat: '"Montserrat", system-ui, sans-serif',
-  "ibm-plex-sans": '"IBM Plex Sans", system-ui, sans-serif',
-  "source-sans-3": '"Source Sans 3", system-ui, sans-serif',
-  "instrument-sans": '"Instrument Sans", system-ui, sans-serif',
-  "eb-garamond": '"EB Garamond", serif',
-  "instrument-serif": '"Instrument Serif", serif',
-} as const satisfies Record<(typeof PRESET_FONTS)[number], string>
 
 function isTranslucentMenuColor(menuColor: ResolvedPreset["menuColor"]) {
   return (
@@ -144,6 +115,21 @@ export function getPresetPreviewUrl(
   return previewUrl.toString()
 }
 
-export function getFontFamily(font: string) {
-  return FONT_STACKS[font as keyof typeof FONT_STACKS] ?? '"Geist", system-ui, sans-serif'
+export function getFontFamily(font: string): string {
+  return getFontDefinition(font)?.family ?? '"Geist", system-ui, sans-serif'
+}
+
+/**
+ * Returns the human-readable display name for a preset font value
+ * (e.g. `"dm-sans"` → `"DM Sans"`). Falls back to a title-cased version of the
+ * slug for any unknown values so we never render raw kebab-case to users.
+ */
+export function getFontDisplayName(font: string): string {
+  if (font === "inherit") return "Inherit"
+  const definition = getFontDefinition(font)
+  if (definition) return definition.title
+  return font
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
 }
