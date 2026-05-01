@@ -2,6 +2,7 @@ export type PresetPreviewPageName =
   | "preview"
   | "preview-02"
   | "dashboard"
+  | "login-02"
   | "login-04"
 
 type PresetPreviewTarget =
@@ -44,8 +45,16 @@ export const PRESET_PREVIEW_VIEWS: ReadonlyArray<{
     },
   },
   {
+    page: "login-02",
+    label: "Login 02",
+    target: {
+      kind: "local",
+      example: "login-02",
+    },
+  },
+  {
     page: "login-04",
-    label: "Login",
+    label: "Login 04",
     target: {
       kind: "local",
       example: "login-04",
@@ -58,6 +67,7 @@ export type LocalPresetPreviewExample =
 
 export const LOCAL_PRESET_PREVIEW_EXAMPLES = [
   "dashboard",
+  "login-02",
   "login-04",
   "style-overview-1",
   "style-overview-2",

@@ -91,7 +91,7 @@ export function LoginForm({ className, ...props }: ComponentProps<"div">) {
               </FieldDescription>
             </FieldGroup>
           </form>
-          <div className="relative hidden min-h-[320px] bg-muted md:block">
+          <div className="relative hidden min-h-80 bg-muted md:block">
             <div className="absolute inset-0 z-30 bg-primary opacity-50 mix-blend-color" />
             <Image
               fill
