@@ -4,6 +4,7 @@ import * as React from "react"
 import { useTheme } from "next-themes"
 
 import DashboardDemo from "@/components/shadcn-examples/dashboard"
+import { Login04Demo } from "@/components/shadcn-examples/login-04"
 import type { LocalPresetPreviewExample } from "@/lib/preset-preview"
 
 const THEME_SYNC_MESSAGE_TYPE = "shadcnpreset:theme-mode"
@@ -41,6 +42,12 @@ function ExampleView({
       return (
         <div className="min-h-svh bg-background text-foreground">
           <DashboardDemo />
+        </div>
+      )
+    case "login-04":
+      return (
+        <div className="min-h-svh bg-background text-foreground">
+          <Login04Demo />
         </div>
       )
     default:
