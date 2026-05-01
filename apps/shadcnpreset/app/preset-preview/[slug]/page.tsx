@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation"
 
 import { getPresetThemeCssBundle } from "@/lib/preset-theme-css"
+import { getPresetGoogleFontStylesheetHrefs } from "@/lib/preset-google-fonts"
 import { isLocalPresetPreviewExample } from "@/lib/preset-preview"
+import { effectiveHeadingFont } from "@/lib/preset"
 import { cn } from "@/lib/utils"
 
 import { PresetPreviewExampleShell } from "./preview-example-shell"
@@ -27,28 +29,47 @@ export default async function PresetPreviewExamplePage({
   }
 
   const { combinedCss } = bundle
-  const { code, style, baseColor } = bundle.resolved
+  const { code, style, baseColor, font, fontHeading } = bundle.resolved
   const styleClass = `style-${style}`
   const baseColorClass = `base-color-${baseColor}`
+  const presetPreviewFontValues = [
+    font,
+    effectiveHeadingFont(font, fontHeading),
+  ]
+  const presetGoogleFontHrefs =
+    getPresetGoogleFontStylesheetHrefs(presetPreviewFontValues)
+  const fontReadyGateKey = presetGoogleFontHrefs.join("|")
 
   return (
-    <div
-      className={cn(
-        "preset-preview-root min-h-svh",
-        styleClass,
-        baseColorClass
-      )}
-    >
-      <style
-        id={PRESET_PREVIEW_THEME_STYLE_ID}
-        dangerouslySetInnerHTML={{ __html: combinedCss }}
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="anonymous"
       />
-      <PresetPreviewExampleShell
-        slug={slug}
-        presetCode={code}
-        bodyStyleClass={styleClass}
-        bodyBaseColorClass={baseColorClass}
-      />
-    </div>
+      {presetGoogleFontHrefs.map((href) => (
+        <link key={href} rel="stylesheet" href={href} />
+      ))}
+      <div
+        className={cn(
+          "preset-preview-root min-h-svh",
+          styleClass,
+          baseColorClass
+        )}
+      >
+        <style
+          id={PRESET_PREVIEW_THEME_STYLE_ID}
+          dangerouslySetInnerHTML={{ __html: combinedCss }}
+        />
+        <PresetPreviewExampleShell
+          slug={slug}
+          presetCode={code}
+          fontReadyGateKey={fontReadyGateKey}
+          bodyStyleClass={styleClass}
+          bodyBaseColorClass={baseColorClass}
+        />
+      </div>
+    </>
   )
 }
