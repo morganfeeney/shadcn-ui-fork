@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/cn-ui/sidebar";
 import { AppSidebar } from "@/components/shadcn-examples/dashboard/components/app-sidebar";
 import { ChartAreaInteractive } from "@/components/shadcn-examples/dashboard/components/chart-area-interactive";
 import { DataTable } from "@/components/shadcn-examples/dashboard/components/data-table";

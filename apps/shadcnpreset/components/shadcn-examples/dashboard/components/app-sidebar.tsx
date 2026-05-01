@@ -11,7 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/cn-ui/sidebar";
 import { NavDocuments } from "@/components/shadcn-examples/dashboard/components/nav-documents";
 import { NavMain } from "@/components/shadcn-examples/dashboard/components/nav-main";
 import { NavSecondary } from "@/components/shadcn-examples/dashboard/components/nav-secondary";

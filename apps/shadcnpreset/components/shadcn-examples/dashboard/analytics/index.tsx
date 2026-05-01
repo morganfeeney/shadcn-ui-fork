@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/cn-ui/sidebar";
 import { AppSidebar } from "@/components/shadcn-examples/dashboard/components/app-sidebar";
 import { SiteHeader } from "@/components/shadcn-examples/dashboard/components/site-header";
 import { AnalyticsHome } from "@/components/shadcn-examples/dashboard/analytics/analytics-home";
