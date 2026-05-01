@@ -32,10 +32,26 @@ export function PresetStyleOverviewCard2({
   virtualHeight = 350,
 }: PresetStyleOverviewCard2Props) {
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(0)
   const [shouldRender, setShouldRender] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const isMobile = useIsMobile()
   const pathname = usePathname()
+
+  useEffect(() => {
+    const node = wrapperRef.current
+    if (!node) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const [entry] = entries
+      if (entry) {
+        setContainerWidth(entry.contentRect.width)
+      }
+    })
+    resizeObserver.observe(node)
+
+    return () => resizeObserver.disconnect()
+  }, [])
 
   useEffect(() => {
     const node = wrapperRef.current
@@ -64,6 +80,13 @@ export function PresetStyleOverviewCard2({
 
     return () => intersectionObserver?.disconnect()
   }, [isMobile])
+
+  const scale = useMemo(() => {
+    if (!containerWidth) return 1
+    return containerWidth / virtualWidth
+  }, [containerWidth, virtualWidth])
+
+  const canRenderPreview = shouldRender && containerWidth > 0
 
   const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(
     code,
@@ -102,24 +125,26 @@ export function PresetStyleOverviewCard2({
     <div className="grid gap-0.5">
       <div
         ref={wrapperRef}
-        className="pointer-events-none relative w-full rounded-sm @container"
+        className="pointer-events-none relative w-full rounded-sm"
         style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
       >
-        {shouldRender ? (
-          <div
-            className="absolute inset-0 p-0 will-change-transform"
-            style={{
-              width: virtualWidth,
-              height: virtualHeight,
-              transform: `scale(calc(100cqi / ${virtualWidth}px))`,
-              transformOrigin: "top left",
-            }}
-          >
-            <PresetCard2StyleOverview
-              initialCode={code}
-              className="h-full w-full overflow-hidden"
-            />
-          </div>
+        {canRenderPreview ? (
+          <>
+            <div
+              className="absolute inset-0 p-0 will-change-transform"
+              style={{
+                width: virtualWidth,
+                height: virtualHeight,
+                transform: `scale(${scale})`,
+                transformOrigin: "top left",
+              }}
+            >
+              <PresetCard2StyleOverview
+                initialCode={code}
+                className="h-full w-full overflow-hidden"
+              />
+            </div>
+          </>
         ) : (
           <Skeleton className="absolute inset-0 flex items-center justify-center" />
         )}
