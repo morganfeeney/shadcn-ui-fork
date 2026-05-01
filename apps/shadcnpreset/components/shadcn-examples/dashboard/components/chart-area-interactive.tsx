@@ -24,7 +24,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/cn-ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 export const description = "An interactive area chart"

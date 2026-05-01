@@ -40,7 +40,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/cn-ui/badge"
 import { Button } from "@/components/cn-ui/button"
 import {
   ChartConfig,
@@ -48,7 +48,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/cn-ui/checkbox"
 import {
   Drawer,
   DrawerClose,
@@ -58,7 +58,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@/components/cn-ui/drawer"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -66,17 +66,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/cn-ui/dropdown-menu"
 import { Input } from "@/components/cn-ui/input"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/cn-ui/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/cn-ui/select"
+import { Separator } from "@/components/cn-ui/separator"
 import {
   Table,
   TableBody,
@@ -84,8 +84,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/cn-ui/table"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/cn-ui/tabs"
 import { IconPlaceholder } from "@/components/icon-placeholder"
 
 export const schema = z.object({
@@ -439,10 +444,22 @@ export function DataTable({
         <TabsList className="hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="outline">Outline</TabsTrigger>
           <TabsTrigger value="past-performance">
-            Past Performance <Badge variant="secondary">3</Badge>
+            Past Performance{" "}
+            <Badge
+              variant="secondary"
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
+              3
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="key-personnel">
-            Key Personnel <Badge variant="secondary">2</Badge>
+            Key Personnel{" "}
+            <Badge
+              variant="secondary"
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
+              2
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>

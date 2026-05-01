@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/cn-ui/button";
+import { Separator } from "@/components/cn-ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function SiteHeader({ title = "Documents" }: { title?: string }) {

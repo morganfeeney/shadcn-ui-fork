@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/cn-ui/badge"
 import {
   Card,
   CardAction,

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/cn-ui/button"
 import { IconPlaceholder } from "@/components/icon-placeholder"
 import {
   SidebarGroup,

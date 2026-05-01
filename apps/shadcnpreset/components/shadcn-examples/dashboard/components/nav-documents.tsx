@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/cn-ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
