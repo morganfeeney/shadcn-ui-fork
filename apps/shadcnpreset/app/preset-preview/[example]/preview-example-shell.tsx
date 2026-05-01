@@ -65,11 +65,24 @@ function ExampleView({
 export function PresetPreviewExampleShell({
   example,
   presetCode,
+  bodyStyleClass,
+  bodyBaseColorClass,
 }: {
   example: LocalPresetPreviewExample
   presetCode: string
+  /** Mirror preset scope on `document.body` so portaled UI (e.g. Vaul drawer) still matches `.style-* .cn-*`. */
+  bodyStyleClass: string
+  bodyBaseColorClass: string
 }) {
   const { setTheme } = useTheme()
+
+  React.useLayoutEffect(() => {
+    const body = document.body
+    body.classList.add(bodyStyleClass, bodyBaseColorClass)
+    return () => {
+      body.classList.remove(bodyStyleClass, bodyBaseColorClass)
+    }
+  }, [bodyStyleClass, bodyBaseColorClass])
 
   React.useEffect(() => {
     const handleMessage = (event: MessageEvent) => {

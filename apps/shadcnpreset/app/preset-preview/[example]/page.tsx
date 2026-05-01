@@ -43,7 +43,12 @@ export default async function PresetPreviewExamplePage({
         id={PRESET_PREVIEW_THEME_STYLE_ID}
         dangerouslySetInnerHTML={{ __html: combinedCss }}
       />
-      <PresetPreviewExampleShell example={example} presetCode={code} />
+      <PresetPreviewExampleShell
+        example={example}
+        presetCode={code}
+        bodyStyleClass={styleClass}
+        bodyBaseColorClass={baseColorClass}
+      />
     </div>
   )
 }
