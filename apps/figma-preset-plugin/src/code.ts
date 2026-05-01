@@ -7,11 +7,11 @@ type GenerateVariablesMessage = {
   collectionName?: string
 }
 
-function getOrCreateCollection(name: string) {
+async function getOrCreateCollection(name: string) {
+  const collections = await figma.variables.getLocalVariableCollectionsAsync()
+
   return (
-    figma.variables
-      .getLocalVariableCollections()
-      .find((collection) => collection.name === name) ??
+    collections.find((collection) => collection.name === name) ??
     figma.variables.createVariableCollection(name)
   )
 }
@@ -35,38 +35,57 @@ function ensureModes(collection: VariableCollection) {
 function getOrCreateVariable(
   collection: VariableCollection,
   name: string,
-  resolvedType: VariableResolvedDataType
+  resolvedType: VariableResolvedDataType,
+  variables: Variable[]
 ) {
   return (
-    figma.variables
-      .getLocalVariables(resolvedType)
-      .find(
-        (variable) =>
-          variable.variableCollectionId === collection.id && variable.name === name
-      ) ?? figma.variables.createVariable(name, collection, resolvedType)
+    variables.find(
+      (variable) =>
+        variable.variableCollectionId === collection.id && variable.name === name
+    ) ?? figma.variables.createVariable(name, collection, resolvedType)
   )
 }
 
-function createOrUpdateVariables(
+async function createOrUpdateVariables(
   collection: VariableCollection,
   payload: ReturnType<typeof generateVariablePayload>
 ) {
   const { lightModeId, darkModeId } = ensureModes(collection)
+  const [colorVariables, stringVariables, numberVariables] = await Promise.all([
+    figma.variables.getLocalVariablesAsync("COLOR"),
+    figma.variables.getLocalVariablesAsync("STRING"),
+    figma.variables.getLocalVariablesAsync("FLOAT"),
+  ])
 
   for (const colorVariable of payload.colors) {
-    const variable = getOrCreateVariable(collection, colorVariable.name, "COLOR")
+    const variable = getOrCreateVariable(
+      collection,
+      colorVariable.name,
+      "COLOR",
+      colorVariables
+    )
     variable.setValueForMode(lightModeId, colorVariable.light)
     variable.setValueForMode(darkModeId, colorVariable.dark)
   }
 
   for (const stringVariable of payload.strings) {
-    const variable = getOrCreateVariable(collection, stringVariable.name, "STRING")
+    const variable = getOrCreateVariable(
+      collection,
+      stringVariable.name,
+      "STRING",
+      stringVariables
+    )
     variable.setValueForMode(lightModeId, stringVariable.value)
     variable.setValueForMode(darkModeId, stringVariable.value)
   }
 
   for (const numberVariable of payload.numbers) {
-    const variable = getOrCreateVariable(collection, numberVariable.name, "FLOAT")
+    const variable = getOrCreateVariable(
+      collection,
+      numberVariable.name,
+      "FLOAT",
+      numberVariables
+    )
     variable.setValueForMode(lightModeId, numberVariable.value)
     variable.setValueForMode(darkModeId, numberVariable.value)
   }
@@ -80,7 +99,7 @@ figma.showUI(uiHtml, {
   themeColors: true,
 })
 
-figma.ui.onmessage = (message: GenerateVariablesMessage) => {
+figma.ui.onmessage = async (message: GenerateVariablesMessage) => {
   if (message.type !== "generate-variables") {
     return
   }
@@ -90,8 +109,8 @@ figma.ui.onmessage = (message: GenerateVariablesMessage) => {
       message.presetCode,
       message.collectionName
     )
-    const collection = getOrCreateCollection(payload.collectionName)
-    const variableCount = createOrUpdateVariables(collection, payload)
+    const collection = await getOrCreateCollection(payload.collectionName)
+    const variableCount = await createOrUpdateVariables(collection, payload)
 
     figma.notify(`Updated ${variableCount} variables in ${payload.collectionName}.`)
     figma.ui.postMessage({
