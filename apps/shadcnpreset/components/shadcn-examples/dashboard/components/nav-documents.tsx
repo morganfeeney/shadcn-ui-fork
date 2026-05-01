@@ -1,12 +1,8 @@
 "use client";
 
 import {
-  IconDots,
-  IconFolder,
-  IconShare3,
-  IconTrash,
-  type Icon,
-} from "@tabler/icons-react";
+  IconPlaceholder,
+} from "@/components/icon-placeholder";
 
 import {
   DropdownMenu,
@@ -31,7 +27,7 @@ export function NavDocuments({
   items: {
     name: string;
     url: string;
-    icon: Icon;
+    icon: React.ReactNode;
   }[];
 }) {
   const { isMobile } = useSidebar();
@@ -43,7 +39,7 @@ export function NavDocuments({
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton render={<a href={item.url} />}>
-              <item.icon />
+              {item.icon}
               <span>{item.name}</span>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -53,7 +49,13 @@ export function NavDocuments({
                     showOnHover
                     className="data-[state=open]:bg-sidebar-accent rounded-sm"
                   >
-                    <IconDots />
+                    <IconPlaceholder
+                      lucide="MoreHorizontalIcon"
+                      tabler="IconDots"
+                      hugeicons="MoreHorizontalCircle01Icon"
+                      phosphor="DotsThreeOutlineIcon"
+                      remixicon="RiMoreLine"
+                    />
                     <span className="sr-only">More</span>
                   </SidebarMenuAction>
                 }
@@ -64,16 +66,34 @@ export function NavDocuments({
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <IconFolder />
+                  <IconPlaceholder
+                    lucide="FolderIcon"
+                    tabler="IconFolder"
+                    hugeicons="Folder01Icon"
+                    phosphor="FolderIcon"
+                    remixicon="RiFolderLine"
+                  />
                   <span>Open</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <IconShare3 />
+                  <IconPlaceholder
+                    lucide="ShareIcon"
+                    tabler="IconShare3"
+                    hugeicons="Share01Icon"
+                    phosphor="ShareIcon"
+                    remixicon="RiShareLine"
+                  />
                   <span>Share</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
-                  <IconTrash />
+                  <IconPlaceholder
+                    lucide="Trash2Icon"
+                    tabler="IconTrash"
+                    hugeicons="Delete02Icon"
+                    phosphor="TrashIcon"
+                    remixicon="RiDeleteBinLine"
+                  />
                   <span>Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -82,7 +102,14 @@ export function NavDocuments({
         ))}
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
-            <IconDots className="text-sidebar-foreground/70" />
+            <IconPlaceholder
+              lucide="MoreHorizontalIcon"
+              tabler="IconDots"
+              hugeicons="MoreHorizontalCircle01Icon"
+              phosphor="DotsThreeOutlineIcon"
+              remixicon="RiMoreLine"
+              className="text-sidebar-foreground/70"
+            />
             <span>More</span>
           </SidebarMenuButton>
         </SidebarMenuItem>

@@ -1,12 +1,8 @@
 "use client";
 
 import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-react";
+  IconPlaceholder,
+} from "@/components/icon-placeholder";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -56,7 +52,14 @@ export function NavUser({
                     {user.email}
                   </span>
                 </div>
-                <IconDotsVertical className="ml-auto size-4" />
+                <IconPlaceholder
+                  lucide="EllipsisVerticalIcon"
+                  tabler="IconDotsVertical"
+                  hugeicons="MoreVerticalCircle01Icon"
+                  phosphor="DotsThreeVerticalIcon"
+                  remixicon="RiMore2Line"
+                  className="ml-auto size-4"
+                />
               </SidebarMenuButton>
             }
           />
@@ -83,21 +86,45 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <IconUserCircle />
+                <IconPlaceholder
+                  lucide="CircleUserRoundIcon"
+                  tabler="IconUserCircle"
+                  hugeicons="UserCircle02Icon"
+                  phosphor="UserCircleIcon"
+                  remixicon="RiUserLine"
+                />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconCreditCard />
+                <IconPlaceholder
+                  lucide="CreditCardIcon"
+                  tabler="IconCreditCard"
+                  hugeicons="CreditCardIcon"
+                  phosphor="CreditCardIcon"
+                  remixicon="RiBankCardLine"
+                />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconNotification />
+                <IconPlaceholder
+                  lucide="BellIcon"
+                  tabler="IconNotification"
+                  hugeicons="Notification03Icon"
+                  phosphor="BellIcon"
+                  remixicon="RiNotification3Line"
+                />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <IconLogout />
+              <IconPlaceholder
+                lucide="LogOutIcon"
+                tabler="IconLogout"
+                hugeicons="Logout01Icon"
+                phosphor="SignOutIcon"
+                remixicon="RiLogoutBoxLine"
+              />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

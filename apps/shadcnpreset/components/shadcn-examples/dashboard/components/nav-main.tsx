@@ -1,10 +1,10 @@
 "use client"
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { IconPlaceholder } from "@/components/icon-placeholder"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -19,7 +19,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: Icon
+    icon?: React.ReactNode
   }[]
 }) {
   const pathname = usePathname()
@@ -33,11 +33,23 @@ export function NavMain({
               tooltip="Quick Create"
               className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
             >
-              <IconCirclePlusFilled />
+              <IconPlaceholder
+                lucide="CirclePlusIcon"
+                tabler="IconCirclePlusFilled"
+                hugeicons="PlusSignCircleIcon"
+                phosphor="PlusCircleIcon"
+                remixicon="RiAddCircleFill"
+              />
               <span>Quick Create</span>
             </SidebarMenuButton>
             <Button size="icon" variant="outline">
-              <IconMail />
+              <IconPlaceholder
+                lucide="MailIcon"
+                tabler="IconMail"
+                hugeicons="Mail01Icon"
+                phosphor="EnvelopeIcon"
+                remixicon="RiMailLine"
+              />
               <span className="sr-only">Inbox</span>
             </Button>
           </SidebarMenuItem>
@@ -55,12 +67,12 @@ export function NavMain({
                     isActive={isActive}
                     render={<Link href={item.url} />}
                   >
-                    {item.icon && <item.icon />}
+                    {item.icon}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 ) : (
                   <SidebarMenuButton tooltip={item.title}>
-                    {item.icon && <item.icon />}
+                    {item.icon}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 )}
