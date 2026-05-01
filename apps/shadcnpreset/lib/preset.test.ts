@@ -47,12 +47,4 @@ describe("getPresetPreviewUrl", () => {
     expect(url).toContain("/preset-preview/dashboard")
     expect(url).toContain("preset=b5aFUJkSzC")
   })
-
-  it("supports local shadcn example views through the same URL helper", () => {
-    const url = getPresetPreviewUrl("b5aFVCFRxi", "example-style-overview-1")
-
-    expect(url).not.toBeNull()
-    expect(url).toContain("/preset-preview/style-overview-1")
-    expect(url).toContain("preset=b5aFUJkSzC")
-  })
 })

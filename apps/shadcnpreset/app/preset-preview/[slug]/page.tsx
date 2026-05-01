@@ -12,11 +12,11 @@ export default async function PresetPreviewExamplePage({
   params,
   searchParams,
 }: {
-  params: Promise<{ example: string }>
+  params: Promise<{ slug: string }>
   searchParams: Promise<{ preset?: string }>
 }) {
-  const [{ example }, { preset: raw }] = await Promise.all([params, searchParams])
-  if (!isLocalPresetPreviewExample(example)) {
+  const [{ slug }, { preset: raw }] = await Promise.all([params, searchParams])
+  if (!isLocalPresetPreviewExample(slug)) {
     notFound()
   }
 
@@ -44,7 +44,7 @@ export default async function PresetPreviewExamplePage({
         dangerouslySetInnerHTML={{ __html: combinedCss }}
       />
       <PresetPreviewExampleShell
-        example={example}
+        slug={slug}
         presetCode={code}
         bodyStyleClass={styleClass}
         bodyBaseColorClass={baseColorClass}

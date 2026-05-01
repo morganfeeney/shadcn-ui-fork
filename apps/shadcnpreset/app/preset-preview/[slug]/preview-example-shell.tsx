@@ -4,8 +4,6 @@ import * as React from "react"
 import { useTheme } from "next-themes"
 
 import DashboardDemo from "@/components/shadcn-examples/dashboard"
-import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
-import { PresetCard2StyleOverview } from "@/components/preset-swatch/components/preset-card-2-style-overview"
 import type { LocalPresetPreviewExample } from "@/lib/preset-preview"
 
 const THEME_SYNC_MESSAGE_TYPE = "shadcnpreset:theme-mode"
@@ -32,28 +30,16 @@ function isThemeModeMessage(value: unknown): value is ThemeModeMessage {
 }
 
 function ExampleView({
-  example,
+  slug,
   presetCode,
 }: {
-  example: LocalPresetPreviewExample
+  slug: LocalPresetPreviewExample
   presetCode: string
 }) {
-  switch (example) {
-    case "style-overview-1":
-      return (
-        <div className="bg-background p-4 md:p-6">
-          <PresetCard1StyleOverview initialCode={presetCode} />
-        </div>
-      )
-    case "style-overview-2":
-      return (
-        <div className="bg-background p-4 md:p-6">
-          <PresetCard2StyleOverview initialCode={presetCode} />
-        </div>
-      )
+  switch (slug) {
     case "dashboard":
       return (
-        <div className="bg-background min-h-svh text-foreground">
+        <div className="min-h-svh bg-background text-foreground">
           <DashboardDemo />
         </div>
       )
@@ -63,12 +49,12 @@ function ExampleView({
 }
 
 export function PresetPreviewExampleShell({
-  example,
+  slug,
   presetCode,
   bodyStyleClass,
   bodyBaseColorClass,
 }: {
-  example: LocalPresetPreviewExample
+  slug: LocalPresetPreviewExample
   presetCode: string
   /** Mirror preset scope on `document.body` so portaled UI (e.g. Vaul drawer) still matches `.style-* .cn-*`. */
   bodyStyleClass: string
@@ -95,5 +81,5 @@ export function PresetPreviewExampleShell({
     return () => window.removeEventListener("message", handleMessage)
   }, [setTheme])
 
-  return <ExampleView example={example} presetCode={presetCode} />
+  return <ExampleView slug={slug} presetCode={presetCode} />
 }

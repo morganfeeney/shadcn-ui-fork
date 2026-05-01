@@ -1,9 +1,4 @@
-export type PresetPreviewPageName =
-  | "preview"
-  | "preview-02"
-  | "example-style-overview-1"
-  | "example-style-overview-2"
-  | "dashboard"
+export type PresetPreviewPageName = "preview" | "preview-02" | "dashboard"
 
 type PresetPreviewTarget =
   | {
@@ -37,22 +32,6 @@ export const PRESET_PREVIEW_VIEWS: ReadonlyArray<{
     },
   },
   {
-    page: "example-style-overview-1",
-    label: "Shadcn A",
-    target: {
-      kind: "local",
-      example: "style-overview-1",
-    },
-  },
-  {
-    page: "example-style-overview-2",
-    label: "Shadcn B",
-    target: {
-      kind: "local",
-      example: "style-overview-2",
-    },
-  },
-  {
     page: "dashboard",
     label: "Dashboard",
     target: {
@@ -78,7 +57,5 @@ export function getPresetPreviewView(page: PresetPreviewPageName) {
 export function isLocalPresetPreviewExample(
   value: string
 ): value is LocalPresetPreviewExample {
-  return (
-    LOCAL_PRESET_PREVIEW_EXAMPLES as readonly string[]
-  ).includes(value)
+  return (LOCAL_PRESET_PREVIEW_EXAMPLES as readonly string[]).includes(value)
 }
