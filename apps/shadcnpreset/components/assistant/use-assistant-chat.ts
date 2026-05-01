@@ -9,11 +9,7 @@ import {
   readPendingAssistantPrompt,
   writePendingAssistantPrompt,
 } from "@/lib/pending-assistant-prompt"
-import {
-  trackAiAssistantPromptSubmit,
-  trackAiAssistantResponseError,
-  trackAiAssistantResponseSuccess,
-} from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import type { AssistantTurn } from "@/lib/search/assistant/schema"
 import { useAuthStore } from "@/stores/auth-store"
 
@@ -263,10 +259,10 @@ export function useAssistantChat() {
       }
 
       if (!response.ok) {
-        trackAiAssistantResponseError({
-          pagePath: pathname,
-          latencyMs,
-          errorType: `http_${response.status}`,
+        trackEvent("ai_assistant_response_error", {
+          page_path: pathname,
+          latency_ms: latencyMs,
+          error_type: `http_${response.status}`,
         })
         setMessages(context?.previousMessages ?? [])
         setInput(args.trimmed)
@@ -279,17 +275,20 @@ export function useAssistantChat() {
       }
 
       if (!("phase" in data)) {
-        trackAiAssistantResponseError({
-          pagePath: pathname,
-          latencyMs,
-          errorType: "unexpected_payload",
+        trackEvent("ai_assistant_response_error", {
+          page_path: pathname,
+          latency_ms: latencyMs,
+          error_type: "unexpected_payload",
         })
         setMessages(context?.previousMessages ?? [])
         setInput(args.trimmed)
         setError("Unexpected response — try again.")
         return
       }
-      trackAiAssistantResponseSuccess({ pagePath: pathname, latencyMs })
+      trackEvent("ai_assistant_response_success", {
+        page_path: pathname,
+        latency_ms: latencyMs,
+      })
 
       if (typeof data.chatId === "string") {
         setActiveChatId(data.chatId)
@@ -328,10 +327,10 @@ export function useAssistantChat() {
       const latencyMs = context
         ? Math.max(0, Date.now() - context.requestStartedAt)
         : undefined
-      trackAiAssistantResponseError({
-        pagePath: pathname,
-        latencyMs,
-        errorType: "network_error",
+      trackEvent("ai_assistant_response_error", {
+        page_path: pathname,
+        ...(latencyMs !== undefined ? { latency_ms: latencyMs } : {}),
+        error_type: "network_error",
       })
       setMessages(context?.previousMessages ?? [])
       setInput(context?.previousInput ?? "")
@@ -384,10 +383,10 @@ export function useAssistantChat() {
     const trimmed = text.trim()
     if (!trimmed || pending) return
     const hasPreviousUserMessage = messages.some((message) => message.role === "user")
-    trackAiAssistantPromptSubmit({
-      pagePath: pathname,
-      promptText: trimmed,
-      promptLength: trimmed.length,
+    trackEvent("ai_assistant_prompt_submit", {
+      page_path: pathname,
+      assistant_prompt: trimmed,
+      prompt_length: trimmed.length,
       intent: hasPreviousUserMessage ? "preset_refinement" : "preset_discovery",
     })
 

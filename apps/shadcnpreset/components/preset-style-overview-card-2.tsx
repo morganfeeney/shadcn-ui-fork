@@ -8,11 +8,7 @@ import useVote from "@/hooks/use-vote"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
 import { Button } from "@/components/ui/button"
-import {
-  trackAiAssistantResultClick,
-  trackPresetPreview,
-  trackPresetVoteClick,
-} from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import { PresetCard2StyleOverview } from "@/components/preset-swatch/components/preset-card-2-style-overview"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -98,24 +94,34 @@ export function PresetStyleOverviewCard2({
   const isAssistantSurface = pathname.startsWith("/assistant")
 
   function handlePreview() {
-    trackPresetPreview({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_preview", {
+      page_path: pathname,
+      preset_code: code,
+    })
+    trackEvent("preset_demo_dialog_open", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `preview:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `preview:${code}`,
       })
     }
     setPreviewOpen(true)
   }
 
   function handleVoteClick() {
-    trackPresetVoteClick({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_vote_click", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `vote:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `vote:${code}`,
       })
     }
     void toggleVote()

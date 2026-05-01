@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { CheckIcon, ChevronDownIcon, Settings2, X } from "lucide-react"
 import { useMemo, useState } from "react"
 
@@ -23,15 +24,16 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { trackEvent } from "@/lib/analytics-events"
+import { getPresetPreviewUrl } from "@/lib/preset"
+import {
+  PRESET_PREVIEW_VIEWS,
+  type PresetPreviewPageName,
+} from "@/lib/preset-preview"
 import { cn } from "@/lib/utils"
 import { PresetV4Frame } from "@/components/preset-v4-frame"
 import { PresetVoteButton } from "@/components/preset-vote-button"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  getPresetPreviewUrl,
-  PRESET_PREVIEW_VIEWS,
-  type PresetPreviewPageName,
-} from "@/lib/preset"
 
 export type PresetPreviewDialogProps = {
   code: string
@@ -69,6 +71,7 @@ export function PresetPreviewDialog({
   title,
   description,
 }: PresetPreviewDialogProps) {
+  const pathname = usePathname()
   const [loadGen, setLoadGen] = useState(0)
   const [previewPage, setPreviewPage] =
     useState<PresetPreviewPageName>("preview")
@@ -179,8 +182,16 @@ export function PresetPreviewDialog({
                         keywords={[label, page]}
                         className="[&>svg:last-child]:hidden"
                         onSelect={() => {
+                          const previous = previewPage
                           setPreviewPage(page)
                           setPreviewPickerOpen(false)
+                          if (page !== previous) {
+                            trackEvent("preset_demo_view_select", {
+                              page_path: pathname,
+                              preset_code: code,
+                              demo_view: page,
+                            })
+                          }
                         }}
                       >
                         <span className="truncate">{label}</span>

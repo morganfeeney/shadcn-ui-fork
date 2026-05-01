@@ -40,7 +40,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import { useAssistantChat } from "@/components/assistant/use-assistant-chat"
-import { trackAiAssistantOpen } from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import { cn } from "@/lib/utils"
 
 export function AssistantChat() {
@@ -65,7 +65,7 @@ export function AssistantChat() {
   }, [messages, lastTurn, pending])
 
   React.useEffect(() => {
-    trackAiAssistantOpen({ pagePath: "/assistant" })
+    trackEvent("ai_assistant_open", { page_path: "/assistant" })
   }, [])
 
   return (

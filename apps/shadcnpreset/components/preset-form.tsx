@@ -22,7 +22,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import { trackSearchSubmit } from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import {
   clearAiSearchContext,
   readAiSearchContextForRoute,
@@ -86,10 +86,10 @@ export function PresetForm({ className }: { className?: string }) {
       return
     }
 
-    trackSearchSubmit({
-      pagePath: pathname,
-      mode,
-      searchTerm: normalized,
+    trackEvent("search_submit", {
+      page_path: pathname,
+      search_mode: mode,
+      search_term: normalized,
     })
 
     if (mode === "code") {
