@@ -5,6 +5,7 @@ import {
   isPresetCode,
   type PresetConfig,
 } from "shadcn/preset"
+import { siteConfig } from "@/lib/config"
 import { DEFAULT_CONFIG, getBaseColor, getThemesForBaseColor } from "@/registry/config"
 import { getFontDefinition } from "@/lib/font-definitions"
 
@@ -89,8 +90,8 @@ export function resolvePresetFromCode(code: string): ResolvedPreset | null {
   })
 }
 
-/** Matches v4 `PreviewSwitcher`: `/preview/radix/preview` vs `/preview/radix/preview-02`. */
-export type PresetPreviewPageName = "preview" | "preview-02"
+/** Matches v4 `PreviewSwitcher`: `/preview/radix/preview` vs `/preview/radix/preview-02`, plus local dashboard embed. */
+export type PresetPreviewPageName = "preview" | "preview-02" | "dashboard"
 
 export const PRESET_PREVIEW_VIEWS: ReadonlyArray<{
   page: PresetPreviewPageName
@@ -98,9 +99,12 @@ export const PRESET_PREVIEW_VIEWS: ReadonlyArray<{
 }> = [
   { page: "preview", label: "View 1" },
   { page: "preview-02", label: "View 2" },
+  { page: "dashboard", label: "Dashboard" },
 ] as const
 
-/** Radix preview iframe URL (no customizer) — same origin as list cards. */
+/**
+ * Preview iframe URL: v4 block previews, or same-origin dashboard demo with preset CSS vars.
+ */
 export function getPresetPreviewUrl(
   code: string,
   pageName: PresetPreviewPageName = "preview"
@@ -108,6 +112,14 @@ export function getPresetPreviewUrl(
   const resolved = resolvePresetFromCode(code)
   if (!resolved) return null
   const canonicalCode = encodePreset(resolved)
+
+  if (pageName === "dashboard") {
+    const url = new URL("/preset-preview/dashboard", siteConfig.url)
+    url.searchParams.set("preset", canonicalCode)
+    url.searchParams.set("iconLibrary", resolved.iconLibrary)
+    return url.toString()
+  }
+
   const v4BaseUrl = process.env.NEXT_PUBLIC_V4_URL ?? "http://localhost:4000"
   const previewUrl = new URL(`/preview/radix/${pageName}`, v4BaseUrl)
   previewUrl.searchParams.set("preset", canonicalCode)
