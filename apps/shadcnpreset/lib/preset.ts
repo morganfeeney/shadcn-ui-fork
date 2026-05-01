@@ -111,14 +111,12 @@ export function getPresetPreviewUrl(
   if (view.target.kind === "local") {
     const url = new URL(`/preset-preview/${view.target.example}`, siteConfig.url)
     url.searchParams.set("preset", canonicalCode)
-    url.searchParams.set("iconLibrary", resolved.iconLibrary)
     return url.toString()
   }
 
   const v4BaseUrl = process.env.NEXT_PUBLIC_V4_URL ?? "http://localhost:4000"
   const previewUrl = new URL(`/preview/radix/${view.target.pageName}`, v4BaseUrl)
   previewUrl.searchParams.set("preset", canonicalCode)
-  previewUrl.searchParams.set("iconLibrary", resolved.iconLibrary)
   return previewUrl.toString()
 }
 

@@ -46,7 +46,6 @@ describe("getPresetPreviewUrl", () => {
     expect(url).not.toBeNull()
     expect(url).toContain("/preset-preview/dashboard")
     expect(url).toContain("preset=b5aFUJkSzC")
-    expect(url).toContain("iconLibrary=")
   })
 
   it("supports local shadcn example views through the same URL helper", () => {
@@ -55,6 +54,5 @@ describe("getPresetPreviewUrl", () => {
     expect(url).not.toBeNull()
     expect(url).toContain("/preset-preview/style-overview-1")
     expect(url).toContain("preset=b5aFUJkSzC")
-    expect(url).toContain("iconLibrary=")
   })
 })
