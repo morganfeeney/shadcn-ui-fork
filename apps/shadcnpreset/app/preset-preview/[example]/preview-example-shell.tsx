@@ -8,7 +8,6 @@ import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/
 import { PresetCard2StyleOverview } from "@/components/preset-swatch/components/preset-card-2-style-overview"
 import type { LocalPresetPreviewExample } from "@/lib/preset-preview"
 
-const THEME_STYLE_ELEMENT_ID = "preset-preview-example-theme"
 const THEME_SYNC_MESSAGE_TYPE = "shadcnpreset:theme-mode"
 
 type ThemeMode = "light" | "dark"
@@ -66,37 +65,11 @@ function ExampleView({
 export function PresetPreviewExampleShell({
   example,
   presetCode,
-  combinedCss,
-  styleClass,
-  baseColorClass,
 }: {
   example: LocalPresetPreviewExample
   presetCode: string
-  combinedCss: string
-  styleClass: string
-  baseColorClass: string
 }) {
   const { setTheme } = useTheme()
-
-  React.useLayoutEffect(() => {
-    const body = document.body
-    body.classList.add(styleClass, baseColorClass)
-
-    let styleEl = document.getElementById(
-      THEME_STYLE_ELEMENT_ID
-    ) as HTMLStyleElement | null
-    if (!styleEl) {
-      styleEl = document.createElement("style")
-      styleEl.id = THEME_STYLE_ELEMENT_ID
-      document.head.appendChild(styleEl)
-    }
-    styleEl.textContent = combinedCss
-
-    return () => {
-      body.classList.remove(styleClass, baseColorClass)
-      document.getElementById(THEME_STYLE_ELEMENT_ID)?.remove()
-    }
-  }, [combinedCss, styleClass, baseColorClass])
 
   React.useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
