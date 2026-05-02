@@ -14,7 +14,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { PRESET_THEME_GENERATOR_TOOL } from "@/app/tools/tools"
-import { trackPresetThemeDecodeSubmit } from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import { generateRandomCompatiblePreset } from "@/lib/random-preset"
 
 type PresetThemeGeneratorHeaderProps = {
@@ -51,9 +51,9 @@ export function PresetThemeGeneratorHeader({
     const nextCode = value.trim()
 
     if (nextCode) {
-      trackPresetThemeDecodeSubmit({
-        pagePath: pathname,
-        presetCode: nextCode,
+      trackEvent("preset_theme_decode_submit", {
+        page_path: pathname,
+        preset_code: nextCode,
       })
     }
 

@@ -1,8 +1,10 @@
 "use client"
 
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useMemo } from "react"
+import { useSearchParams } from "next/navigation"
 import { SquareIcon } from "lucide-react"
 import type { IconLibraryName } from "shadcn/icons"
+import { decodePreset, isPresetCode } from "shadcn/preset"
 
 import { useDesignSystemSearchParams } from "@/app/(create)/lib/search-params"
 
@@ -64,8 +66,22 @@ export function IconPlaceholder({
   remixicon,
   ...rest
 }: IconPlaceholderProps) {
+  const searchParams = useSearchParams()
   const [{ iconLibrary: iconLibraryFromUrl }] = useDesignSystemSearchParams()
-  const iconLibrary = iconLibraryFromProps ?? iconLibraryFromUrl
+
+  const iconLibraryFromPreset = useMemo(() => {
+    const preset = searchParams.get("preset")
+    if (!preset || !isPresetCode(preset)) {
+      return null
+    }
+
+    const decoded = decodePreset(preset)
+    return decoded?.iconLibrary ?? null
+  }, [searchParams])
+
+  const iconLibrary =
+    iconLibraryFromProps ?? iconLibraryFromPreset ?? iconLibraryFromUrl
+
   const nameByLib: Record<IconLibraryName, string> = {
     lucide,
     tabler,

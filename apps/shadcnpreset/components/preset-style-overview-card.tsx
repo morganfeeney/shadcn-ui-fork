@@ -13,12 +13,7 @@ import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
 import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import {
-  trackAiAssistantResultClick,
-  trackPresetEditClick,
-  trackPresetPreview,
-  trackPresetVoteClick,
-} from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 
 type PresetStyleOverviewCardProps = {
   code: string
@@ -101,35 +96,48 @@ export function PresetStyleOverviewCard({
   const isAssistantSurface = pathname.startsWith("/assistant")
 
   function handlePreview() {
-    trackPresetPreview({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_preview", {
+      page_path: pathname,
+      preset_code: code,
+    })
+    trackEvent("preset_demo_dialog_open", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `preview:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `preview:${code}`,
       })
     }
     setPreviewOpen(true)
   }
 
   function handleEditNavigate() {
-    trackPresetEditClick({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_edit_click", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "preset",
-        targetId: code,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "preset",
+        target_id: code,
       })
     }
   }
 
   function handleVoteClick() {
-    trackPresetVoteClick({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_vote_click", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `vote:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `vote:${code}`,
       })
     }
     void toggleVote()

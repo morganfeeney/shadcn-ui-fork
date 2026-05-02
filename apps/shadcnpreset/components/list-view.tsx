@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { Button } from "@/components/ui/button"
 import { usePresetFeed } from "@/hooks/use-preset-feed"
-import { trackFeedLoadMore } from "@/lib/analytics-events"
+import { trackEvent } from "@/lib/analytics-events"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 import { PresetStyleOverviewCard2 } from "@/components/preset-style-overview-card-2"
 
@@ -88,7 +88,10 @@ export function ListView({
   const hasMore = visibleItems.length < feedItems.length
 
   function loadMore() {
-    trackFeedLoadMore({ pagePath: pathname, batchSize: visibleStep })
+    trackEvent("feed_load_more", {
+      page_path: pathname,
+      batch_size: visibleStep,
+    })
     setVisibleCount((current) =>
       Math.min(feedItems.length, current + visibleStep)
     )

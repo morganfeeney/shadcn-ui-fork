@@ -1,36 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { PRESET_FONTS } from "shadcn/preset"
 
-const GOOGLE_FONT_QUERY_BY_VALUE = {
-  inter: "Inter:wght@400;500;600;700",
-  "noto-sans": "Noto+Sans:wght@400;500;600;700",
-  "nunito-sans": "Nunito+Sans:wght@400;500;600;700",
-  figtree: "Figtree:wght@400;500;600;700",
-  roboto: "Roboto:wght@400;500;700",
-  raleway: "Raleway:wght@400;500;600;700",
-  "dm-sans": "DM+Sans:wght@400;500;700",
-  "public-sans": "Public+Sans:wght@400;500;600;700",
-  outfit: "Outfit:wght@400;500;600;700",
-  "jetbrains-mono": "JetBrains+Mono:wght@400;500;700",
-  geist: "Geist:wght@100..900",
-  "geist-mono": "Geist+Mono:wght@100..900",
-  lora: "Lora:wght@400;500;600;700",
-  merriweather: "Merriweather:wght@400;700",
-  "playfair-display": "Playfair+Display:wght@400;500;600;700",
-  "noto-serif": "Noto+Serif:wght@400;500;600;700",
-  "roboto-slab": "Roboto+Slab:wght@400;500;600;700",
-  oxanium: "Oxanium:wght@400;500;600;700",
-  manrope: "Manrope:wght@400;500;600;700",
-  "space-grotesk": "Space+Grotesk:wght@400;500;600;700",
-  montserrat: "Montserrat:wght@400;500;600;700",
-  "ibm-plex-sans": "IBM+Plex+Sans:wght@400;500;600;700",
-  "source-sans-3": "Source+Sans+3:wght@400;500;600;700",
-  "instrument-sans": "Instrument+Sans:wght@400;500;600;700",
-  "eb-garamond": "EB+Garamond:wght@400;500;600;700",
-  "instrument-serif": "Instrument+Serif:ital@0;1",
-} as const satisfies Record<(typeof PRESET_FONTS)[number], string>
+import {
+  GOOGLE_FONT_QUERY_BY_VALUE,
+} from "@/lib/preset-google-fonts"
 
 function ensurePreconnect(url: string) {
   if (document.head.querySelector(`link[rel="preconnect"][href="${url}"]`)) {

@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { Settings2, X } from "lucide-react"
-import { useState } from "react"
+import { usePathname } from "next/navigation"
+import { CheckIcon, ChevronDownIcon, Settings2, X } from "lucide-react"
+import { useMemo, useState } from "react"
 
 import {
   Dialog,
@@ -14,15 +15,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { trackEvent } from "@/lib/analytics-events"
+import { getPresetPreviewUrl } from "@/lib/preset"
+import {
+  PRESET_PREVIEW_VIEWS,
+  type PresetPreviewPageName,
+} from "@/lib/preset-preview"
 import { cn } from "@/lib/utils"
 import { PresetV4Frame } from "@/components/preset-v4-frame"
 import { PresetVoteButton } from "@/components/preset-vote-button"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  getPresetPreviewUrl,
-  PRESET_PREVIEW_VIEWS,
-  type PresetPreviewPageName,
-} from "@/lib/preset"
 
 export type PresetPreviewDialogProps = {
   code: string
@@ -60,9 +71,18 @@ export function PresetPreviewDialog({
   title,
   description,
 }: PresetPreviewDialogProps) {
+  const pathname = usePathname()
   const [loadGen, setLoadGen] = useState(0)
   const [previewPage, setPreviewPage] =
     useState<PresetPreviewPageName>("preview")
+  const [previewPickerOpen, setPreviewPickerOpen] = useState(false)
+
+  const currentPreviewLabel = useMemo(
+    () =>
+      PRESET_PREVIEW_VIEWS.find((v) => v.page === previewPage)?.label ??
+      previewPage,
+    [previewPage]
+  )
 
   const basePreviewUrl = getPresetPreviewUrl(code)
   if (!basePreviewUrl) return null
@@ -76,6 +96,7 @@ export function PresetPreviewDialog({
         if (next) {
           setLoadGen((g) => g + 1)
           setPreviewPage("preview")
+          setPreviewPickerOpen(false)
         }
         onOpenChange(next)
       }}
@@ -128,26 +149,65 @@ export function PresetPreviewDialog({
           />
         </div>
         <DialogFooter>
-          <div
-            role="tablist"
-            aria-label="Preview layout"
-            className="flex gap-2"
-          >
-            {PRESET_PREVIEW_VIEWS.map(({ page, label }) => (
-              <Button
-                key={page}
-                type="button"
-                role="tab"
-                aria-selected={previewPage === page}
-                variant={previewPage === page ? "outline" : "ghost"}
-                size="sm"
-                className="h-8 rounded-md px-3 text-xs"
-                onClick={() => setPreviewPage(page)}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
+          <Popover open={previewPickerOpen} onOpenChange={setPreviewPickerOpen}>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  aria-label="Choose preview layout"
+                  className="h-8 w-full min-w-[10.5rem] justify-between gap-2 px-3 text-xs font-normal sm:w-auto"
+                />
+              }
+            >
+              <span className="truncate">{currentPreviewLabel}</span>
+              <ChevronDownIcon className="size-3.5 shrink-0 opacity-50" />
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-72 p-0"
+              side="top"
+              align="end"
+              sideOffset={8}
+            >
+              <Command>
+                <CommandInput placeholder="Search previews…" />
+                <CommandList>
+                  <CommandEmpty>No preview found.</CommandEmpty>
+                  <CommandGroup heading="Layouts">
+                    {PRESET_PREVIEW_VIEWS.map(({ page, label }) => (
+                      <CommandItem
+                        key={page}
+                        value={page}
+                        keywords={[label, page]}
+                        className="[&>svg:last-child]:hidden"
+                        onSelect={() => {
+                          const previous = previewPage
+                          setPreviewPage(page)
+                          setPreviewPickerOpen(false)
+                          if (page !== previous) {
+                            trackEvent("preset_demo_view_select", {
+                              page_path: pathname,
+                              preset_code: code,
+                              demo_view: page,
+                            })
+                          }
+                        }}
+                      >
+                        <span className="truncate">{label}</span>
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto size-4 shrink-0",
+                            previewPage === page ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </DialogFooter>
       </DialogContent>
     </Dialog>

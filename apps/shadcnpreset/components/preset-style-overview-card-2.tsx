@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { HeartIcon, EyeIcon } from "@phosphor-icons/react"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -8,14 +7,8 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import useVote from "@/hooks/use-vote"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import {
-  trackAiAssistantResultClick,
-  trackPresetEditClick,
-  trackPresetPreview,
-  trackPresetVoteClick,
-} from "@/lib/analytics-events"
+import { Button } from "@/components/ui/button"
+import { trackEvent } from "@/lib/analytics-events"
 import { PresetCard2StyleOverview } from "@/components/preset-swatch/components/preset-card-2-style-overview"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -101,35 +94,34 @@ export function PresetStyleOverviewCard2({
   const isAssistantSurface = pathname.startsWith("/assistant")
 
   function handlePreview() {
-    trackPresetPreview({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_preview", {
+      page_path: pathname,
+      preset_code: code,
+    })
+    trackEvent("preset_demo_dialog_open", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `preview:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `preview:${code}`,
       })
     }
     setPreviewOpen(true)
   }
 
-  function handleEditNavigate() {
-    trackPresetEditClick({ pagePath: pathname, presetCode: code })
-    if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "preset",
-        targetId: code,
-      })
-    }
-  }
-
   function handleVoteClick() {
-    trackPresetVoteClick({ pagePath: pathname, presetCode: code })
+    trackEvent("preset_vote_click", {
+      page_path: pathname,
+      preset_code: code,
+    })
     if (isAssistantSurface) {
-      trackAiAssistantResultClick({
-        pagePath: pathname,
-        resultType: "action",
-        targetId: `vote:${code}`,
+      trackEvent("ai_assistant_result_click", {
+        page_path: pathname,
+        result_type: "action",
+        target_id: `vote:${code}`,
       })
     }
     void toggleVote()
@@ -155,7 +147,7 @@ export function PresetStyleOverviewCard2({
             >
               <PresetCard2StyleOverview
                 initialCode={code}
-                className="h-full w-full overflow-auto"
+                className="h-full w-full overflow-hidden"
               />
             </div>
           </>

@@ -52,7 +52,13 @@ export function getPresetThemeCssBundle(
   })
 
   const fontVars = getFontVars(resolved)
+  const themeVars = (
+    registryTheme.cssVars as {
+      theme?: ThemeVars
+    }
+  ).theme
   const lightVars = {
+    ...(themeVars ?? {}),
     ...(registryTheme.cssVars.light as ThemeVars),
     ...fontVars,
   }
