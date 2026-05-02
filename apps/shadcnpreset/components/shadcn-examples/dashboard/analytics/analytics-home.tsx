@@ -35,7 +35,7 @@ import {
 } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Card,
@@ -607,15 +607,16 @@ export function AnalyticsHome() {
               </div>
             </CardContent>
             <CardFooter className="grid py-3">
-              <Button asChild variant="ghost" className="-me-3.5">
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-1 justify-self-end -me-1"
-                >
-                  View report
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
+              <a
+                href="#"
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "-me-3.5 inline-flex items-center gap-1 justify-self-end -me-1"
+                )}
+              >
+                View report
+                <ArrowRight className="size-4" />
+              </a>
             </CardFooter>
           </Card>
 
@@ -634,18 +635,20 @@ export function AnalyticsHome() {
                 </div>
                 <ButtonGroup>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button type="button" variant="outline" size="sm">
-                        <Check
-                          className="size-3.5 text-emerald-600 dark:text-emerald-500"
-                          aria-hidden
-                        />
-                        <ChevronDown
-                          className="size-3.5 opacity-70"
-                          aria-hidden
-                        />
-                      </Button>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button type="button" variant="outline" size="sm">
+                          <Check
+                            className="size-3.5 text-emerald-600 dark:text-emerald-500"
+                            aria-hidden
+                          />
+                          <ChevronDown
+                            className="size-3.5 opacity-70"
+                            aria-hidden
+                          />
+                        </Button>
+                      }
+                    />
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Reporting window</DropdownMenuLabel>
                       <DropdownMenuSeparator />
@@ -798,15 +801,16 @@ export function AnalyticsHome() {
               </div>
             </CardContent>
             <CardFooter className="grid py-3">
-              <Button asChild variant="ghost" className="-me-3.5">
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-1 justify-self-end -me-1"
-                >
-                  View breakdown
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
+              <a
+                href="#"
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "-me-3.5 inline-flex items-center gap-1 justify-self-end -me-1"
+                )}
+              >
+                View breakdown
+                <ArrowRight className="size-4" />
+              </a>
             </CardFooter>
           </Card>
         </div>
@@ -927,12 +931,14 @@ export function AnalyticsHome() {
             </CardContent>
             <CardFooter className="mt-auto flex items-center justify-between py-3">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button type="button" variant="ghost" className="-ms-2.5">
-                    Last 7 days
-                    <ChevronDown className="size-4 opacity-70" />
-                  </Button>
-                </DropdownMenuTrigger>
+                <DropdownMenuTrigger
+                  render={
+                    <Button type="button" variant="ghost" className="-ms-2.5">
+                      Last 7 days
+                      <ChevronDown className="size-4 opacity-70" />
+                    </Button>
+                  }
+                />
                 <DropdownMenuContent align="start">
                   <DropdownMenuLabel>Date range</DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -945,12 +951,16 @@ export function AnalyticsHome() {
                   <DropdownMenuItem>Last month</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button asChild variant="ghost" className="-me-3.5">
-                <a href="#" className="inline-flex items-center gap-1 -me-1">
-                  View traffic acquisition
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
+              <a
+                href="#"
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "-me-3.5 inline-flex items-center gap-1 -me-1"
+                )}
+              >
+                View traffic acquisition
+                <ArrowRight className="size-4" />
+              </a>
             </CardFooter>
           </div>
         </Card>
@@ -1009,12 +1019,14 @@ export function AnalyticsHome() {
             </CardContent>
             <CardFooter className="mt-auto flex items-center py-3">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button type="button" variant="ghost" className="-ms-2.5">
-                    Last 7 days
-                    <ChevronDown className="size-4 opacity-70" />
-                  </Button>
-                </DropdownMenuTrigger>
+                <DropdownMenuTrigger
+                  render={
+                    <Button type="button" variant="ghost" className="-ms-2.5">
+                      Last 7 days
+                      <ChevronDown className="size-4 opacity-70" />
+                    </Button>
+                  }
+                />
                 <DropdownMenuContent align="start">
                   <DropdownMenuLabel>Date range</DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -1080,12 +1092,14 @@ export function AnalyticsHome() {
             </CardContent>
             <CardFooter className="mt-auto flex items-center py-3 justify-between">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button type="button" variant="ghost" className="-ms-2.5">
-                    Last 7 days
-                    <ChevronDown className="size-4 opacity-70" />
-                  </Button>
-                </DropdownMenuTrigger>
+                <DropdownMenuTrigger
+                  render={
+                    <Button type="button" variant="ghost" className="-ms-2.5">
+                      Last 7 days
+                      <ChevronDown className="size-4 opacity-70" />
+                    </Button>
+                  }
+                />
                 <DropdownMenuContent align="start">
                   <DropdownMenuLabel>Date range</DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -1098,15 +1112,16 @@ export function AnalyticsHome() {
                   <DropdownMenuItem>Last month</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button asChild variant="ghost" className="-me-3.5">
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-1 justify-self-end -me-1"
-                >
-                  View breakdown
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
+              <a
+                href="#"
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "inline-flex items-center gap-1 justify-self-end -me-1 -me-3.5"
+                )}
+              >
+                View breakdown
+                <ArrowRight className="size-4" />
+              </a>
             </CardFooter>
           </div>
         </Card>
