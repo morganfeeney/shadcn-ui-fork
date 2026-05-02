@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function ToolsPage() {
   return (
-    <>
+    <div className="grid content-start items-start">
       <PageHeader>
         <PageHeaderHeading className="max-w-4xl">
           {TOOLS_PAGE.title}
@@ -51,6 +51,6 @@ export default function ToolsPage() {
           }))}
         />
       </main>
-    </>
+    </div>
   )
 }
