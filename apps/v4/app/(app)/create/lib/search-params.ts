@@ -91,6 +91,7 @@ const designSystemSearchParams = {
     "laravel",
   ] as const).withDefault("next"),
   rtl: parseAsBoolean.withDefault(false),
+  pointer: parseAsBoolean.withDefault(false),
   size: parseAsInteger.withDefault(100),
   custom: parseAsBoolean.withDefault(false),
   /** When true (e.g. ?embed=1 from shadcnpreset iframe), outer marketing chrome is hidden. */
@@ -128,6 +129,7 @@ const NON_DESIGN_SYSTEM_KEYS = [
   "preset",
   "template",
   "rtl",
+  "pointer",
   "size",
   "custom",
   "embed",
@@ -227,6 +229,7 @@ function resolvePresetParams(
         preset: rawParams.preset,
         template: rawParams.template,
         rtl: rawParams.rtl,
+        pointer: rawParams.pointer,
         size: rawParams.size,
         custom: rawParams.custom,
         embed: rawParams.embed,
