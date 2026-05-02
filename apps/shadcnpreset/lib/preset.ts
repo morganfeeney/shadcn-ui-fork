@@ -5,7 +5,6 @@ import {
   isPresetCode,
   type PresetConfig,
 } from "shadcn/preset"
-import { siteConfig } from "@/lib/config"
 import {
   getPresetPreviewView,
   PRESET_PREVIEW_VIEWS,
@@ -109,9 +108,12 @@ export function getPresetPreviewUrl(
   if (!view) return null
 
   if (view.target.kind === "local") {
-    const url = new URL(`/preset-preview/${view.target.example}`, siteConfig.url)
-    url.searchParams.set("preset", canonicalCode)
-    return url.toString()
+    // Same-origin path only — avoids iframe loading a different host than the tab
+    // (siteConfig.url can be apex while the user is on www, or vice versa), which
+    // triggers Chrome security / cross-origin prompts for local demo embeds.
+    const path = `/preset-preview/${view.target.example}`
+    const params = new URLSearchParams({ preset: canonicalCode })
+    return `${path}?${params.toString()}`
   }
 
   const v4BaseUrl = process.env.NEXT_PUBLIC_V4_URL ?? "http://localhost:4000"

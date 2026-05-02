@@ -69,8 +69,6 @@ export const LOCAL_PRESET_PREVIEW_EXAMPLES = [
   "dashboard",
   "login-02",
   "login-04",
-  "style-overview-1",
-  "style-overview-2",
 ] as const
 
 export function getPresetPreviewView(page: PresetPreviewPageName) {
