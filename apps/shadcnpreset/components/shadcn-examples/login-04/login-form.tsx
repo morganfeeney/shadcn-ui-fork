@@ -20,8 +20,8 @@ export function LoginForm({ className, ...props }: ComponentProps<"div">) {
           <form className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-sm text-balance text-muted-foreground">
+                <h1 className="cn-dialog-title">Welcome back</h1>
+                <p className="cn-dialog-description">
                   Login to your Acme Inc account
                 </p>
               </div>
