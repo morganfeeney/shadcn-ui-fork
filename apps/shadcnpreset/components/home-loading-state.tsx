@@ -1,34 +1,22 @@
-import { Announcement } from "@/components/announcement"
 import { CardListSkeleton } from "@/components/card-list-skeleton"
-import {
-  PageHeader,
-  PageHeaderDescription,
-  PageHeaderHeading,
-} from "@/components/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
-import { DefaultLayout } from "@/components/default-layout"
-import { siteConfig } from "@/lib/config"
+import { ContainerOuter } from "@/components/zippystarter/container"
+import { HomeHero } from "@/components/home-hero"
+import { Footer1 } from "@/components/zippystarter/footer1"
+import { Header1 } from "@/components/zippystarter/header1"
 
 export function HomeLoadingState() {
   return (
-    <DefaultLayout>
-      <PageHeader>
-        <Announcement />
-        <PageHeaderHeading className="max-w-4xl">
-          {siteConfig.title}
-        </PageHeaderHeading>
-        <PageHeaderDescription className="text-muted-foreground">
-          {siteConfig.description}
-        </PageHeaderDescription>
-        <div className="w-full max-w-2xl space-y-2.5 pt-2">
-          <div className="flex flex-col justify-center gap-2 sm:flex-row">
-            <Skeleton className="h-9 w-21.5" />
-            <Skeleton className="h-9 w-37.5" />
-          </div>
+    <ContainerOuter className="grid min-h-screen grid-rows-[auto_1fr_auto]">
+      <Header1 />
+      <HomeHero>
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-21.5" />
+          <Skeleton className="h-9 w-37.5" />
         </div>
-      </PageHeader>
-
+      </HomeHero>
       <CardListSkeleton />
-    </DefaultLayout>
+      <Footer1 />
+    </ContainerOuter>
   )
 }

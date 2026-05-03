@@ -36,3 +36,7 @@ export function CardListSkeleton() {
     </main>
   )
 }
+
+export function HomePresetCarouselSkeleton() {
+  return <section className="pt-6 pb-20 md:pt-8 md:pb-28"></section>
+}
