@@ -1,13 +1,13 @@
 "use client"
 
 import { useCallback, useRef, type KeyboardEvent } from "react"
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  type LucideIcon,
-} from "lucide-react"
 import Link from "next/link"
+import {
+  ArrowRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  type Icon,
+} from "@phosphor-icons/react"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -30,7 +30,7 @@ export function HomeHeroButtons() {
   return (
     <div className="flex gap-2">
       <Link href="/assistant" className={buttonVariants({ size: "lg" })}>
-        Ask AI <ArrowRight />
+        Ask AI <ArrowRightIcon className="size-4" weight="bold" />
       </Link>
       <Link
         href="/community"
@@ -117,7 +117,7 @@ export function HomePresetCarousel({
           <CarouselRailNavButton
             label="Previous featured preset"
             viewportId={FEATURED_PRESETS_VIEWPORT_ID}
-            Icon={ChevronLeft}
+            Icon={CaretLeftIcon}
             onPress={scrollPrev}
             className="absolute top-1/2 left-4 z-50 -translate-y-1/2"
           />
@@ -129,7 +129,7 @@ export function HomePresetCarousel({
           <CarouselRailNavButton
             label="Next featured preset"
             viewportId={FEATURED_PRESETS_VIEWPORT_ID}
-            Icon={ChevronRight}
+            Icon={CaretRightIcon}
             onPress={scrollNext}
             className="absolute top-1/2 right-4 z-50 -translate-y-1/2"
           />
@@ -163,7 +163,7 @@ function CarouselRailNavButton({
 }: {
   label: string
   viewportId: string
-  Icon: LucideIcon
+  Icon: Icon
   disabled?: boolean
   onPress: () => void
   className?: string
@@ -175,10 +175,13 @@ function CarouselRailNavButton({
       aria-label={label}
       aria-controls={viewportId}
       disabled={disabled}
-      className={cn(className)}
+      className={cn(
+        "transition-none active:translate-y-[calc(-50%+1px)]!",
+        className
+      )}
       onClick={onPress}
     >
-      <Icon className="size-4" />
+      <Icon className="size-4" weight="bold" />
     </Button>
   )
 }
