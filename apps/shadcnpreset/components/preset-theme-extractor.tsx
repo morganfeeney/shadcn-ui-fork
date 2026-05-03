@@ -143,17 +143,9 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-[2fr_3fr]">
-      <div className="space-y-6">
-        {bundle ? (
-          <PresetStyleOverviewCard
-            code={bundle.resolved.code}
-            title={bundle.resolved.code}
-            description={`${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
-          />
-        ) : null}
-
-        <Card>
+    <div className="grid items-start gap-6 md:grid-cols-[2fr_3fr] 2xl:grid-cols-2">
+      <div className="grid items-start gap-6 md:sticky md:top-6 2xl:grid-cols-[1fr_2fr]">
+        <Card className="max-2xl:order-2">
           <CardHeader>
             <CardTitle>
               About preset{" "}
@@ -189,6 +181,14 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
             )}
           </CardContent>
         </Card>
+        {bundle ? (
+          <PresetStyleOverviewCard
+            className="max-2xl:order-1"
+            code={bundle.resolved.code}
+            title={bundle.resolved.code}
+            description={`${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
+          />
+        ) : null}
       </div>
 
       <Card>

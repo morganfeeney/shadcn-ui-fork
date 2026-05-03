@@ -50,7 +50,7 @@ export function Container({
         data-slot="container-inner"
         className={cn(
           className,
-          "relative z-10 mx-auto w-full max-w-400 gap-(--gap) px-safe [--gap:--spacing(4)] md:[--gap:--spacing(6)]"
+          "relative z-10 mx-auto w-full max-w-500 gap-(--gap) px-safe [--gap:--spacing(4)] md:[--gap:--spacing(6)]"
         )}
       >
         {children}
