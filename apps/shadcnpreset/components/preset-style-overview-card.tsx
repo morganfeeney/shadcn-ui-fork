@@ -63,14 +63,9 @@ export function PresetStyleOverviewCard({
     intersectionObserver = new IntersectionObserver(
       (entries) => {
         const isVisible = entries.some((entry) => entry.isIntersecting)
-
-        if (!isMobile && isVisible) {
-          setShouldRender(true)
-          intersectionObserver?.disconnect()
-          return
-        }
-
-        setShouldRender(isVisible)
+        if (!isVisible) return
+        setShouldRender(true)
+        intersectionObserver?.disconnect()
       },
       {
         rootMargin: isMobile ? "96px 0px" : "220px 0px",
