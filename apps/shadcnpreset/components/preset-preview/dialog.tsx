@@ -152,30 +152,6 @@ export function PresetPreviewDialog({
               ) : null}
             </div>
             <div className="flex shrink-0 flex-wrap justify-end gap-2">
-              {canStep ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    aria-label="Previous preset"
-                    disabled={!canPrev}
-                    onClick={() => stepPreset(-1)}
-                  >
-                    <CaretLeftIcon className="size-4" weight="bold" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    aria-label="Next preset"
-                    disabled={!canNext}
-                    onClick={() => stepPreset(1)}
-                  >
-                    <CaretRightIcon className="size-4" weight="bold" />
-                  </Button>
-                </>
-              ) : null}
               <PresetVoteButton code={viewCode} enabled={open} />
               <Link
                 href={`/preset/${viewCode}`}
@@ -200,11 +176,43 @@ export function PresetPreviewDialog({
           </div>
         </DialogHeader>
         <div className="relative -mx-4">
+          {canStep ? (
+            <Button
+              type="button"
+              size="icon"
+              aria-label="Previous preset"
+              disabled={!canPrev}
+              className={cn(
+                "absolute top-1/2 -left-3 z-10 size-11 -translate-y-1/2 opacity-95 shadow-md backdrop-blur-sm",
+                "hover:opacity-100",
+                "transition-none active:translate-y-[calc(-50%+1px)]!"
+              )}
+              onClick={() => stepPreset(-1)}
+            >
+              <CaretLeftIcon className="size-4" weight="bold" />
+            </Button>
+          ) : null}
           <DialogPreviewIframe
             key={`${viewCode}-${previewPage}-${loadGen}`}
             src={previewSrc}
             title={`Preset preview ${viewCode} ${previewPage}`}
           />
+          {canStep ? (
+            <Button
+              type="button"
+              size="icon"
+              aria-label="Next preset"
+              disabled={!canNext}
+              className={cn(
+                "absolute top-1/2 -right-3 z-10 size-11 -translate-y-1/2 opacity-95 shadow-md backdrop-blur-sm",
+                "hover:opacity-100",
+                "transition-none active:translate-y-[calc(-50%+1px)]!"
+              )}
+              onClick={() => stepPreset(1)}
+            >
+              <CaretRightIcon className="size-4" weight="bold" />
+            </Button>
+          ) : null}
         </div>
         <DialogFooter>
           <Popover open={previewPickerOpen} onOpenChange={setPreviewPickerOpen}>
