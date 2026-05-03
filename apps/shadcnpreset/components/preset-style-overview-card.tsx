@@ -153,17 +153,17 @@ export function PresetStyleOverviewCard({
             <button
               type="button"
               className={cn(
-                "absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-t-xl rounded-b-none border border-transparent bg-transparent p-0 outline-none transition-all select-none",
-                "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-ring/50"
+                "absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-t-xl rounded-b-none border border-transparent bg-transparent p-0 transition-all outline-none select-none",
+                "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
               )}
               aria-label={`Open preview for ${title}`}
               onClick={handlePreview}
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100 [@media(hover:none)]:hidden"
+                className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100"
               />
-              <span className="pointer-events-none invisible relative z-10 group-hover/card:visible [@media(hover:none)]:hidden">
+              <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
                 <span className={cn(buttonVariants())}>Preview</span>
               </span>
             </button>
