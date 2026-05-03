@@ -20,9 +20,11 @@ import { useHorizontalSnapRailNav } from "@/hooks/use-horizontal-snap-rail-nav"
 import { useLgAndUp } from "@/hooks/use-lg-and-up"
 import { cn } from "@/lib/utils"
 
-import type { HomePresetCarouselItem } from "./home-preset-carousel-types"
-
-export type { HomePresetCarouselItem } from "./home-preset-carousel-types"
+interface HomePresetCarouselItem {
+  code: string
+  title: string
+  description: string
+}
 
 const FEATURED_PRESETS_VIEWPORT_ID = "home-featured-presets-carousel"
 
