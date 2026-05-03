@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 
-import type { HomePresetCarouselItem } from "./home-preset-carousel-types"
 import { cn } from "@/lib/utils"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 
@@ -50,6 +49,12 @@ function getCardStyle(distanceFromActive: number): CSSProperties {
     opacity,
     transform: `translate3d(calc(-50% + ${translateX}px), -50%, ${-limitedDistance * 60}px) rotateY(${rotateY}deg) scale(${scale})`,
   }
+}
+
+interface HomePresetCarouselItem {
+  code: string
+  title: string
+  description: string
 }
 
 export function HomePresetCarouselDesktop({
