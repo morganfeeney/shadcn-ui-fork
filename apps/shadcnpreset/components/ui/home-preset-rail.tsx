@@ -14,11 +14,13 @@ function HomePresetRail({ className, ...props }: React.ComponentProps<"div">) {
 
 function HomePresetRailViewport({
   className,
+  ref,
   "aria-label": ariaLabel = "Featured presets",
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
+      ref={ref}
       role="list"
       data-slot="home-preset-rail-viewport"
       aria-label={ariaLabel}
