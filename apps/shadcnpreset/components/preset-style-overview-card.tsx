@@ -29,7 +29,7 @@ export function PresetStyleOverviewCard({
   title,
   description,
   virtualWidth = 700,
-  virtualHeight = 575,
+  virtualHeight = 700,
   className,
 }: PresetStyleOverviewCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
