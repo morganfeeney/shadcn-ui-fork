@@ -132,7 +132,7 @@ export function PresetStyleOverviewCard2({
         {canRenderPreview ? (
           <>
             <div
-              className="absolute inset-0 p-0 will-change-transform"
+              className="absolute inset-0 p-0"
               style={{
                 width: virtualWidth,
                 height: virtualHeight,

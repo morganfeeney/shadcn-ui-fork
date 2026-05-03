@@ -135,7 +135,7 @@ export function PresetStyleOverviewCard({
         {canRenderPreview ? (
           <>
             <CardContent
-              className="pointer-events-none absolute inset-0 p-0 will-change-transform"
+              className="pointer-events-none absolute inset-0 p-0"
               style={{
                 width: virtualWidth,
                 height: virtualHeight,
