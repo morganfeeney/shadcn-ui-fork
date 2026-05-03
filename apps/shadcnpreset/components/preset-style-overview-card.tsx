@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Heart } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -29,7 +28,7 @@ export function PresetStyleOverviewCard({
   title,
   description,
   virtualWidth = 700,
-  virtualHeight = 700,
+  virtualHeight = 600,
   className,
 }: PresetStyleOverviewCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -111,20 +110,6 @@ export function PresetStyleOverviewCard({
     setPreviewOpen(true)
   }
 
-  function handleEditNavigate() {
-    trackEvent("preset_edit_click", {
-      page_path: pathname,
-      preset_code: code,
-    })
-    if (isAssistantSurface) {
-      trackEvent("ai_assistant_result_click", {
-        page_path: pathname,
-        result_type: "preset",
-        target_id: code,
-      })
-    }
-  }
-
   function handleVoteClick() {
     trackEvent("preset_vote_click", {
       page_path: pathname,
@@ -150,7 +135,7 @@ export function PresetStyleOverviewCard({
         {canRenderPreview ? (
           <>
             <CardContent
-              className="absolute inset-0 p-0 will-change-transform"
+              className="pointer-events-none absolute inset-0 p-0 will-change-transform"
               style={{
                 width: virtualWidth,
                 height: virtualHeight,
@@ -163,24 +148,20 @@ export function PresetStyleOverviewCard({
                 className="h-full w-full"
               />
             </CardContent>
-            <div className="absolute inset-0">
-              <div
+            <button
+              type="button"
+              className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center border-0 bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              aria-label={`Open preview for ${title}`}
+              onClick={handlePreview}
+            >
+              <span
                 aria-hidden
-                className="absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100 [@media(hover:none)]:hidden"
+                className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100 [@media(hover:none)]:hidden"
               />
-              <div className="invisible absolute inset-0 z-10 grid place-content-center gap-2 group-hover/card:visible [@media(hover:none)]:hidden">
-                <Button type="button" onClick={handlePreview}>
-                  Preview
-                </Button>
-                <Link
-                  href={`/preset/${code}`}
-                  className={cn(buttonVariants({ variant: "outline" }))}
-                  onClick={handleEditNavigate}
-                >
-                  Edit
-                </Link>
-              </div>
-            </div>
+              <span className="pointer-events-none invisible relative z-10 group-hover/card:visible [@media(hover:none)]:hidden">
+                <span className={cn(buttonVariants())}>Preview</span>
+              </span>
+            </button>
           </>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -230,13 +211,6 @@ export function PresetStyleOverviewCard({
           <Button type="button" onClick={handlePreview}>
             Preview
           </Button>
-          <Link
-            href={`/preset/${code}`}
-            className={cn(buttonVariants({ variant: "outline" }))}
-            onClick={handleEditNavigate}
-          >
-            Edit
-          </Link>
         </div>
       </CardFooter>
     </Card>

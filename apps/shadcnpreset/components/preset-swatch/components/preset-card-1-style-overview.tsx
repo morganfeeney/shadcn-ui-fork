@@ -20,6 +20,7 @@ import { PresetThemeSurface } from "@/components/preset-theme-surface"
 import { effectiveHeadingFont, resolvePresetFromCode } from "@/lib/preset"
 import { buildRegistryTheme, DEFAULT_CONFIG } from "@/registry/config"
 import { ObservabilityCard } from "@/components/preset-swatch/components/cards/observability-card"
+import { PreviewAnalyticsCard } from "@/components/preset-swatch/components/cards/preview-analytics-card"
 import { PreviewIconGrid } from "@/components/preset-swatch/components/cards/icon-preview-grid"
 import { StyleOverview } from "@/components/preset-swatch/components/cards/style-overview"
 import { TypographySpecimenCard } from "@/components/preset-swatch/components/cards/typography-specimen"
@@ -33,7 +34,7 @@ type PresetCard1StyleOverviewProps = {
 
 /**
  * Like `PresetCard1`, with a v4-style stack: `TypographySpecimenCard`, {@link StyleOverview}
- * (title + token grid), {@link PreviewIconGrid}, and {@link ObservabilityCard}. Still decodes
+ * (title + token grid), {@link PreviewIconGrid}, {@link PreviewAnalyticsCard}, and {@link ObservabilityCard}. Still decodes
  * a preset, applies `buildRegistryTheme`, and composes v4-style preview blocks (no iframe).
  *
  * Spacing uses `@container` so gaps track the **preview surface width** (e.g. the fixed
@@ -113,7 +114,7 @@ export function PresetCard1StyleOverview({
             </div>
             <div className="flex flex-col gap-(--gap)">
               <ObservabilityCard iconLibrary={resolved.iconLibrary} />
-              <div className="grid grid-cols-2 gap-(--gap)">
+              <div className="grid grid-cols-2 gap-2">
                 <TypographySpecimen type="body" font={resolved.font} />
                 <TypographySpecimen
                   type="heading"
@@ -123,6 +124,7 @@ export function PresetCard1StyleOverview({
                   )}
                 />
               </div>
+              <PreviewAnalyticsCard />
             </div>
           </ShadcnCardContent>
         </ShadcnCard>

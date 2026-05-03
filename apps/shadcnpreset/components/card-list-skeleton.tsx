@@ -11,7 +11,7 @@ function PresetCardSkeleton() {
     <Card className="gap-0 pt-0">
       <div
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: "700 / 575" }}
+        style={{ aspectRatio: "700 / 600" }}
       >
         <Skeleton className="absolute inset-0 rounded-none" />
       </div>
