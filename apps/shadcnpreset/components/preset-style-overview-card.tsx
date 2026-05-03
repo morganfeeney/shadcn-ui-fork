@@ -8,7 +8,10 @@ import { Spinner } from "@/components/ui/spinner"
 
 import useVote from "@/hooks/use-vote"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
+import {
+  PresetPreviewDialog,
+  type PresetPreviewStepItem,
+} from "@/components/preset-preview/dialog"
 import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -18,6 +21,7 @@ type PresetStyleOverviewCardProps = {
   code: string
   title: string
   description: string
+  previewStepOrder?: readonly PresetPreviewStepItem[]
   virtualWidth?: number
   virtualHeight?: number
   className?: string
@@ -27,6 +31,7 @@ export function PresetStyleOverviewCard({
   code,
   title,
   description,
+  previewStepOrder,
   virtualWidth = 700,
   virtualHeight = 600,
   className,
@@ -181,6 +186,7 @@ export function PresetStyleOverviewCard({
         onOpenChange={setPreviewOpen}
         title={title}
         description={description}
+        previewStepOrder={previewStepOrder}
       />
 
       <CardFooter className="flex flex-col gap-3">

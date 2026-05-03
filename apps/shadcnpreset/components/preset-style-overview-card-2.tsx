@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import useVote from "@/hooks/use-vote"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { PresetPreviewDialog } from "@/components/preset-preview-dialog"
+import { PresetPreviewDialog } from "@/components/preset-preview/dialog"
 import { Button } from "@/components/ui/button"
 import { trackEvent } from "@/lib/analytics-events"
 import { PresetCard2StyleOverview } from "@/components/preset-swatch/components/preset-card-2-style-overview"

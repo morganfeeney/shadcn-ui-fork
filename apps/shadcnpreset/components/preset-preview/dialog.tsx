@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react"
 import { usePathname } from "next/navigation"
 import { CheckIcon, ChevronDownIcon, Settings2, X } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
   Dialog,
@@ -23,7 +24,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { PresetV4Frame } from "@/components/preset-v4-frame"
+import { PresetVoteButton } from "@/components/preset-vote-button"
+import { Spinner } from "@/components/ui/spinner"
 import { trackEvent } from "@/lib/analytics-events"
 import { getPresetPreviewUrl } from "@/lib/preset"
 import {
@@ -31,9 +39,13 @@ import {
   type PresetPreviewPageName,
 } from "@/lib/preset-preview"
 import { cn } from "@/lib/utils"
-import { PresetV4Frame } from "@/components/preset-v4-frame"
-import { PresetVoteButton } from "@/components/preset-vote-button"
-import { Spinner } from "@/components/ui/spinner"
+
+import {
+  type PresetPreviewStepItem,
+  usePresetPreviewStep,
+} from "@/components/preset-preview/step"
+
+export type { PresetPreviewStepItem }
 
 export type PresetPreviewDialogProps = {
   code: string
@@ -41,9 +53,9 @@ export type PresetPreviewDialogProps = {
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
+  previewStepOrder?: readonly PresetPreviewStepItem[]
 }
 
-/** Isolated so `key` remount resets loading state without effects. */
 function DialogPreviewIframe({ src, title }: { src: string; title: string }) {
   const [loaded, setLoaded] = useState(false)
   return (
@@ -70,12 +82,34 @@ export function PresetPreviewDialog({
   onOpenChange,
   title,
   description,
+  previewStepOrder,
 }: PresetPreviewDialogProps) {
   const pathname = usePathname()
   const [loadGen, setLoadGen] = useState(0)
   const [previewPage, setPreviewPage] =
     useState<PresetPreviewPageName>("preview")
   const [previewPickerOpen, setPreviewPickerOpen] = useState(false)
+
+  const afterPreviewStep = useCallback(() => {
+    setPreviewPage("preview")
+    setLoadGen((g) => g + 1)
+    setPreviewPickerOpen(false)
+  }, [])
+
+  const {
+    viewCode,
+    displayTitle,
+    displayDesc,
+    canStep,
+    canPrev,
+    canNext,
+    stepPreset,
+  } = usePresetPreviewStep({
+    open,
+    fromCard: { code, title, description },
+    previewStepOrder,
+    afterStep: afterPreviewStep,
+  })
 
   const currentPreviewLabel = useMemo(
     () =>
@@ -84,10 +118,10 @@ export function PresetPreviewDialog({
     [previewPage]
   )
 
-  const basePreviewUrl = getPresetPreviewUrl(code)
+  const basePreviewUrl = getPresetPreviewUrl(viewCode)
   if (!basePreviewUrl) return null
 
-  const previewSrc = getPresetPreviewUrl(code, previewPage)!
+  const previewSrc = getPresetPreviewUrl(viewCode, previewPage)!
 
   return (
     <Dialog
@@ -107,20 +141,44 @@ export function PresetPreviewDialog({
       >
         <DialogHeader className="gap-0 pb-4">
           <div className="flex justify-between">
-            <div>
+            <div className="min-w-0">
               <DialogTitle className="font-mono text-sm tracking-tight md:text-xl">
-                {title}
+                {displayTitle}
               </DialogTitle>
-              {description ? (
+              {displayDesc ? (
                 <DialogDescription className="line-clamp-2 text-xs">
-                  {description}
+                  {displayDesc}
                 </DialogDescription>
               ) : null}
             </div>
-            <div className="flex gap-2">
-              <PresetVoteButton code={code} enabled={open} />
+            <div className="flex shrink-0 flex-wrap justify-end gap-2">
+              {canStep ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Previous preset"
+                    disabled={!canPrev}
+                    onClick={() => stepPreset(-1)}
+                  >
+                    <CaretLeftIcon className="size-4" weight="bold" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Next preset"
+                    disabled={!canNext}
+                    onClick={() => stepPreset(1)}
+                  >
+                    <CaretRightIcon className="size-4" weight="bold" />
+                  </Button>
+                </>
+              ) : null}
+              <PresetVoteButton code={viewCode} enabled={open} />
               <Link
-                href={`/preset/${code}`}
+                href={`/preset/${viewCode}`}
                 className={cn(
                   buttonVariants({
                     variant: "outline",
@@ -143,9 +201,9 @@ export function PresetPreviewDialog({
         </DialogHeader>
         <div className="relative -mx-4">
           <DialogPreviewIframe
-            key={`${code}-${previewPage}-${loadGen}`}
+            key={`${viewCode}-${previewPage}-${loadGen}`}
             src={previewSrc}
-            title={`Preset preview ${code} ${previewPage}`}
+            title={`Preset preview ${viewCode} ${previewPage}`}
           />
         </div>
         <DialogFooter>
@@ -188,7 +246,7 @@ export function PresetPreviewDialog({
                           if (page !== previous) {
                             trackEvent("preset_demo_view_select", {
                               page_path: pathname,
-                              preset_code: code,
+                              preset_code: viewCode,
                               demo_view: page,
                             })
                           }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, type KeyboardEvent } from "react"
+import { useCallback, useMemo, useRef, type KeyboardEvent } from "react"
 import Link from "next/link"
 import {
   ArrowRightIcon,
@@ -15,6 +15,7 @@ import {
   HomePresetRailItem,
   HomePresetRailViewport,
 } from "@/components/ui/home-preset-rail"
+import { buildPreviewStepOrder } from "@/components/preset-preview/step"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { useHorizontalSnapRailNav } from "@/hooks/use-horizontal-snap-rail-nav"
 import { useLgAndUp } from "@/hooks/use-lg-and-up"
@@ -81,6 +82,11 @@ export function HomePresetCarousel({
     [scrollPrev, scrollNext]
   )
 
+  const previewStepOrder = useMemo(
+    () => buildPreviewStepOrder(items),
+    [items]
+  )
+
   if (items.length === 0) {
     return null
   }
@@ -107,6 +113,7 @@ export function HomePresetCarousel({
                 code={item.code}
                 title={item.title}
                 description={item.description}
+                previewStepOrder={previewStepOrder}
               />
             </HomePresetRailItem>
           ))}
