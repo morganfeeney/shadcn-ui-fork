@@ -136,7 +136,7 @@ export function PresetPreviewDialog({
       }}
     >
       <DialogContent
-        className="grid h-[90dvh] w-full max-w-[90dvw]! grid-rows-[auto_1fr_auto] gap-0 overflow-hidden"
+        className="grid h-[90dvh] w-full max-w-[90dvw]! grid-rows-[auto_1fr_auto] gap-0"
         showCloseButton={false}
       >
         <DialogHeader className="gap-0 pb-4">
@@ -183,8 +183,10 @@ export function PresetPreviewDialog({
               aria-label="Previous preset"
               disabled={!canPrev}
               className={cn(
-                "absolute top-1/2 -left-3 z-10 size-11 -translate-y-1/2 opacity-95 shadow-md backdrop-blur-sm",
+                "absolute top-1/2 z-10 -translate-y-1/2",
                 "hover:opacity-100",
+                "-left-4",
+                "lg:-left-12 lg:size-10",
                 "transition-none active:translate-y-[calc(-50%+1px)]!"
               )}
               onClick={() => stepPreset(-1)}
@@ -204,8 +206,10 @@ export function PresetPreviewDialog({
               aria-label="Next preset"
               disabled={!canNext}
               className={cn(
-                "absolute top-1/2 -right-3 z-10 size-11 -translate-y-1/2 opacity-95 shadow-md backdrop-blur-sm",
+                "absolute top-1/2 z-10 -translate-y-1/2",
                 "hover:opacity-100",
+                "-right-4",
+                "lg:-right-12 lg:size-10",
                 "transition-none active:translate-y-[calc(-50%+1px)]!"
               )}
               onClick={() => stepPreset(1)}
@@ -223,7 +227,7 @@ export function PresetPreviewDialog({
                   size="sm"
                   type="button"
                   aria-label="Choose preview layout"
-                  className="h-8 w-full min-w-[10.5rem] justify-between gap-2 px-3 text-xs font-normal sm:w-auto"
+                  className="h-8 w-full min-w-42 justify-between gap-2 px-3 text-xs font-normal sm:w-auto"
                 />
               }
             >
