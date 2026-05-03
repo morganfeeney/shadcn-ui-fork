@@ -17,7 +17,7 @@ function formatTypographyLine(fontHeading: string, font: string) {
 }
 
 export default async function HomePage() {
-  const featuredPresets = await getHomepageFeed(8)
+  const featuredPresets = await getHomepageFeed(16)
 
   return (
     <ContainerOuter className="grid min-h-screen grid-rows-[auto_1fr_auto]">
@@ -25,9 +25,9 @@ export default async function HomePage() {
       <HomeHero>
         <HomeHeroButtons />
       </HomeHero>
-      <section className="py-8">
+      <section className="pt-6 pb-20 md:pt-8 md:pb-28">
         <HomePresetCarousel
-          className="mx-safe max-w-400"
+          className="mx-safe w-screen"
           items={featuredPresets.map((item) => ({
             code: item.code,
             title: item.code,

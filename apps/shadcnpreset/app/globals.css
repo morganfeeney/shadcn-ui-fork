@@ -183,6 +183,11 @@
   padding-right: var(--safe-area-right);
 }
 
+@utility mx-safe {
+  margin-left: var(--safe-area-left);
+  margin-right: var(--safe-area-right);
+}
+
 @utility font-display {
   @apply font-semibold tracking-tight;
 }

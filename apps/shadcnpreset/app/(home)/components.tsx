@@ -29,8 +29,8 @@ type HomePresetCarouselItem = {
   description: string
 }
 
-const CARD_WIDTH = 360
-const SIDE_OFFSET = 145
+const CARD_WIDTH = 420
+const SIDE_OFFSET = 168
 const MAX_VISIBLE_DISTANCE = 3
 const LOOP_MULTIPLIER = 7
 
@@ -68,12 +68,41 @@ function getCardStyle(distanceFromActive: number): CSSProperties {
   }
 }
 
-export function HomePresetCarousel({
+function HomePresetCarouselMobile({
   items,
-  className,
 }: {
   items: HomePresetCarouselItem[]
-  className?: string
+}) {
+  return (
+    <div
+      role="list"
+      aria-label="Featured presets"
+      className={cn(
+        "scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain",
+        "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      )}
+    >
+      {items.map((item) => (
+        <div
+          key={item.code}
+          role="listitem"
+          className="w-[85vw] max-w-88 shrink-0 snap-center sm:max-w-120"
+        >
+          <PresetStyleOverviewCard
+            code={item.code}
+            title={item.title}
+            description={item.description}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function HomePresetCarouselDesktop({
+  items,
+}: {
+  items: HomePresetCarouselItem[]
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
@@ -146,16 +175,13 @@ export function HomePresetCarousel({
 
   return (
     <div
-      className={cn(
-        "relative mx-auto flex h-[380px] max-w-full items-center justify-center overflow-hidden lg:h-[430px]",
-        className
-      )}
+      className="relative mx-auto flex min-h-[520px] max-w-full items-center justify-center overflow-hidden lg:min-h-[580px]"
       style={{ perspective: "1050px" }}
     >
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="carousel-scroll scrollbar-none absolute inset-0 z-[35] flex snap-x snap-mandatory overflow-x-hidden overscroll-x-contain lg:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="carousel-scroll scrollbar-none absolute inset-0 z-[35] flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div className="shrink-0" style={spacerStyle} />
         {snapSlots.map((slotIndex) => (
@@ -222,6 +248,29 @@ export function HomePresetCarousel({
       >
         <ChevronRight className="size-4" />
       </Button>
+    </div>
+  )
+}
+
+export function HomePresetCarousel({
+  items,
+  className,
+}: {
+  items: HomePresetCarouselItem[]
+  className?: string
+}) {
+  if (items.length === 0) {
+    return null
+  }
+
+  return (
+    <div className={cn("w-full max-w-full", className)}>
+      <div>
+        <HomePresetCarouselMobile items={items} />
+      </div>
+      {/*<div className="hidden lg:block">*/}
+      {/*  <HomePresetCarouselDesktop items={items} />*/}
+      {/*</div>*/}
     </div>
   )
 }
