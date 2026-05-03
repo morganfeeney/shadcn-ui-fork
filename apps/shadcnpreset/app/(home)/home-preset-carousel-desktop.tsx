@@ -135,7 +135,7 @@ export function HomePresetCarouselDesktop({
   return (
     <div className={cn("w-full max-w-full", className)}>
       <div
-        className="relative mx-auto flex min-h-[520px] max-w-full items-center justify-center overflow-hidden lg:min-h-[580px]"
+        className="relative mx-auto flex min-h-130 max-w-full items-center justify-center overflow-hidden lg:min-h-145"
         style={{ perspective: "1050px" }}
       >
         <div

@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react"
+import { useCallback, useRef, type KeyboardEvent } from "react"
 import {
   ArrowRight,
   ChevronLeft,
@@ -23,6 +17,7 @@ import {
 } from "@/components/ui/home-preset-rail"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { useHorizontalSnapRailNav } from "@/hooks/use-horizontal-snap-rail-nav"
+import { useLgAndUp } from "@/hooks/use-lg-and-up"
 import { cn } from "@/lib/utils"
 
 import type { HomePresetCarouselItem } from "./home-preset-carousel-types"
@@ -89,13 +84,8 @@ export function HomePresetCarousel({
   }
 
   return (
-    <div
-      className={cn(
-        "relative isolate w-full max-w-full",
-        className
-      )}
-    >
-      <HomePresetRail className="relative z-[1]">
+    <div className={cn("relative isolate w-full max-w-full", className)}>
+      <HomePresetRail className="relative z-1">
         <HomePresetRailViewport
           ref={viewportRef}
           id={FEATURED_PRESETS_VIEWPORT_ID}
@@ -129,7 +119,7 @@ export function HomePresetCarousel({
             viewportId={FEATURED_PRESETS_VIEWPORT_ID}
             Icon={ChevronLeft}
             onPress={scrollPrev}
-            className="absolute top-1/2 left-4 z-[50] -translate-y-1/2"
+            className="absolute top-1/2 left-4 z-50 -translate-y-1/2"
           />
         </>
       ) : null}
@@ -141,7 +131,7 @@ export function HomePresetCarousel({
             viewportId={FEATURED_PRESETS_VIEWPORT_ID}
             Icon={ChevronRight}
             onPress={scrollNext}
-            className="absolute top-1/2 right-4 z-[50] -translate-y-1/2"
+            className="absolute top-1/2 right-4 z-50 -translate-y-1/2"
           />
         </>
       ) : null}
@@ -154,29 +144,13 @@ function RailEdgeFade({ side }: { side: "leading" | "trailing" }) {
     <div
       aria-hidden
       className={cn(
-        "pointer-events-auto absolute inset-y-0 z-[40] w-[min(6.5rem,22vw)] md:w-28",
+        "pointer-events-auto absolute inset-y-0 z-40 w-[min(6.5rem,22vw)] md:w-28",
         side === "leading"
           ? "left-0 bg-linear-to-r from-background to-transparent"
           : "right-0 bg-linear-to-l from-background to-transparent"
       )}
     />
   )
-}
-
-function useLgAndUp() {
-  const [matches, setMatches] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)")
-    const update = () => {
-      setMatches(mq.matches)
-    }
-    update()
-    mq.addEventListener("change", update)
-    return () => mq.removeEventListener("change", update)
-  }, [])
-
-  return matches
 }
 
 function CarouselRailNavButton({
