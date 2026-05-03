@@ -143,14 +143,19 @@ export function PresetStyleOverviewCard({
                 transformOrigin: "top left",
               }}
             >
-              <PresetCard1StyleOverview
-                initialCode={code}
-                className="h-full w-full"
-              />
+              <div className="size-full" inert>
+                <PresetCard1StyleOverview
+                  initialCode={code}
+                  className="h-full w-full"
+                />
+              </div>
             </CardContent>
             <button
               type="button"
-              className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center border-0 bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className={cn(
+                "absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-t-xl rounded-b-none border border-transparent bg-transparent p-0 outline-none transition-all select-none",
+                "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-ring/50"
+              )}
               aria-label={`Open preview for ${title}`}
               onClick={handlePreview}
             >
@@ -205,11 +210,6 @@ export function PresetStyleOverviewCard({
               }`}
             />
             {voteCount}
-          </Button>
-        </div>
-        <div className="flex w-full flex-wrap gap-2 [@media(hover:hover)]:hidden">
-          <Button type="button" onClick={handlePreview}>
-            Preview
           </Button>
         </div>
       </CardFooter>
