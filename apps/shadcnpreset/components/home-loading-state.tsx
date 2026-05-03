@@ -1,4 +1,4 @@
-import { CardListSkeleton } from "@/components/card-list-skeleton"
+import { HomePresetCarouselSkeleton } from "@/components/card-list-skeleton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ContainerOuter } from "@/components/zippystarter/container"
 import { HomeHero } from "@/components/home-hero"
@@ -15,7 +15,9 @@ export function HomeLoadingState() {
           <Skeleton className="h-9 w-37.5" />
         </div>
       </HomeHero>
-      <CardListSkeleton />
+      <section className="pt-6 pb-20 md:pt-8 md:pb-28">
+        <HomePresetCarouselSkeleton className="w-screen [&_[role=listitem]:first-child]:ml-safe [&_[role=listitem]:last-child]:mr-safe" />
+      </section>
       <Footer1 />
     </ContainerOuter>
   )
