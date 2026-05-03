@@ -265,12 +265,7 @@ export function HomePresetCarousel({
 
   return (
     <div className={cn("w-full max-w-full", className)}>
-      <div>
-        <HomePresetCarouselMobile items={items} />
-      </div>
-      {/*<div className="hidden lg:block">*/}
-      {/*  <HomePresetCarouselDesktop items={items} />*/}
-      {/*</div>*/}
+      <HomePresetCarouselMobile items={items} />
     </div>
   )
 }

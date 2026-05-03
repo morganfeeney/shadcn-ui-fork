@@ -21,6 +21,7 @@ type PresetStyleOverviewCardProps = {
   description: string
   virtualWidth?: number
   virtualHeight?: number
+  className?: string
 }
 
 export function PresetStyleOverviewCard({
@@ -29,6 +30,7 @@ export function PresetStyleOverviewCard({
   description,
   virtualWidth = 700,
   virtualHeight = 575,
+  className,
 }: PresetStyleOverviewCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -144,7 +146,7 @@ export function PresetStyleOverviewCard({
   }
 
   return (
-    <Card className="gap-0 pt-0">
+    <Card className={cn("gap-0 pt-0", className)}>
       <div
         ref={wrapperRef}
         className="relative w-full overflow-hidden"
@@ -163,7 +165,7 @@ export function PresetStyleOverviewCard({
             >
               <PresetCard1StyleOverview
                 initialCode={code}
-                className="h-full w-full overflow-auto"
+                className="h-full w-full"
               />
             </CardContent>
             <div className="absolute inset-0">

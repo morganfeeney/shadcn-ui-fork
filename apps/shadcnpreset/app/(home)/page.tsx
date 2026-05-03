@@ -27,7 +27,7 @@ export default async function HomePage() {
       </HomeHero>
       <section className="pt-6 pb-20 md:pt-8 md:pb-28">
         <HomePresetCarousel
-          className="mx-safe w-screen"
+          className="w-screen [&_[role=listitem]:first-child]:ml-safe [&_[role=listitem]:last-child]:mr-safe"
           items={featuredPresets.map((item) => ({
             code: item.code,
             title: item.code,

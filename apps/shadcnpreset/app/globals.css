@@ -188,6 +188,14 @@
   margin-right: var(--safe-area-right);
 }
 
+@utility ml-safe {
+  margin-left: var(--safe-area-left);
+}
+
+@utility mr-safe {
+  margin-right: var(--safe-area-right);
+}
+
 @utility font-display {
   @apply font-semibold tracking-tight;
 }
