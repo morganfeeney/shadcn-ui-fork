@@ -13,7 +13,7 @@ export default async function CommunityPage() {
   const feedKey = feedItems.map((item) => item.code).join(":")
 
   return (
-    <main className="grid gap-4">
+    <main className="grid gap-4 px-safe">
       <ListView
         key={feedKey}
         items={feedItems.map((item) => ({
