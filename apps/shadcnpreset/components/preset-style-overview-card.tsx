@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { HeartIcon } from "@phosphor-icons/react"
+import { motion, useReducedMotion } from "motion/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
@@ -27,6 +28,26 @@ type PresetStyleOverviewCardProps = {
   className?: string
 }
 
+const voteTapTransition = {
+  type: "spring" as const,
+  stiffness: 520,
+  damping: 28,
+}
+
+const voteHeartEase = [0.22, 1.15, 0.36, 1] as [number, number, number, number]
+
+/** Module-level targets so list re-renders / reorder never look like new animation props. */
+const heartMotionRest = { scale: 1, rotate: 0 }
+
+const heartMotionCelebrate = {
+  scale: [1, 1.34, 1],
+  rotate: [0, -18, 14, -10, 0],
+  transition: {
+    duration: 0.55,
+    ease: voteHeartEase,
+  },
+}
+
 export function PresetStyleOverviewCard({
   code,
   title,
@@ -40,8 +61,11 @@ export function PresetStyleOverviewCard({
   const [containerWidth, setContainerWidth] = useState(0)
   const [shouldRender, setShouldRender] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
+  /** Bumped only on this card's “add vote” click — not derived from `hasVoted` (reorder/async would replay). */
+  const [voteCelebrateGeneration, setVoteCelebrateGeneration] = useState(0)
   const isMobile = useIsMobile()
   const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     const node = wrapperRef.current
@@ -126,6 +150,9 @@ export function PresetStyleOverviewCard({
         result_type: "action",
         target_id: `vote:${code}`,
       })
+    }
+    if (!hasVoted) {
+      setVoteCelebrateGeneration((g) => g + 1)
     }
     void toggleVote()
   }
@@ -223,8 +250,31 @@ export function PresetStyleOverviewCard({
                 : "Sign in to vote"
             }
           >
-            <HeartIcon className="size-3.5" />
-            {voteCount}
+            <motion.span
+              className="inline-flex items-center gap-1.5"
+              whileTap={
+                reduceMotion || isVoting
+                  ? undefined
+                  : { scale: 0.88, transition: voteTapTransition }
+              }
+            >
+              <motion.span
+                key={voteCelebrateGeneration}
+                className="inline-flex will-change-transform"
+                initial={false}
+                animate={
+                  reduceMotion || voteCelebrateGeneration === 0
+                    ? heartMotionRest
+                    : heartMotionCelebrate
+                }
+              >
+                <HeartIcon
+                  className="size-3.5"
+                  weight={hasVoted ? "fill" : "regular"}
+                />
+              </motion.span>
+              <span className="tabular-nums">{voteCount}</span>
+            </motion.span>
           </Button>
         </CardFooter>
       </div>
