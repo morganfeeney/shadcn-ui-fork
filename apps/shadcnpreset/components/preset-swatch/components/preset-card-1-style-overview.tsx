@@ -33,6 +33,7 @@ import { TypographySpecimenCard } from "@/components/preset-swatch/components/ca
 import { cn } from "@/lib/utils"
 import { TypographySpecimen } from "@/components/preset-swatch/components/typography-specimen"
 import { StyleOverviewTokenGrid } from "@/components/preset-swatch/components/cards/style-overview-tokens"
+import {FeedbackForm} from "@/components/preset-swatch/components/cards/feedback-form";
 
 type PresetCard1StyleOverviewProps = {
   initialCode: string
@@ -117,16 +118,20 @@ export function PresetCard1StyleOverview({
             </div>
             <div className="flex flex-col gap-(--gap)">
               <div className="grid grid-cols-2 gap-(--gap)">
-                <div className="grid grid-cols-2 content-start gap-(--gap)">
-                  <TypographySpecimen type="body" font={resolved.font} />
-                  <TypographySpecimen
-                    type="heading"
-                    font={effectiveHeadingFont(
-                      resolved.font,
-                      resolved.fontHeading
-                    )}
-                  />
+                <div className="grid gap-(--gap)">
+                  <div className="grid grid-cols-2 content-start gap-(--gap)">
+                    <TypographySpecimen type="body" font={resolved.font} />
+                    <TypographySpecimen
+                      type="heading"
+                      font={effectiveHeadingFont(
+                        resolved.font,
+                        resolved.fontHeading
+                      )}
+                    />
+                  </div>
+                  <FeedbackForm />
                 </div>
+
                 <ObservabilityCard iconLibrary={resolved.iconLibrary} />
                 <PreviewAnalyticsCard />
               </div>
