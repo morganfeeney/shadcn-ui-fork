@@ -32,8 +32,11 @@ import {
 import { TypographySpecimenCard } from "@/components/preset-swatch/components/cards/typography-specimen"
 import { cn } from "@/lib/utils"
 import { TypographySpecimen } from "@/components/preset-swatch/components/typography-specimen"
-import { StyleOverviewTokenGrid } from "@/components/preset-swatch/components/cards/style-overview-tokens"
-import {FeedbackForm} from "@/components/preset-swatch/components/cards/feedback-form";
+import { FeedbackForm } from "@/components/preset-swatch/components/cards/feedback-form"
+import { SavingsProgress } from "@/components/preset-swatch/components/cards/savings-progress"
+import { ClaimableBalance } from "@/components/preset-swatch/components/cards/claimable-balance"
+import { PieChartCard } from "@/components/preset-swatch/components/cards/pie-chart-card"
+import { UIElements } from "@/components/preset-swatch/components/cards/ui-elements"
 
 type PresetCard1StyleOverviewProps = {
   initialCode: string
@@ -117,7 +120,7 @@ export function PresetCard1StyleOverview({
               />
             </div>
             <div className="flex flex-col gap-(--gap)">
-              <div className="grid grid-cols-2 gap-(--gap)">
+              <div className="grid grid-cols-2 items-start gap-(--gap)">
                 <div className="grid gap-(--gap)">
                   <div className="grid grid-cols-2 content-start gap-(--gap)">
                     <TypographySpecimen type="body" font={resolved.font} />
@@ -129,11 +132,15 @@ export function PresetCard1StyleOverview({
                       )}
                     />
                   </div>
+                  <ObservabilityCard iconLibrary={resolved.iconLibrary} />
                   <FeedbackForm />
                 </div>
 
-                <ObservabilityCard iconLibrary={resolved.iconLibrary} />
-                <PreviewAnalyticsCard />
+                <div className="grid gap-(--gap)">
+                  <UIElements />
+
+                  <PieChartCard />
+                </div>
               </div>
             </div>
           </ShadcnCardContent>
