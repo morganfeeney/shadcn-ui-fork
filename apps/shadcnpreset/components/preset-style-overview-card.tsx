@@ -132,90 +132,99 @@ export function PresetStyleOverviewCard({
 
   return (
     <Card
-      className={cn("gap-0 rounded-sm bg-background pt-0 ring-0", className)}
+      className={cn(
+        "relative gap-0 rounded-sm bg-background pt-0 ring-0",
+        className
+      )}
     >
-      <div
-        ref={wrapperRef}
-        className="relative w-full overflow-hidden rounded-sm border"
-        style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
-      >
-        {canRenderPreview ? (
-          <>
-            <CardContent
-              className="pointer-events-none absolute inset-0 p-0"
-              style={{
-                width: virtualWidth,
-                height: virtualHeight,
-                transform: `scale(${scale})`,
-                transformOrigin: "top left",
-              }}
-            >
-              <div className="size-full" inert>
-                <PresetCard1StyleOverview
-                  initialCode={code}
-                  className="h-full w-full"
-                />
-              </div>
-            </CardContent>
-            <button
-              type="button"
-              className={cn(
-                "absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-t-xl rounded-b-none border border-transparent bg-transparent p-0 transition-all outline-none select-none",
-                "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
-              )}
-              aria-label={`Open preview for ${title}`}
-              onClick={handlePreview}
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100"
-              />
-              <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
-                <span className={cn(buttonVariants())}>Preview</span>
-              </span>
-            </button>
-          </>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Spinner />
-          </div>
+      <button
+        type="button"
+        className={cn(
+          "absolute inset-0 z-0 rounded-sm border border-transparent bg-transparent p-0 transition-all outline-none select-none",
+          "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
         )}
-      </div>
-
-      <PresetPreviewDialog
-        code={code}
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        title={title}
-        description={description}
-        previewStepOrder={previewStepOrder}
+        aria-label={`Open preview for ${title}`}
+        onClick={handlePreview}
       />
 
-      <CardFooter className="grid justify-items-start gap-1 border-0 bg-background px-2 pt-2 pb-0">
-        <div className="flex w-full justify-between gap-2">
-          <div>
-            <p className="truncate font-mono text-sm font-medium">{title}</p>
-            <p className="line-clamp-1 text-xs text-muted-foreground">
-              {description}
-            </p>
-          </div>
-        </div>
-        <Button
-          className="-ml-2"
-          onClick={handleVoteClick}
-          disabled={isVoting}
-          aria-pressed={hasVoted}
-          variant="ghost"
-          title={
-            authStatus === "authenticated"
-              ? "Vote for this preset"
-              : "Sign in to vote"
-          }
+      <div className="relative z-10 flex flex-col pointer-events-none">
+        <div
+          ref={wrapperRef}
+          className="relative w-full overflow-hidden rounded-sm border"
+          style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
         >
-          <HeartIcon className="size-3.5" />
-          {voteCount}
-        </Button>
-      </CardFooter>
+          {canRenderPreview ? (
+            <>
+              <CardContent
+                className="pointer-events-none absolute inset-0 p-0"
+                style={{
+                  width: virtualWidth,
+                  height: virtualHeight,
+                  transform: `scale(${scale})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                <div className="size-full" inert>
+                  <PresetCard1StyleOverview
+                    initialCode={code}
+                    className="h-full w-full"
+                  />
+                </div>
+              </CardContent>
+              <div
+                aria-hidden
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
+              >
+                <span
+                  className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100"
+                />
+                <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
+                  <span className={cn(buttonVariants())}>Preview</span>
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Spinner />
+            </div>
+          )}
+        </div>
+
+        <PresetPreviewDialog
+          code={code}
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          title={title}
+          description={description}
+          previewStepOrder={previewStepOrder}
+        />
+
+        <CardFooter className="grid justify-items-start gap-1 border-0 bg-background px-2 pt-2 pb-0">
+          <div className="flex w-full justify-between gap-2">
+            <div>
+              <p className="truncate font-mono text-sm font-medium">{title}</p>
+              <p className="line-clamp-1 text-xs text-muted-foreground">
+                {description}
+              </p>
+            </div>
+          </div>
+          <Button
+            className="-ml-2 pointer-events-auto"
+            onClick={handleVoteClick}
+            disabled={isVoting}
+            aria-pressed={hasVoted}
+            variant="ghost"
+            title={
+              authStatus === "authenticated"
+                ? "Vote for this preset"
+                : "Sign in to vote"
+            }
+          >
+            <HeartIcon className="size-3.5" />
+            {voteCount}
+          </Button>
+        </CardFooter>
+      </div>
     </Card>
   )
 }
