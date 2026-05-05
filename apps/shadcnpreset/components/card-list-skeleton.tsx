@@ -6,22 +6,25 @@ import {
 } from "@/components/ui/home-preset-rail"
 import { Skeleton } from "@/components/ui/skeleton"
 
+/** Preview area + footer shell aligned with `PresetStyleOverviewCard` (1400×700 virtual preview). */
 function PresetCardSkeleton() {
   return (
-    <Card className="gap-0 pt-0">
-      <div
-        className="relative w-full overflow-hidden"
-        style={{ aspectRatio: "700 / 600" }}
-      >
-        <Skeleton className="absolute inset-0 rounded-none" />
-      </div>
-      <CardFooter className="justify-between">
-        <div className="min-w-0 space-y-1.5">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-3 w-44" />
+    <Card className="relative gap-0 rounded-sm bg-background pt-0 ring-0">
+      <div className="pointer-events-none relative flex flex-col">
+        <div
+          className="relative w-full overflow-hidden rounded-sm border"
+          style={{ aspectRatio: "1400 / 700" }}
+        >
+          <Skeleton className="absolute inset-0 rounded-none" />
         </div>
-        <Skeleton className="h-8 w-14" />
-      </CardFooter>
+        <CardFooter className="grid justify-items-start gap-0.5 border-0 bg-background px-2 pt-2 pb-0">
+          <div className="flex w-full flex-col gap-1">
+            <Skeleton className="h-5 w-36" />
+            <Skeleton className="h-3.5 max-w-[min(100%,20rem)]" />
+          </div>
+          {/*<Skeleton className="-ml-2.5 h-9 w-14 shrink-0 rounded-full" />*/}
+        </CardFooter>
+      </div>
     </Card>
   )
 }
@@ -48,7 +51,7 @@ export function CardListSkeleton() {
   )
 }
 
-/** Placeholder for the home preset rail — matches the mobile horizontal scroll-snap carousel only. */
+/** Placeholder for the home preset rail — matches `HomePresetCarousel` / `PresetStyleOverviewCard` sizing. */
 export function HomePresetCarouselSkeleton({
   className,
 }: {

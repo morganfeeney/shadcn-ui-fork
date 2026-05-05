@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react"
-import { DefaultLayout } from "@/components/default-layout"
+import { WideLayout } from "@/components/wide-layout"
 import {
   PageHeader,
   PageHeaderDescription,
@@ -8,7 +8,7 @@ import {
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <DefaultLayout>
+    <WideLayout>
       <PageHeader>
         <PageHeaderHeading className="max-w-4xl">
           Community presets
@@ -19,6 +19,6 @@ export default function Layout({ children }: PropsWithChildren) {
         </PageHeaderDescription>
       </PageHeader>
       {children}
-    </DefaultLayout>
+    </WideLayout>
   )
 }
