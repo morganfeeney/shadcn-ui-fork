@@ -147,7 +147,7 @@ export function PresetStyleOverviewCard({
         onClick={handlePreview}
       />
 
-      <div className="relative z-10 flex flex-col pointer-events-none">
+      <div className="pointer-events-none relative z-10 flex flex-col">
         <div
           ref={wrapperRef}
           className="relative w-full overflow-hidden rounded-sm border"
@@ -175,9 +175,7 @@ export function PresetStyleOverviewCard({
                 aria-hidden
                 className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
               >
-                <span
-                  className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100"
-                />
+                <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
                 <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
                   <span className={cn(buttonVariants())}>Preview</span>
                 </span>
@@ -199,7 +197,7 @@ export function PresetStyleOverviewCard({
           previewStepOrder={previewStepOrder}
         />
 
-        <CardFooter className="grid justify-items-start gap-1 border-0 bg-background px-2 pt-2 pb-0">
+        <CardFooter className="grid justify-items-start gap-0.5 border-0 bg-background px-2 pt-2 pb-0">
           <div className="flex w-full justify-between gap-2">
             <div>
               <p className="truncate font-mono text-sm font-medium">{title}</p>
@@ -209,7 +207,12 @@ export function PresetStyleOverviewCard({
             </div>
           </div>
           <Button
-            className="-ml-2 pointer-events-auto"
+            className={cn(
+              "pointer-events-auto -ml-2.5 rounded-full",
+              hasVoted
+                ? "bg-destructive/20 fill-destructive text-destructive"
+                : "text-muted-foreground"
+            )}
             onClick={handleVoteClick}
             disabled={isVoting}
             aria-pressed={hasVoted}
