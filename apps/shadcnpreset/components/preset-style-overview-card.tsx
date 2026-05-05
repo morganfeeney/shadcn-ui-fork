@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { Heart } from "lucide-react"
+import { HeartIcon } from "@phosphor-icons/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
@@ -131,10 +131,12 @@ export function PresetStyleOverviewCard({
   }
 
   return (
-    <Card className={cn("gap-0 pt-0", className)}>
+    <Card
+      className={cn("gap-0 rounded-sm bg-background pt-0 ring-0", className)}
+    >
       <div
         ref={wrapperRef}
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden rounded-sm border"
         style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
       >
         {canRenderPreview ? (
@@ -189,7 +191,7 @@ export function PresetStyleOverviewCard({
         previewStepOrder={previewStepOrder}
       />
 
-      <CardFooter className="flex flex-col gap-3">
+      <CardFooter className="grid justify-items-start gap-1 border-0 bg-background px-2 pt-2 pb-0">
         <div className="flex w-full justify-between gap-2">
           <div>
             <p className="truncate font-mono text-sm font-medium">{title}</p>
@@ -197,27 +199,22 @@ export function PresetStyleOverviewCard({
               {description}
             </p>
           </div>
-          <Button
-            onClick={handleVoteClick}
-            disabled={isVoting}
-            aria-pressed={hasVoted}
-            variant="outline"
-            title={
-              authStatus === "authenticated"
-                ? "Vote for this preset"
-                : "Sign in to vote"
-            }
-          >
-            <Heart
-              className={`size-3.5 ${
-                hasVoted
-                  ? "fill-rose-500 text-rose-500"
-                  : "text-muted-foreground"
-              }`}
-            />
-            {voteCount}
-          </Button>
         </div>
+        <Button
+          className="-ml-2"
+          onClick={handleVoteClick}
+          disabled={isVoting}
+          aria-pressed={hasVoted}
+          variant="ghost"
+          title={
+            authStatus === "authenticated"
+              ? "Vote for this preset"
+              : "Sign in to vote"
+          }
+        >
+          <HeartIcon className="size-3.5" />
+          {voteCount}
+        </Button>
       </CardFooter>
     </Card>
   )
