@@ -144,3 +144,22 @@ export function PreviewIconGrid({ iconLibrary }: PreviewIconGridProps) {
     </Card>
   )
 }
+
+export function PreviewIconGridLg({ iconLibrary }: PreviewIconGridProps) {
+  return (
+    <Card>
+      <CardContent>
+        <div className="grid grid-cols-5 place-items-center gap-4">
+          {PREVIEW_ICON_NAMES.slice(0, 15).map((names) => (
+            <Card
+              key={names.lucide}
+              className="flex size-16 items-center justify-center p-0 shadow-none *:[svg]:size-7"
+            >
+              <IconPlaceholder iconLibrary={iconLibrary} {...names} />
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

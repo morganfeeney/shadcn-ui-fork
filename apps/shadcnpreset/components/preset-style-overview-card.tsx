@@ -32,8 +32,8 @@ export function PresetStyleOverviewCard({
   title,
   description,
   previewStepOrder,
-  virtualWidth = 700,
-  virtualHeight = 600,
+  virtualWidth = 1400,
+  virtualHeight = 700,
   className,
 }: PresetStyleOverviewCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)

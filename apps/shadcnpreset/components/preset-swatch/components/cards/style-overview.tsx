@@ -63,3 +63,13 @@ export function StyleOverview({
     </Card>
   )
 }
+
+export function StyleOverviewMinimal() {
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-6 style-lyra:gap-4 style-mira:gap-4">
+        <StyleOverviewTokenGrid />
+      </CardContent>
+    </Card>
+  )
+}
