@@ -143,7 +143,7 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
   }
 
   return (
-    <div className="grid items-start gap-6 md:grid-cols-[2fr_3fr] 2xl:grid-cols-2">
+    <div className="grid items-start gap-6 md:grid-cols-[2fr_3fr] 2xl:grid-cols-[3fr_2fr]">
       <div className="grid items-start gap-6 md:sticky md:top-6 2xl:grid-cols-[1fr_2fr]">
         <Card className="max-2xl:order-2">
           <CardHeader>
