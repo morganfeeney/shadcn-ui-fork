@@ -98,7 +98,7 @@ export function ListView({
 
   return (
     <section>
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-6 gap-y-4">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,400px),1fr))] gap-6">
         {visibleItems.map((item) => (
           <li key={item.code}>
             <PresetStyleOverviewCard
