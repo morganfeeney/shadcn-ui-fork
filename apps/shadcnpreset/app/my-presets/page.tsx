@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react"
 import { ListView } from "@/components/list-view"
+import { toListViewItem } from "@/lib/list-view"
 import { MyVotesSignInPrompt } from "@/components/my-votes-sign-in-prompt"
 import {
   Empty,
@@ -42,15 +43,7 @@ export default async function MyVotesPage() {
   }
 
   const feedItems = await getVotedPresetsForUser(user.id)
-  const items = feedItems.map((item) => ({
-    code: item.code,
-    baseColor: item.config.baseColor,
-    theme: item.config.theme,
-    chartColor: item.config.chartColor ?? item.config.theme,
-    iconLibrary: item.config.iconLibrary,
-    font: item.config.font,
-    fontHeading: item.config.fontHeading,
-  }))
+  const items = feedItems.map(toListViewItem)
 
   return (
     <div className="grid grid-rows-[auto_1fr] gap-6">

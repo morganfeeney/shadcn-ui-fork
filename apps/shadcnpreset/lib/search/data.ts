@@ -1,3 +1,8 @@
+import {
+  listViewItemFromPresetConfig,
+  toListViewItem,
+  type ListViewItem,
+} from "@/lib/list-view"
 import { resolvePresetFromCode } from "@/lib/preset"
 import { buildSearchCorpus } from "@/lib/search/corpus"
 import { getSemanticRelevanceScores } from "@/lib/search/semantic"
@@ -7,22 +12,10 @@ import {
 } from "@/lib/search/semantic-rank"
 import { SEARCH_PAGE_SIZE, type SearchMode } from "@/lib/search/route"
 
-export type SearchListItem = {
-  code: string
-  baseColor: string
-  /** Semantic / accent palette (distinct from neutral `baseColor`). */
-  theme: string
-  /** Chart series accent; may match `theme` or differ. */
-  chartColor: string
-  iconLibrary: string
-  font: string
-  fontHeading: string
-}
-
 export type SearchPageData = {
   mode: SearchMode
   query: string
-  items: SearchListItem[]
+  items: ListViewItem[]
 }
 
 async function getRankedSmartResults(query: string, neededCount: number) {
@@ -36,34 +29,16 @@ async function getSearchItemsWindow(
   mode: SearchMode,
   query: string,
   neededCount: number
-): Promise<SearchPageData["items"]> {
+): Promise<ListViewItem[]> {
   if (mode === "code") {
     const resolved = resolvePresetFromCode(query)
     return resolved
-      ? [
-          {
-            code: resolved.code,
-            baseColor: resolved.baseColor,
-            theme: resolved.theme,
-            chartColor: resolved.chartColor ?? resolved.theme,
-            iconLibrary: resolved.iconLibrary,
-            font: resolved.font,
-            fontHeading: resolved.fontHeading,
-          },
-        ]
+      ? [listViewItemFromPresetConfig(resolved.code, resolved)]
       : []
   }
 
   const results = await getRankedSmartResults(query, neededCount)
-  return results.map((item) => ({
-    code: item.code,
-    baseColor: item.config.baseColor,
-    theme: item.config.theme,
-    chartColor: item.config.chartColor ?? item.config.theme,
-    iconLibrary: item.config.iconLibrary,
-    font: item.config.font,
-    fontHeading: item.config.fontHeading,
-  }))
+  return results.map(toListViewItem)
 }
 
 export async function getSearchPageData(

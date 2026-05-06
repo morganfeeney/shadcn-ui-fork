@@ -186,7 +186,7 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
             className="max-2xl:order-1"
             code={bundle.resolved.code}
             title={bundle.resolved.code}
-            description={`${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
+            description={`${bundle.resolved.style} style, ${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
           />
         ) : null}
       </div>

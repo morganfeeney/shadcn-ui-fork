@@ -48,6 +48,22 @@ export async function getHomepageFeed(limit = 100): Promise<PresetPageItem[]> {
   return homepageItems
 }
 
+/** Presets that appear in `preset_votes` at least once, most-voted first. No catalog backfill. */
+export async function getVotedPresetsFeed(limit = 100): Promise<PresetPageItem[]> {
+  const safeLimit = Math.min(100, Math.max(0, limit))
+  const lovedItems = await getLovedItems()
+  const items: PresetPageItem[] = []
+
+  for (let index = 0; index < Math.min(lovedItems.length, safeLimit); index++) {
+    items.push({
+      ...lovedItems[index],
+      index,
+    })
+  }
+
+  return items
+}
+
 async function getLovedItems() {
   const result = await query<VoteRow>(
     `
