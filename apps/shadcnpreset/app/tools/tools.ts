@@ -17,4 +17,19 @@ export const PRESET_THEME_GENERATOR_TOOL = {
     "Paste a preset code to decode its config, preview it, and copy ready-to-use CSS custom properties.",
 } as const
 
-export const TOOLS = [PRESET_THEME_GENERATOR_TOOL] as const
+export const PRESET_COLOR_CONTRAST_TOOL = {
+  slug: "color-contrast",
+  legacySlug: "accessibility-checker",
+  href: "/tools/color-contrast",
+  legacyHref: "/tools/accessibility-checker",
+  title: "Preset color contrast checker",
+  description:
+    "WCAG 2.x contrast ratios for shadcn variable pairs in a preset's light and dark theme tokens.",
+  cardDescription:
+    "Check WCAG contrast for core theme token pairs from a preset code, with light and dark previews.",
+} as const
+
+export const TOOLS = [
+  PRESET_THEME_GENERATOR_TOOL,
+  PRESET_COLOR_CONTRAST_TOOL,
+] as const
