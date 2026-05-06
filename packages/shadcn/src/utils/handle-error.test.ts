@@ -4,7 +4,6 @@ import {
   getPreviousMinorVersion,
   handleError,
 } from "@/src/utils/handle-error"
-import packageJson from "../../package.json"
 import { logger } from "@/src/utils/logger"
 import {
   afterAll,
@@ -96,7 +95,7 @@ describe("handleError", () => {
       "You can also try a previous version to see if that works:"
     )
     expect(logger.error).toHaveBeenCalledWith(
-      getPreviousMinorCommand(packageJson.version, ["add", "foo"])
+      getPreviousMinorCommand(undefined, ["add", "foo"])
     )
     expect(exit).toHaveBeenCalledWith(1)
   })
