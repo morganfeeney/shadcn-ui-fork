@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export type PresetPreviewStepItem = {
   code: string
@@ -34,12 +34,35 @@ export function usePresetPreviewStep({
   afterStep,
 }: UsePresetPreviewStepOptions) {
   const { code, title, description } = fromCard
-  const [viewCode, setViewCode] = useState(code)
+  /** Index in `previewStepOrder` when the user stepped; null means follow `fromCard`. */
+  const [userChosenIndex, setUserChosenIndex] = useState<number | null>(null)
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevCode, setPrevCode] = useState(code)
 
-  useLayoutEffect(() => {
-    if (!open) return
-    setViewCode(code)
-  }, [open, code])
+  if (open) {
+    const openedOrCodeChanged = !prevOpen || code !== prevCode
+    if (openedOrCodeChanged) {
+      setPrevOpen(open)
+      setPrevCode(code)
+      if (userChosenIndex !== null) {
+        setUserChosenIndex(null)
+      }
+    }
+  } else if (prevOpen !== false || prevCode !== code) {
+    setPrevOpen(false)
+    setPrevCode(code)
+  }
+
+  const baseIndex =
+    previewStepOrder?.findIndex((p) => p.code === code) ?? -1
+  const stepIndex =
+    userChosenIndex !== null ? userChosenIndex : baseIndex
+  const viewCode =
+    stepIndex >= 0 &&
+    previewStepOrder &&
+    previewStepOrder[stepIndex] !== undefined
+      ? previewStepOrder[stepIndex]!.code
+      : code
 
   const canStep =
     !!(previewStepOrder && previewStepOrder.length > 1 && open)
@@ -48,9 +71,6 @@ export function usePresetPreviewStep({
     previewStepOrder?.find((p) => p.code === viewCode) ?? undefined
   const displayTitle = stepMeta?.title ?? title
   const displayDesc = stepMeta?.description ?? description
-
-  const stepIndex =
-    previewStepOrder?.findIndex((p) => p.code === viewCode) ?? -1
   const canPrev = canStep && stepIndex > 0
   const canNext =
     canStep &&
@@ -64,7 +84,7 @@ export function usePresetPreviewStep({
         return
       const n = stepIndex + delta
       if (n < 0 || n >= previewStepOrder.length) return
-      setViewCode(previewStepOrder[n]!.code)
+      setUserChosenIndex(n)
       afterStep?.()
     },
     [previewStepOrder, stepIndex, afterStep]
