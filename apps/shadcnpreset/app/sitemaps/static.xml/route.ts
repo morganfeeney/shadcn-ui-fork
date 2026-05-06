@@ -10,6 +10,7 @@ const STATIC_PATHS = [
   "/my-presets",
   "/tools",
   "/tools/preset-theme-generator",
+  "/tools/color-contrast-checker",
 ] as const
 
 export function GET() {

@@ -47,7 +47,7 @@ import {
   type PresetColorContrastReport,
   type ThemeMode,
 } from "@/lib/preset-color-contrast-report"
-import { cn } from "@/lib/utils"
+import { cn, toSentenceCase } from "@/lib/utils"
 
 function dialProgressStrokeClass(percent: number | null) {
   if (percent === null) return "stroke-muted-foreground"
@@ -270,7 +270,7 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
   return (
     <Table>
       <TableHeader>
-        <TableRow className="">
+        <TableRow className="[&_th]:text-muted-foreground">
           <TableHead>Pair</TableHead>
           <TableHead>Colors</TableHead>
           <TableHead className="text-right">Ratio</TableHead>
@@ -292,7 +292,7 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
         {data.pairs.map((row) => (
           <TableRow key={row.id}>
             <TableCell className="text-sm font-medium">
-              {row.backgroundKey}
+              {toSentenceCase(row.backgroundKey)}
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-1">
@@ -388,9 +388,7 @@ export function PresetColorContrastHeader({
 
   return (
     <>
-      <PageHeaderHeading className="max-w-4xl">
-        {PRESET_COLOR_CONTRAST_TOOL.title}
-      </PageHeaderHeading>
+      <PageHeaderHeading>{PRESET_COLOR_CONTRAST_TOOL.title}</PageHeaderHeading>
       <PageHeaderDescription className="text-muted-foreground">
         {PRESET_COLOR_CONTRAST_TOOL.description}
       </PageHeaderDescription>
@@ -415,7 +413,9 @@ export function PresetColorContrastHeader({
             >
               Random
             </InputGroupButton>
-            <InputGroupButton type="submit">Check contrast</InputGroupButton>
+            <InputGroupButton variant="secondary" type="submit">
+              Check contrast
+            </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
       </form>
@@ -452,29 +452,10 @@ export function PresetColorContrastResults({
           className="grid gap-3"
           aria-labelledby="contrast-details-heading"
         >
-          {/*<div>*/}
-          {/*  <h2*/}
-          {/*    id="contrast-details-heading"*/}
-          {/*    className="text-lg font-semibold tracking-tight text-foreground"*/}
-          {/*  >*/}
-          {/*    Pair-by-pair*/}
-          {/*  </h2>*/}
-          {/*  <p className="mt-1 max-w-prose text-sm text-muted-foreground">*/}
-          {/*    Each row is a foreground color on its matched background. The*/}
-          {/*    small ring above each table is the AA pass rate (*/}
-          {/*    {PRESET_CONTRAST_AA_NORMAL_RATIO}:1) for that surface. AAA in the*/}
-          {/*    table is stricter than that headline.*/}
-          {/*  </p>*/}
-          {/*</div>*/}
           <div className="grid gap-10">
             <div className="grid gap-3">
+              <p className="text-sm font-semibold">Light</p>
               <Card size="sm">
-                <CardHeader>
-                  <CardTitle>Light</CardTitle>
-                  {/*<CardDescription>*/}
-                  {/*  <ContrastTabSummary data={report.light} />*/}
-                  {/*</CardDescription>*/}
-                </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
                     <ContrastRatingDial
@@ -495,20 +476,23 @@ export function PresetColorContrastResults({
               <ContrastTable data={report.light} />
             </div>
             <div className="grid gap-3">
+              <p className="text-sm font-semibold">Dark</p>
               <Card size="sm">
-                <CardHeader>
-                  <CardTitle>Dark</CardTitle>
-                  {/*<CardDescription>*/}
-                  {/*  <ContrastTabSummary data={report.dark} />*/}
-                  {/*</CardDescription>*/}
-                </CardHeader>
                 <CardContent>
-                  <ContrastRatingDial
-                    surface="dark"
-                    score={darkScore}
-                    variant="compact"
-                    showSurfaceLabel={false}
-                  />
+                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
+                    <ContrastRatingDial
+                      surface="dark"
+                      score={darkScore}
+                      variant="compact"
+                      showSurfaceLabel={false}
+                    />
+                    <div>
+                      <p className="font-semibold">WCAG 2.1</p>
+                      <p className="text-xs text-muted-foreground">
+                        Normal text
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               <ContrastTable data={report.dark} />
