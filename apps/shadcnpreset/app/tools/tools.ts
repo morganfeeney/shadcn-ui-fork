@@ -7,9 +7,7 @@ export const TOOLS_PAGE = {
 
 export const PRESET_THEME_GENERATOR_TOOL = {
   slug: "preset-theme-generator",
-  legacySlug: "preset-theme",
   href: "/tools/preset-theme-generator",
-  legacyHref: "/tools/preset-theme",
   title: "Preset Theme CSS Generator",
   description:
     "Decode a shadcn preset, preview it, and generate CSS custom properties for light and dark mode you can copy and paste into your project.",
@@ -18,10 +16,8 @@ export const PRESET_THEME_GENERATOR_TOOL = {
 } as const
 
 export const PRESET_COLOR_CONTRAST_TOOL = {
-  slug: "color-contrast",
-  legacySlug: "accessibility-checker",
-  href: "/tools/color-contrast",
-  legacyHref: "/tools/accessibility-checker",
+  slug: "color-contrast-checker",
+  href: "/tools/color-contrast-checker",
   title: "Preset color contrast checker",
   description:
     "WCAG 2.x contrast ratios for a shadcn preset's light and dark theme tokens.",
