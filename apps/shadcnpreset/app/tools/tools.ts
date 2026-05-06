@@ -24,7 +24,7 @@ export const PRESET_COLOR_CONTRAST_TOOL = {
   legacyHref: "/tools/accessibility-checker",
   title: "Preset color contrast checker",
   description:
-    "WCAG 2.x contrast ratios for shadcn variable pairs in a preset's light and dark theme tokens.",
+    "WCAG 2.x contrast ratios for a shadcn preset's light and dark theme tokens.",
   cardDescription:
     "Check WCAG contrast for core theme token pairs from a preset code, with light and dark previews.",
 } as const

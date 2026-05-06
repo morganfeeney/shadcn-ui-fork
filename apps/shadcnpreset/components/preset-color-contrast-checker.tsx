@@ -23,7 +23,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
@@ -60,12 +66,16 @@ function dialLabelTextClass(percent: number | null) {
 function ContrastRatingDial({
   surface,
   score,
+  variant = "default",
+  showSurfaceLabel = true,
 }: {
   surface: ThemeMode
   score: OverallContrastScore
+  variant?: "default" | "compact"
+  showSurfaceLabel?: boolean
 }) {
-  const size = 76
-  const stroke = 5
+  const size = variant === "compact" ? 38 : 76
+  const stroke = variant === "compact" ? 3 : 5
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   const p = score.percent ?? 0
@@ -91,11 +101,14 @@ function ContrastRatingDial({
       </div>
     )
 
+  const gapClass = variant === "compact" ? "gap-3" : "gap-4"
+
   return (
     <Tooltip>
       <TooltipTrigger
         className={cn(
-          "inline-flex items-center gap-4 rounded-lg text-left",
+          "inline-flex items-center rounded-lg text-left",
+          gapClass,
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
         )}
       >
@@ -138,24 +151,33 @@ function ContrastRatingDial({
           </svg>
           <span
             className={cn(
-              "relative flex flex-col items-center leading-none tabular-nums",
-              labelTextClass
+              "relative leading-none tabular-nums",
+              labelTextClass,
+              variant === "compact"
+                ? "text-[10px] font-semibold tracking-tight"
+                : "flex flex-col items-center text-xl font-semibold tracking-tight"
             )}
           >
-            <span className="text-xl font-semibold tracking-tight">
-              {score.percent === null ? "—" : score.percent}
+            {score.percent === null ? (
+              "—"
+            ) : variant === "compact" ? (
+              `${score.percent}%`
+            ) : (
+              <>
+                <span>{score.percent}</span>
+                <span className="text-[10px] font-medium">%</span>
+              </>
+            )}
+          </span>
+        </div>
+        {showSurfaceLabel ? (
+          <div className="grid min-w-0 gap-0.5">
+            <span className="text-sm font-semibold capitalize">{surface}</span>
+            <span className="font-mono text-xs text-muted-foreground">
+              {PRESET_CONTRAST_AA_NORMAL_RATIO}:1
             </span>
-            {score.percent !== null ? (
-              <span className="text-[10px] font-medium">%</span>
-            ) : null}
-          </span>
-        </div>
-        <div className="grid min-w-0 gap-0.5">
-          <span className="text-sm font-semibold">{surface}</span>
-          <span className="font-mono text-xs text-muted-foreground">
-            {PRESET_CONTRAST_AA_NORMAL_RATIO}:1
-          </span>
-        </div>
+          </div>
+        ) : null}
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
         {tooltipBody}
@@ -185,7 +207,7 @@ function TooltipColorSwatch({
         </span>
         <span
           className={cn(
-            "inline-block size-7 rounded-sm border border-border",
+            "inline-block size-6 rounded-sm border border-border",
             missing ? "border-dashed bg-muted" : "shadow-sm"
           )}
           style={missing ? undefined : { backgroundColor: raw }}
@@ -248,22 +270,18 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
   return (
     <Table>
       <TableHeader>
-        <TableRow>
-          <TableHead className="min-w-[7rem] text-xs font-normal">
-            Pair
-          </TableHead>
-          <TableHead className="text-xs font-normal">Colors</TableHead>
-          <TableHead className="text-right text-xs font-normal">
-            Ratio
-          </TableHead>
+        <TableRow className="">
+          <TableHead>Pair</TableHead>
+          <TableHead>Colors</TableHead>
+          <TableHead className="text-right">Ratio</TableHead>
           <TableHead
-            className="text-right text-xs font-normal"
+            className="text-right"
             title={`WCAG 2.x AA · normal text · ${PRESET_CONTRAST_AA_NORMAL_RATIO}:1`}
           >
             AA
           </TableHead>
           <TableHead
-            className="text-right text-xs font-normal"
+            className="text-right"
             title={`WCAG 2.x AAA · enhanced · normal text · ${PRESET_CONTRAST_AAA_NORMAL_RATIO}:1`}
           >
             AAA
@@ -277,7 +295,7 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
               {row.backgroundKey}
             </TableCell>
             <TableCell>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <TooltipColorSwatch
                   tokenName={row.foregroundKey}
                   raw={row.foregroundRaw}
@@ -429,52 +447,97 @@ export function PresetColorContrastResults({
         title={report.code}
         description={report.overviewDescription}
       />
-      <div className="grid min-w-0 gap-6 text-left">
-        <div className="rounded-xl border border-border bg-muted/40 px-4 py-4">
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
-            <ContrastRatingDial surface="light" score={lightScore} />
-            <ContrastRatingDial surface="dark" score={darkScore} />
+      <div className="grid min-w-0 gap-8 text-left">
+        <section
+          className="grid gap-3"
+          aria-labelledby="contrast-details-heading"
+        >
+          {/*<div>*/}
+          {/*  <h2*/}
+          {/*    id="contrast-details-heading"*/}
+          {/*    className="text-lg font-semibold tracking-tight text-foreground"*/}
+          {/*  >*/}
+          {/*    Pair-by-pair*/}
+          {/*  </h2>*/}
+          {/*  <p className="mt-1 max-w-prose text-sm text-muted-foreground">*/}
+          {/*    Each row is a foreground color on its matched background. The*/}
+          {/*    small ring above each table is the AA pass rate (*/}
+          {/*    {PRESET_CONTRAST_AA_NORMAL_RATIO}:1) for that surface. AAA in the*/}
+          {/*    table is stricter than that headline.*/}
+          {/*  </p>*/}
+          {/*</div>*/}
+          <div className="grid gap-10">
+            <div className="grid gap-3">
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle>Light</CardTitle>
+                  {/*<CardDescription>*/}
+                  {/*  <ContrastTabSummary data={report.light} />*/}
+                  {/*</CardDescription>*/}
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
+                    <ContrastRatingDial
+                      surface="light"
+                      score={lightScore}
+                      variant="compact"
+                      showSurfaceLabel={false}
+                    />
+                    <div>
+                      <p className="font-semibold">WCAG 2.1</p>
+                      <p className="text-xs text-muted-foreground">
+                        Normal text
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <ContrastTable data={report.light} />
+            </div>
+            <div className="grid gap-3">
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle>Dark</CardTitle>
+                  {/*<CardDescription>*/}
+                  {/*  <ContrastTabSummary data={report.dark} />*/}
+                  {/*</CardDescription>*/}
+                </CardHeader>
+                <CardContent>
+                  <ContrastRatingDial
+                    surface="dark"
+                    score={darkScore}
+                    variant="compact"
+                    showSurfaceLabel={false}
+                  />
+                </CardContent>
+              </Card>
+              <ContrastTable data={report.dark} />
+            </div>
           </div>
-        </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          WCAG 2.x{" "}
-          <abbr title="Success Criterion" className="no-underline">
-            SC
-          </abbr>{" "}
-          <span className="whitespace-nowrap">1.4.3</span> (Contrast Minimum)
-          sets{" "}
-          <span className="whitespace-nowrap">
-            {PRESET_CONTRAST_AA_NORMAL_RATIO}:1
-          </span>{" "}
-          for normal text at Level AA.{" "}
-          <span className="whitespace-nowrap">SC 1.4.6</span> (Contrast
-          Enhanced) sets{" "}
-          <span className="whitespace-nowrap">
-            {PRESET_CONTRAST_AAA_NORMAL_RATIO}:1
-          </span>{" "}
-          for normal text at Level AAA. The AA and AAA columns use those
-          thresholds; large text and non-text contrast are not evaluated here.
-        </p>
-        <Tabs defaultValue="light">
-          <TabsList>
-            <TabsTrigger value="light">Light</TabsTrigger>
-            <TabsTrigger value="dark">Dark</TabsTrigger>
-          </TabsList>
-          <TabsContent value="light" className="mt-4">
-            <p className="mb-3 text-sm text-muted-foreground">
-              Pass: {report.light.passCount} · Fail: {report.light.failCount} ·
-              Could not evaluate: {report.light.unresolvedCount}
-            </p>
-            <ContrastTable data={report.light} />
-          </TabsContent>
-          <TabsContent value="dark" className="mt-4">
-            <p className="mb-3 text-sm text-muted-foreground">
-              Pass: {report.dark.passCount} · Fail: {report.dark.failCount} ·
-              Could not evaluate: {report.dark.unresolvedCount}
-            </p>
-            <ContrastTable data={report.dark} />
-          </TabsContent>
-        </Tabs>
+        </section>
+
+        <footer className="border-t border-border pt-6">
+          <p className="mt-2 max-w-prose text-xs leading-relaxed text-muted-foreground">
+            WCAG 2.x{" "}
+            <abbr title="Success Criterion" className="no-underline">
+              SC
+            </abbr>{" "}
+            <span className="whitespace-nowrap">1.4.3</span> (Contrast Minimum)
+            requires{" "}
+            <span className="whitespace-nowrap">
+              {PRESET_CONTRAST_AA_NORMAL_RATIO}:1
+            </span>{" "}
+            for normal text at Level AA.{" "}
+            <span className="whitespace-nowrap">SC 1.4.6</span> (Contrast
+            Enhanced) requires{" "}
+            <span className="whitespace-nowrap">
+              {PRESET_CONTRAST_AAA_NORMAL_RATIO}:1
+            </span>{" "}
+            at Level AAA. <br />
+            <br />
+            Large text and non-text contrast are not covered here.
+          </p>
+        </footer>
       </div>
     </div>
   )

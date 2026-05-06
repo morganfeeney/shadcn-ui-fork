@@ -143,9 +143,43 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
   }
 
   return (
-    <div className="grid items-start gap-6 md:grid-cols-[2fr_3fr] 2xl:grid-cols-[3fr_2fr]">
-      <div className="grid items-start gap-6 md:sticky md:top-6 2xl:grid-cols-[1fr_2fr]">
-        <Card className="max-2xl:order-2">
+    <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="grid items-start gap-6 lg:sticky lg:top-6">
+        {bundle ? (
+          <PresetStyleOverviewCard
+            className="max-2xl:order-1"
+            code={bundle.resolved.code}
+            title={bundle.resolved.code}
+            description={`${bundle.resolved.style} style, ${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
+          />
+        ) : null}
+      </div>
+      <div className="grid items-start gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Theme custom properties</CardTitle>
+            <CardDescription>
+              Copy and paste into your{" "}
+              <code className="text-[13px]">globals.css</code> file.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!bundle ? (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                This preset code could not be decoded.
+              </div>
+            ) : (
+              <CssOutputBlock
+                value={bundle.combinedCss}
+                copyLabel="Copy code"
+                copyKey="combined"
+                copiedKey={copiedKey}
+                onCopy={handleCopy}
+              />
+            )}
+          </CardContent>
+        </Card>
+        <Card>
           <CardHeader>
             <CardTitle>
               About preset{" "}
@@ -181,40 +215,7 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
             )}
           </CardContent>
         </Card>
-        {bundle ? (
-          <PresetStyleOverviewCard
-            className="max-2xl:order-1"
-            code={bundle.resolved.code}
-            title={bundle.resolved.code}
-            description={`${bundle.resolved.style} style, ${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
-          />
-        ) : null}
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Theme custom properties</CardTitle>
-          <CardDescription>
-            Copy and paste into your{" "}
-            <code className="text-[13px]">globals.css</code> file.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!bundle ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              This preset code could not be decoded.
-            </div>
-          ) : (
-            <CssOutputBlock
-              value={bundle.combinedCss}
-              copyLabel="Copy code"
-              copyKey="combined"
-              copiedKey={copiedKey}
-              onCopy={handleCopy}
-            />
-          )}
-        </CardContent>
-      </Card>
     </div>
   )
 }
