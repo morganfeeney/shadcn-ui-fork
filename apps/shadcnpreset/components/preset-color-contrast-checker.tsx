@@ -3,7 +3,7 @@
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-import { CheckIcon, XIcon } from "@phosphor-icons/react"
+import { CheckIcon, XIcon, SunIcon, MoonIcon } from "@phosphor-icons/react"
 import {
   PageHeaderDescription,
   PageHeaderHeading,
@@ -23,13 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
@@ -74,7 +68,7 @@ function ContrastRatingDial({
   variant?: "default" | "compact"
   showSurfaceLabel?: boolean
 }) {
-  const size = variant === "compact" ? 38 : 76
+  const size = variant === "compact" ? 30 : 76
   const stroke = variant === "compact" ? 3 : 5
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
@@ -161,7 +155,7 @@ function ContrastRatingDial({
             {score.percent === null ? (
               "—"
             ) : variant === "compact" ? (
-              `${score.percent}%`
+              `${score.percent}`
             ) : (
               <>
                 <span>{score.percent}</span>
@@ -250,7 +244,7 @@ function ConformanceIcon({
     return (
       <CheckIcon
         className="text-emerald-600 dark:text-emerald-400"
-        size={20}
+        size={16}
         weight="bold"
         aria-label={labelPass}
       />
@@ -259,7 +253,7 @@ function ConformanceIcon({
   return (
     <XIcon
       className="text-red-600 dark:text-red-400"
-      size={20}
+      size={16}
       weight="bold"
       aria-label={labelFail}
     />
@@ -268,9 +262,9 @@ function ConformanceIcon({
 
 function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="[&_th]:text-muted-foreground">
+    <Table className="**:text-xs">
+      <TableHeader className="**:font-normal">
+        <TableRow>
           <TableHead>Pair</TableHead>
           <TableHead>Colors</TableHead>
           <TableHead className="text-right">Ratio</TableHead>
@@ -306,7 +300,7 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
                 />
               </div>
             </TableCell>
-            <TableCell className="text-right text-sm">
+            <TableCell className="text-right">
               {formatRatio(row.ratio)}
             </TableCell>
             <TableCell className="text-right">
@@ -318,11 +312,6 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
                     labelFail={`Below AA (${PRESET_CONTRAST_AA_NORMAL_RATIO}:1)`}
                   />
                 </span>
-                {row.note ? (
-                  <span className="max-w-[12rem] text-right text-xs text-muted-foreground">
-                    {row.note}
-                  </span>
-                ) : null}
               </div>
             </TableCell>
             <TableCell className="text-right">
@@ -423,6 +412,33 @@ export function PresetColorContrastHeader({
   )
 }
 
+function WcagLozenge({
+  mode,
+  report,
+}: {
+  mode: ThemeMode
+  report: PresetColorContrastReport
+}) {
+  const lightScore = getOverallContrastScore(report.light)
+  const darkScore = getOverallContrastScore(report.dark)
+  return (
+    <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2">
+      <ContrastRatingDial
+        surface={mode}
+        score={mode === "light" ? lightScore : darkScore}
+        variant="compact"
+        showSurfaceLabel={false}
+      />
+      <div>
+        <p className="text-sm font-normal">WCAG 2.1</p>
+        <p className="-mt-0.5 text-xs font-normal text-muted-foreground">
+          Normal text
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function PresetColorContrastResults({
   report,
 }: {
@@ -436,71 +452,51 @@ export function PresetColorContrastResults({
     )
   }
 
-  const lightScore = getOverallContrastScore(report.light)
-  const darkScore = getOverallContrastScore(report.dark)
-
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-2">
+    <div className="grid items-start gap-8 xl:grid-cols-2">
       <PresetStyleOverviewCard
-        className="lg:sticky lg:top-6"
+        className="xl:sticky xl:top-6"
         code={report.code}
-        title={report.code}
         description={report.overviewDescription}
+        previewVariant="v4-iframe"
+        title={report.code}
+        virtualWidth={2000}
+        virtualHeight={1000}
       />
-      <div className="grid min-w-0 gap-8 text-left">
-        <section
-          className="grid gap-3"
-          aria-labelledby="contrast-details-heading"
-        >
-          <div className="grid gap-10">
-            <div className="grid gap-3">
-              <p className="text-sm font-semibold">Light</p>
-              <Card size="sm">
-                <CardContent>
-                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
-                    <ContrastRatingDial
-                      surface="light"
-                      score={lightScore}
-                      variant="compact"
-                      showSurfaceLabel={false}
-                    />
-                    <div>
-                      <p className="font-semibold">WCAG 2.1</p>
-                      <p className="text-xs text-muted-foreground">
-                        Normal text
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <ContrastTable data={report.light} />
-            </div>
-            <div className="grid gap-3">
-              <p className="text-sm font-semibold">Dark</p>
-              <Card size="sm">
-                <CardContent>
-                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
-                    <ContrastRatingDial
-                      surface="dark"
-                      score={darkScore}
-                      variant="compact"
-                      showSurfaceLabel={false}
-                    />
-                    <div>
-                      <p className="font-semibold">WCAG 2.1</p>
-                      <p className="text-xs text-muted-foreground">
-                        Normal text
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <ContrastTable data={report.dark} />
-            </div>
-          </div>
-        </section>
+      <section
+        className="grid gap-4"
+        aria-labelledby="contrast-details-heading"
+      >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-4">
+          <div className="grid gap-3">
+            <Card size="sm">
+              <CardHeader className="flex justify-between">
+                <CardTitle className="grid gap-1">
+                  <SunIcon className="text-muted-foreground" /> Light
+                </CardTitle>
+                <WcagLozenge mode="light" report={report} />
+              </CardHeader>
 
-        <footer className="border-t border-border pt-6">
+              <CardContent className="grid gap-2 px-1!">
+                <ContrastTable data={report.light} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-3">
+            <Card size="sm">
+              <CardHeader className="flex justify-between">
+                <CardTitle className="grid gap-1">
+                  <MoonIcon className="text-muted-foreground" /> Dark
+                </CardTitle>
+                <WcagLozenge mode="dark" report={report} />
+              </CardHeader>
+              <CardContent className="grid gap-2 px-1!">
+                <ContrastTable data={report.dark} />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <footer>
           <p className="mt-2 max-w-prose text-xs leading-relaxed text-muted-foreground">
             WCAG 2.x{" "}
             <abbr title="Success Criterion" className="no-underline">
@@ -522,7 +518,7 @@ export function PresetColorContrastResults({
             Large text and non-text contrast are not covered here.
           </p>
         </footer>
-      </div>
+      </section>
     </div>
   )
 }

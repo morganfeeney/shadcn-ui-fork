@@ -13,8 +13,10 @@ import {
   PresetPreviewDialog,
   type PresetPreviewStepItem,
 } from "@/components/preset-preview/dialog"
+import { PresetV4Frame } from "@/components/preset-v4-frame"
 import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { getPresetPreviewUrl } from "@/lib/preset"
 import { cn } from "@/lib/utils"
 import { trackEvent } from "@/lib/analytics-events"
 
@@ -22,6 +24,11 @@ type PresetStyleOverviewCardProps = {
   code: string
   title: string
   description: string
+  /**
+   * `inline` — local React preview (default).
+   * `v4-iframe` — scaled shadcn v4 create preview URL (same as PresetPreviewDialog /create).
+   */
+  previewVariant?: "inline" | "v4-iframe"
   previewStepOrder?: readonly PresetPreviewStepItem[]
   virtualWidth?: number
   virtualHeight?: number
@@ -48,10 +55,71 @@ const heartMotionCelebrate = {
   },
 }
 
+type StyleOverviewV4ScaledPreviewProps = {
+  code: string
+  src: string
+  virtualWidth: number
+  virtualHeight: number
+  scale: number
+}
+
+/** Iframe load state is internal; remount via `key={src}` when the preview URL changes. */
+function StyleOverviewV4ScaledPreview({
+  code,
+  src,
+  virtualWidth,
+  virtualHeight,
+  scale,
+}: StyleOverviewV4ScaledPreviewProps) {
+  const [loaded, setLoaded] = useState(false)
+
+  return (
+    <>
+      <CardContent
+        className="pointer-events-none absolute inset-0 p-0"
+        style={{
+          width: virtualWidth,
+          height: virtualHeight,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        <PresetV4Frame
+          title={`v4 create preview · ${code}`}
+          src={src}
+          className="h-full w-full border-0"
+          sandbox="allow-scripts allow-same-origin"
+          onLoad={() => setLoaded(true)}
+        />
+      </CardContent>
+      {!loaded ? (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background">
+          <Spinner />
+        </div>
+      ) : null}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
+      >
+        <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
+        <span
+          className={cn(
+            "pointer-events-none relative z-10",
+            !loaded ? "invisible" : "invisible group-hover/card:visible"
+          )}
+        >
+          <span className={cn(buttonVariants())}>Preview</span>
+        </span>
+      </div>
+    </>
+  )
+}
+
 export function PresetStyleOverviewCard({
   code,
   title,
   description,
+  previewVariant = "inline",
   previewStepOrder,
   virtualWidth = 1400,
   virtualHeight = 700,
@@ -105,12 +173,24 @@ export function PresetStyleOverviewCard({
     return () => intersectionObserver?.disconnect()
   }, [isMobile])
 
+  const isV4Iframe = previewVariant === "v4-iframe"
+
+  const previewSrc = useMemo(() => {
+    if (!isV4Iframe) return null
+    return getPresetPreviewUrl(code, "preview")
+  }, [code, isV4Iframe])
+
   const scale = useMemo(() => {
     if (!containerWidth) return 1
     return containerWidth / virtualWidth
   }, [containerWidth, virtualWidth])
 
-  const canRenderPreview = shouldRender && containerWidth > 0
+  const showV4UrlError =
+    isV4Iframe && shouldRender && containerWidth > 0 && previewSrc === null
+
+  const canRenderPreview = isV4Iframe
+    ? shouldRender && containerWidth > 0 && previewSrc !== null
+    : shouldRender && containerWidth > 0
   const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(
     code,
     {
@@ -180,34 +260,49 @@ export function PresetStyleOverviewCard({
           className="relative w-full overflow-hidden rounded-sm border"
           style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
         >
-          {canRenderPreview ? (
-            <>
-              <CardContent
-                className="pointer-events-none absolute inset-0 p-0"
-                style={{
-                  width: virtualWidth,
-                  height: virtualHeight,
-                  transform: `scale(${scale})`,
-                  transformOrigin: "top left",
-                }}
-              >
-                <div className="size-full" inert>
-                  <PresetCard1StyleOverview
-                    initialCode={code}
-                    className="h-full w-full"
-                  />
+          {showV4UrlError ? (
+            <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
+              Live preview URL could not be built for this preset code.
+            </div>
+          ) : canRenderPreview ? (
+            isV4Iframe ? (
+              <StyleOverviewV4ScaledPreview
+                key={previewSrc}
+                code={code}
+                scale={scale}
+                src={previewSrc!}
+                virtualHeight={virtualHeight}
+                virtualWidth={virtualWidth}
+              />
+            ) : (
+              <>
+                <CardContent
+                  className="pointer-events-none absolute inset-0 p-0"
+                  style={{
+                    width: virtualWidth,
+                    height: virtualHeight,
+                    transform: `scale(${scale})`,
+                    transformOrigin: "top left",
+                  }}
+                >
+                  <div className="size-full" inert>
+                    <PresetCard1StyleOverview
+                      initialCode={code}
+                      className="h-full w-full"
+                    />
+                  </div>
+                </CardContent>
+                <div
+                  aria-hidden
+                  className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
+                >
+                  <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
+                  <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
+                    <span className={cn(buttonVariants())}>Preview</span>
+                  </span>
                 </div>
-              </CardContent>
-              <div
-                aria-hidden
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
-              >
-                <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
-                <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
-                  <span className={cn(buttonVariants())}>Preview</span>
-                </span>
-              </div>
-            </>
+              </>
+            )
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <Spinner />
