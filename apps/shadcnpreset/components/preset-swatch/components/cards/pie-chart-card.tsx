@@ -91,6 +91,7 @@ export function PieChartCard() {
               nameKey="browser"
               innerRadius={50}
               strokeWidth={5}
+              isAnimationActive={false}
             >
               <Label
                 content={({ viewBox }) => {

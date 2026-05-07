@@ -86,6 +86,7 @@ export function PreviewAnalyticsCard({ className }: { className?: string }) {
             fill="var(--color-visitors)"
             fillOpacity={0.4}
             stroke="var(--color-visitors)"
+            isAnimationActive={false}
           />
         </AreaChart>
       </ChartContainer>

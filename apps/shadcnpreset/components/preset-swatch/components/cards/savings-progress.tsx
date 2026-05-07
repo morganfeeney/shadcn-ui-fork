@@ -49,6 +49,7 @@ export function SavingsProgress() {
               strokeWidth={0}
               startAngle={90}
               endAngle={-270}
+              isAnimationActive={false}
             >
               <Label
                 content={({ viewBox }) => {
