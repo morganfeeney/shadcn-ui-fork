@@ -8,7 +8,7 @@ import {
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
-import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
+import { PresetV4Frame } from "@/components/preset-v4-frame"
 import {
   InputGroup,
   InputGroupAddon,
@@ -23,13 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Spinner } from "@/components/ui/spinner"
 import {
   Tooltip,
   TooltipContent,
@@ -47,7 +42,113 @@ import {
   type PresetColorContrastReport,
   type ThemeMode,
 } from "@/lib/preset-color-contrast-report"
+import { getPresetPreviewUrl } from "@/lib/preset"
 import { cn, toSentenceCase } from "@/lib/utils"
+
+/** Same “design size” as preset overview cards; iframe is scaled down to the column width. */
+const V4_CONTRAST_PREVIEW_WIDTH = 1400
+const V4_CONTRAST_PREVIEW_HEIGHT = 700
+
+function PresetContrastV4PreviewCard({
+  code,
+  title,
+  description,
+  className,
+}: {
+  code: string
+  title: string
+  description: string
+  className?: string
+}) {
+  const wrapperRef = React.useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = React.useState(0)
+  const [loaded, setLoaded] = React.useState(false)
+
+  const previewSrc = React.useMemo(
+    () => getPresetPreviewUrl(code, "preview"),
+    [code]
+  )
+
+  React.useEffect(() => {
+    const node = wrapperRef.current
+    if (!node) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const [entry] = entries
+      if (entry) {
+        setContainerWidth(entry.contentRect.width)
+      }
+    })
+    resizeObserver.observe(node)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
+  React.useEffect(() => {
+    setLoaded(false)
+  }, [code, previewSrc])
+
+  const scale =
+    containerWidth > 0 ? containerWidth / V4_CONTRAST_PREVIEW_WIDTH : 1
+  const canPaint = previewSrc !== null && containerWidth > 0
+
+  return (
+    <Card
+      className={cn(
+        "relative gap-0 rounded-sm bg-background pt-0 ring-0",
+        className
+      )}
+    >
+      <div
+        ref={wrapperRef}
+        className="relative w-full overflow-hidden rounded-sm border"
+        style={{
+          aspectRatio: `${V4_CONTRAST_PREVIEW_WIDTH} / ${V4_CONTRAST_PREVIEW_HEIGHT}`,
+        }}
+      >
+        {canPaint ? (
+          <>
+            <div
+              className="absolute top-0 left-0 origin-top-left"
+              style={{
+                width: V4_CONTRAST_PREVIEW_WIDTH,
+                height: V4_CONTRAST_PREVIEW_HEIGHT,
+                transform: `scale(${scale})`,
+              }}
+            >
+              <PresetV4Frame
+                title={`v4 create preview for contrast · ${code}`}
+                src={previewSrc}
+                className="h-full w-full border-0"
+                sandbox="allow-scripts allow-same-origin"
+                onLoad={() => setLoaded(true)}
+              />
+            </div>
+            {!loaded ? (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+                <Spinner />
+              </div>
+            ) : null}
+          </>
+        ) : previewSrc === null ? (
+          <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
+            Live preview URL could not be built for this preset code.
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </div>
+        )}
+      </div>
+      <CardContent className="grid gap-0.5 px-2 pt-3 pb-2">
+        <p className="truncate font-mono text-sm font-medium">{title}</p>
+        <p className="line-clamp-2 text-xs text-muted-foreground">
+          {description}
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
 
 function dialProgressStrokeClass(percent: number | null) {
   if (percent === null) return "stroke-muted-foreground"
@@ -74,7 +175,7 @@ function ContrastRatingDial({
   variant?: "default" | "compact"
   showSurfaceLabel?: boolean
 }) {
-  const size = variant === "compact" ? 38 : 76
+  const size = variant === "compact" ? 30 : 76
   const stroke = variant === "compact" ? 3 : 5
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
@@ -161,7 +262,7 @@ function ContrastRatingDial({
             {score.percent === null ? (
               "—"
             ) : variant === "compact" ? (
-              `${score.percent}%`
+              `${score.percent}`
             ) : (
               <>
                 <span>{score.percent}</span>
@@ -250,7 +351,7 @@ function ConformanceIcon({
     return (
       <CheckIcon
         className="text-emerald-600 dark:text-emerald-400"
-        size={20}
+        size={16}
         weight="bold"
         aria-label={labelPass}
       />
@@ -259,7 +360,7 @@ function ConformanceIcon({
   return (
     <XIcon
       className="text-red-600 dark:text-red-400"
-      size={20}
+      size={16}
       weight="bold"
       aria-label={labelFail}
     />
@@ -268,9 +369,9 @@ function ConformanceIcon({
 
 function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="[&_th]:text-muted-foreground">
+    <Table className="**:text-xs">
+      <TableHeader className="**:font-normal">
+        <TableRow>
           <TableHead>Pair</TableHead>
           <TableHead>Colors</TableHead>
           <TableHead className="text-right">Ratio</TableHead>
@@ -306,7 +407,7 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
                 />
               </div>
             </TableCell>
-            <TableCell className="text-right text-sm">
+            <TableCell className="text-right">
               {formatRatio(row.ratio)}
             </TableCell>
             <TableCell className="text-right">
@@ -318,11 +419,6 @@ function ContrastTable({ data }: { data: PresetColorContrastModeReport }) {
                     labelFail={`Below AA (${PRESET_CONTRAST_AA_NORMAL_RATIO}:1)`}
                   />
                 </span>
-                {row.note ? (
-                  <span className="max-w-[12rem] text-right text-xs text-muted-foreground">
-                    {row.note}
-                  </span>
-                ) : null}
               </div>
             </TableCell>
             <TableCell className="text-right">
@@ -423,6 +519,33 @@ export function PresetColorContrastHeader({
   )
 }
 
+function WcagLozenge({
+  mode,
+  report,
+}: {
+  mode: ThemeMode
+  report: PresetColorContrastReport
+}) {
+  const lightScore = getOverallContrastScore(report.light)
+  const darkScore = getOverallContrastScore(report.dark)
+  return (
+    <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2">
+      <ContrastRatingDial
+        surface={mode}
+        score={mode === "light" ? lightScore : darkScore}
+        variant="compact"
+        showSurfaceLabel={false}
+      />
+      <div>
+        <p className="text-sm font-normal">WCAG 2.1</p>
+        <p className="-mt-0.5 text-xs font-normal text-muted-foreground">
+          Normal text
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function PresetColorContrastResults({
   report,
 }: {
@@ -436,69 +559,41 @@ export function PresetColorContrastResults({
     )
   }
 
-  const lightScore = getOverallContrastScore(report.light)
-  const darkScore = getOverallContrastScore(report.dark)
-
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-2">
-      <PresetStyleOverviewCard
+    <div className="grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
+      <PresetContrastV4PreviewCard
         className="lg:sticky lg:top-6"
         code={report.code}
         title={report.code}
         description={report.overviewDescription}
       />
-      <div className="grid min-w-0 gap-8 text-left">
-        <section
-          className="grid gap-3"
-          aria-labelledby="contrast-details-heading"
-        >
-          <div className="grid gap-10">
-            <div className="grid gap-3">
-              <p className="text-sm font-semibold">Light</p>
-              <Card size="sm">
-                <CardContent>
-                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
-                    <ContrastRatingDial
-                      surface="light"
-                      score={lightScore}
-                      variant="compact"
-                      showSurfaceLabel={false}
-                    />
-                    <div>
-                      <p className="font-semibold">WCAG 2.1</p>
-                      <p className="text-xs text-muted-foreground">
-                        Normal text
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      <section
+        className="grid grid-cols-2 gap-6"
+        aria-labelledby="contrast-details-heading"
+      >
+        <div className="grid gap-3">
+          <Card size="sm">
+            <CardHeader className="flex justify-between">
+              <CardTitle>Light</CardTitle>
+              <WcagLozenge mode="light" report={report} />
+            </CardHeader>
+
+            <CardContent className="grid gap-2 px-1!">
               <ContrastTable data={report.light} />
-            </div>
-            <div className="grid gap-3">
-              <p className="text-sm font-semibold">Dark</p>
-              <Card size="sm">
-                <CardContent>
-                  <div className="grid grid-cols-[auto_auto] items-center justify-start gap-2.5">
-                    <ContrastRatingDial
-                      surface="dark"
-                      score={darkScore}
-                      variant="compact"
-                      showSurfaceLabel={false}
-                    />
-                    <div>
-                      <p className="font-semibold">WCAG 2.1</p>
-                      <p className="text-xs text-muted-foreground">
-                        Normal text
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-3">
+          <Card size="sm">
+            <CardHeader className="flex justify-between">
+              <CardTitle>Dark</CardTitle>
+              <WcagLozenge mode="dark" report={report} />
+            </CardHeader>
+            <CardContent className="grid gap-2 px-1!">
               <ContrastTable data={report.dark} />
-            </div>
-          </div>
-        </section>
+            </CardContent>
+          </Card>
+        </div>
 
         <footer className="border-t border-border pt-6">
           <p className="mt-2 max-w-prose text-xs leading-relaxed text-muted-foreground">
@@ -522,7 +617,7 @@ export function PresetColorContrastResults({
             Large text and non-text contrast are not covered here.
           </p>
         </footer>
-      </div>
+      </section>
     </div>
   )
 }
