@@ -3,7 +3,7 @@
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-import { CheckIcon, XIcon } from "@phosphor-icons/react"
+import { CheckIcon, XIcon, SunIcon, MoonIcon } from "@phosphor-icons/react"
 import {
   PageHeaderDescription,
   PageHeaderHeading,
@@ -574,7 +574,9 @@ export function PresetColorContrastResults({
         <div className="grid gap-3">
           <Card size="sm">
             <CardHeader className="flex justify-between">
-              <CardTitle>Light</CardTitle>
+              <CardTitle className="grid gap-1">
+                <SunIcon className="text-muted-foreground" /> Light
+              </CardTitle>
               <WcagLozenge mode="light" report={report} />
             </CardHeader>
 
@@ -586,7 +588,9 @@ export function PresetColorContrastResults({
         <div className="grid gap-3">
           <Card size="sm">
             <CardHeader className="flex justify-between">
-              <CardTitle>Dark</CardTitle>
+              <CardTitle className="grid gap-1">
+                <MoonIcon className="text-muted-foreground" /> Dark
+              </CardTitle>
               <WcagLozenge mode="dark" report={report} />
             </CardHeader>
             <CardContent className="grid gap-2 px-1!">
