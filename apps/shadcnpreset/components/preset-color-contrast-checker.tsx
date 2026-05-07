@@ -8,7 +8,7 @@ import {
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
-import { PresetV4Frame } from "@/components/preset-v4-frame"
+import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import {
   InputGroup,
   InputGroupAddon,
@@ -24,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Spinner } from "@/components/ui/spinner"
 import {
   Tooltip,
   TooltipContent,
@@ -42,113 +41,7 @@ import {
   type PresetColorContrastReport,
   type ThemeMode,
 } from "@/lib/preset-color-contrast-report"
-import { getPresetPreviewUrl } from "@/lib/preset"
 import { cn, toSentenceCase } from "@/lib/utils"
-
-/** Same “design size” as preset overview cards; iframe is scaled down to the column width. */
-const V4_CONTRAST_PREVIEW_WIDTH = 1400
-const V4_CONTRAST_PREVIEW_HEIGHT = 700
-
-function PresetContrastV4PreviewCard({
-  code,
-  title,
-  description,
-  className,
-}: {
-  code: string
-  title: string
-  description: string
-  className?: string
-}) {
-  const wrapperRef = React.useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = React.useState(0)
-  const [loaded, setLoaded] = React.useState(false)
-
-  const previewSrc = React.useMemo(
-    () => getPresetPreviewUrl(code, "preview"),
-    [code]
-  )
-
-  React.useEffect(() => {
-    const node = wrapperRef.current
-    if (!node) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const [entry] = entries
-      if (entry) {
-        setContainerWidth(entry.contentRect.width)
-      }
-    })
-    resizeObserver.observe(node)
-
-    return () => resizeObserver.disconnect()
-  }, [])
-
-  React.useEffect(() => {
-    setLoaded(false)
-  }, [code, previewSrc])
-
-  const scale =
-    containerWidth > 0 ? containerWidth / V4_CONTRAST_PREVIEW_WIDTH : 1
-  const canPaint = previewSrc !== null && containerWidth > 0
-
-  return (
-    <Card
-      className={cn(
-        "relative gap-0 rounded-sm bg-background pt-0 ring-0",
-        className
-      )}
-    >
-      <div
-        ref={wrapperRef}
-        className="relative w-full overflow-hidden rounded-sm border"
-        style={{
-          aspectRatio: `${V4_CONTRAST_PREVIEW_WIDTH} / ${V4_CONTRAST_PREVIEW_HEIGHT}`,
-        }}
-      >
-        {canPaint ? (
-          <>
-            <div
-              className="absolute top-0 left-0 origin-top-left"
-              style={{
-                width: V4_CONTRAST_PREVIEW_WIDTH,
-                height: V4_CONTRAST_PREVIEW_HEIGHT,
-                transform: `scale(${scale})`,
-              }}
-            >
-              <PresetV4Frame
-                title={`v4 create preview for contrast · ${code}`}
-                src={previewSrc}
-                className="h-full w-full border-0"
-                sandbox="allow-scripts allow-same-origin"
-                onLoad={() => setLoaded(true)}
-              />
-            </div>
-            {!loaded ? (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
-                <Spinner />
-              </div>
-            ) : null}
-          </>
-        ) : previewSrc === null ? (
-          <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
-            Live preview URL could not be built for this preset code.
-          </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Spinner />
-          </div>
-        )}
-      </div>
-      <CardContent className="grid gap-0.5 px-2 pt-3 pb-2">
-        <p className="truncate font-mono text-sm font-medium">{title}</p>
-        <p className="line-clamp-2 text-xs text-muted-foreground">
-          {description}
-        </p>
-      </CardContent>
-    </Card>
-  )
-}
 
 function dialProgressStrokeClass(percent: number | null) {
   if (percent === null) return "stroke-muted-foreground"
@@ -561,11 +454,14 @@ export function PresetColorContrastResults({
 
   return (
     <div className="grid items-start gap-8 xl:grid-cols-2">
-      <PresetContrastV4PreviewCard
+      <PresetStyleOverviewCard
         className="xl:sticky xl:top-6"
         code={report.code}
-        title={report.code}
         description={report.overviewDescription}
+        previewVariant="v4-iframe"
+        title={report.code}
+        virtualWidth={2000}
+        virtualHeight={1000}
       />
       <section
         className="grid gap-4"
