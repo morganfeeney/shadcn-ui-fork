@@ -20,7 +20,7 @@ export function GET() {
       lastmod: nowIso,
     },
     ...Array.from({ length: presetChunkCount }, (_, chunk) => ({
-      loc: `${siteConfig.url}/sitemaps/presets/${chunk}`,
+      loc: `${siteConfig.url}/sitemaps/presets/${chunk}.xml`,
       lastmod: nowIso,
     })),
   ]

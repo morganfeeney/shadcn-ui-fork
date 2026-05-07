@@ -1,9 +1,18 @@
-const siteUrl =
-  process.env.VERCEL_ENV === "preview"
-    ? `https://${process.env.VERCEL_BRANCH_URL}`
-    : process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "http://localhost:4010"
+function normalizeSiteOrigin(url: string) {
+  return url.replace(/\/$/, "")
+}
+
+function resolveSiteUrl() {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL
+  if (explicit) return normalizeSiteOrigin(explicit)
+
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  if (productionHost) return normalizeSiteOrigin(`https://${productionHost}`)
+
+  return "http://localhost:4010"
+}
+
+const siteUrl = resolveSiteUrl()
 
 export const siteConfig = {
   name: "shadcnpreset",

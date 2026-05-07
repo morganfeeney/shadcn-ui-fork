@@ -19,7 +19,8 @@ function notFoundResponse() {
 
 export async function GET(_request: Request, { params }: PresetSitemapRouteProps) {
   const { chunk } = await params
-  const chunkNumber = Number.parseInt(chunk, 10)
+  const chunkSansXml = chunk.replace(/\.xml$/i, "")
+  const chunkNumber = Number.parseInt(chunkSansXml, 10)
 
   if (Number.isNaN(chunkNumber) || chunkNumber < 0) {
     return notFoundResponse()
