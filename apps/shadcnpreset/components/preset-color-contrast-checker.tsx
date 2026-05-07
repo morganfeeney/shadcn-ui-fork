@@ -560,46 +560,47 @@ export function PresetColorContrastResults({
   }
 
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
+    <div className="grid items-start gap-8 xl:grid-cols-2">
       <PresetContrastV4PreviewCard
-        className="lg:sticky lg:top-6"
+        className="xl:sticky xl:top-6"
         code={report.code}
         title={report.code}
         description={report.overviewDescription}
       />
       <section
-        className="grid grid-cols-2 gap-6"
+        className="grid gap-4"
         aria-labelledby="contrast-details-heading"
       >
-        <div className="grid gap-3">
-          <Card size="sm">
-            <CardHeader className="flex justify-between">
-              <CardTitle className="grid gap-1">
-                <SunIcon className="text-muted-foreground" /> Light
-              </CardTitle>
-              <WcagLozenge mode="light" report={report} />
-            </CardHeader>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-4">
+          <div className="grid gap-3">
+            <Card size="sm">
+              <CardHeader className="flex justify-between">
+                <CardTitle className="grid gap-1">
+                  <SunIcon className="text-muted-foreground" /> Light
+                </CardTitle>
+                <WcagLozenge mode="light" report={report} />
+              </CardHeader>
 
-            <CardContent className="grid gap-2 px-1!">
-              <ContrastTable data={report.light} />
-            </CardContent>
-          </Card>
+              <CardContent className="grid gap-2 px-1!">
+                <ContrastTable data={report.light} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-3">
+            <Card size="sm">
+              <CardHeader className="flex justify-between">
+                <CardTitle className="grid gap-1">
+                  <MoonIcon className="text-muted-foreground" /> Dark
+                </CardTitle>
+                <WcagLozenge mode="dark" report={report} />
+              </CardHeader>
+              <CardContent className="grid gap-2 px-1!">
+                <ContrastTable data={report.dark} />
+              </CardContent>
+            </Card>
+          </div>
         </div>
-        <div className="grid gap-3">
-          <Card size="sm">
-            <CardHeader className="flex justify-between">
-              <CardTitle className="grid gap-1">
-                <MoonIcon className="text-muted-foreground" /> Dark
-              </CardTitle>
-              <WcagLozenge mode="dark" report={report} />
-            </CardHeader>
-            <CardContent className="grid gap-2 px-1!">
-              <ContrastTable data={report.dark} />
-            </CardContent>
-          </Card>
-        </div>
-
-        <footer className="border-t border-border pt-6">
+        <footer>
           <p className="mt-2 max-w-prose text-xs leading-relaxed text-muted-foreground">
             WCAG 2.x{" "}
             <abbr title="Success Criterion" className="no-underline">
