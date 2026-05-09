@@ -3,8 +3,8 @@
 import React, { PropsWithChildren, ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
+import isPathActive from "@/lib/is-path-active"
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -13,8 +13,36 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { MenuIcon } from "lucide-react"
-import type { VariantProps } from "class-variance-authority"
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  ArrowRightIcon,
+  CaretDownIcon,
+  CircleHalfIcon,
+  FolderOpenIcon,
+  GaugeIcon,
+  HamburgerIcon,
+  HeartIcon,
+  PaintBrushIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react"
+
+import {
+  PRESET_COLOR_CONTRAST_TOOL,
+  PRESET_THEME_GENERATOR_TOOL,
+  TOOLS_PAGE,
+} from "@/app/tools/tools"
+import { Announcement, AnnouncementTitle } from "@/components/announcement"
 import { Link } from "@/components/zippystarter/link"
 import { Container } from "@/components/zippystarter/container"
 import { Separator } from "@/components/ui/separator"
@@ -23,37 +51,438 @@ import { ModeSwitcher } from "@/components/mode-switcher"
 import { GitHubLink } from "@/components/github-link"
 import { UserMenu } from "@/components/user-menu"
 import { OpenPresetDialog } from "@/components/open-preset-dialog"
+import { Button } from "@/components/ui/button"
 
-const HEADER_LINKS: ComponentLink[] = [
-  { type: "link", href: "/assistant", label: "Ask AI" },
-  { type: "link", href: "/community", label: "Community" },
-  { type: "link", href: "/tools", label: "Tools" },
-  { type: "link", href: "/my-presets", label: "My presets" },
-  { type: "action", action: "open-preset", label: "Open Preset" },
-]
+export type NavChildLink =
+  | {
+      label: string
+      href: string
+      description?: string
+      icon: React.ElementType
+      openInNewTab?: boolean
+    }
+  | {
+      label: string
+      description?: string
+      icon: React.ElementType
+      action: "open-preset"
+    }
 
-const isPathActive = (pathname: string, href: string) => {
-  const regex = new RegExp(`^${href}`)
-  return regex.test(pathname)
+/** Top-level entry: flat link, or parent with `children` mega-menu (parent `href` is for keys only). */
+export type ComponentLink = {
+  href: string
+  label: string
+  openInNewTab?: boolean
+  children?: NavChildLink[]
 }
 
-type ComponentLink =
-  | {
-      type: "link"
-      href: string
-      label: string
-      button?: VariantProps<typeof buttonVariants>["variant"]
-    }
-  | {
-      type: "action"
-      action: "open-preset"
-      label: string
-      button?: VariantProps<typeof buttonVariants>["variant"]
-    }
+type ComponentLinkWithChildren = ComponentLink
+
+const HEADER_LINKS: ComponentLink[] = [
+  { href: "/assistant", label: "Ask AI" },
+  { href: "/community", label: "Community" },
+  {
+    href: "presets",
+    label: "Presets",
+    children: [
+      {
+        label: "High contrast",
+        href: "/accessible-presets",
+        description: "Themes selected for strong contrast.",
+        icon: CircleHalfIcon,
+      },
+      {
+        label: "My presets",
+        href: "/my-presets",
+        description: "Configurations you’ve saved.",
+        icon: HeartIcon,
+      },
+      {
+        label: "Open Preset",
+        description: "Load a preset from its code.",
+        icon: FolderOpenIcon,
+        action: "open-preset",
+      },
+    ],
+  },
+  {
+    href: "tools",
+    label: "Tools",
+    children: [
+      {
+        label: TOOLS_PAGE.title,
+        href: TOOLS_PAGE.href,
+        description: TOOLS_PAGE.description,
+        icon: WrenchIcon,
+      },
+      {
+        label: PRESET_THEME_GENERATOR_TOOL.title,
+        href: PRESET_THEME_GENERATOR_TOOL.href,
+        description: PRESET_THEME_GENERATOR_TOOL.cardDescription,
+        icon: PaintBrushIcon,
+      },
+      {
+        label: PRESET_COLOR_CONTRAST_TOOL.title,
+        href: PRESET_COLOR_CONTRAST_TOOL.href,
+        description: PRESET_COLOR_CONTRAST_TOOL.cardDescription,
+        icon: GaugeIcon,
+      },
+    ],
+  },
+]
 
 interface NavItemProps extends PropsWithChildren {
   href: string
-  isActive?: boolean
+  isActive: boolean
+  openInNewTab?: boolean
+}
+
+function NavItemMobile({
+  isActive,
+  href,
+  children,
+  openInNewTab,
+}: NavItemProps) {
+  return (
+    <Link
+      className={cn(
+        "inline-grid h-10 items-center px-4 py-2 text-sm font-medium transition",
+        {
+          "text-header-foreground": isActive,
+          "text-foreground hover:text-header-foreground": !isActive,
+        }
+      )}
+      href={href}
+      {...(openInNewTab && {
+        target: "_blank",
+        rel: "noopener noreferrer",
+      })}
+    >
+      {children}
+    </Link>
+  )
+}
+
+type NavItemMobileRow =
+  | {
+      kind: "link"
+      href: string
+      label: string
+      openInNewTab?: boolean
+    }
+  | { kind: "open-preset"; label: string }
+
+function isOpenPresetChild(
+  child: NavChildLink
+): child is Extract<NavChildLink, { action: "open-preset" }> {
+  return "action" in child && child.action === "open-preset"
+}
+
+function flattenMobileLinks(links: ComponentLink[]): NavItemMobileRow[] {
+  return links.flatMap((link): NavItemMobileRow[] => {
+    if (!link.children) {
+      return [
+        {
+          kind: "link",
+          href: link.href,
+          label: link.label,
+          openInNewTab: link.openInNewTab,
+        },
+      ]
+    }
+    return link.children.map((child): NavItemMobileRow => {
+      if (isOpenPresetChild(child)) {
+        return { kind: "open-preset", label: child.label }
+      }
+      return {
+        kind: "link",
+        href: child.href,
+        label: child.label,
+        openInNewTab: child.openInNewTab,
+      }
+    })
+  })
+}
+
+interface DesktopNavProps {
+  links: ComponentLinkWithChildren[]
+  actions: ReactNode
+  pathname: string
+  className?: string
+  onOpenPreset: () => void
+}
+
+function submenuParentActive(
+  pathname: string,
+  children: NavChildLink[]
+): boolean {
+  return children.some(
+    (child) => "href" in child && isPathActive(pathname, child.href)
+  )
+}
+
+function DesktopNav({
+  links,
+  actions,
+  pathname,
+  className,
+  onOpenPreset,
+}: DesktopNavProps) {
+  return (
+    <div
+      className={cn(
+        "flex flex-1 items-center justify-between gap-8",
+        className
+      )}
+    >
+      <NavigationMenu>
+        <NavigationMenuList className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+          {links.map(({ href, label, children, openInNewTab }) => {
+            if (children?.length) {
+              const active = submenuParentActive(pathname, children)
+              return (
+                <NavigationMenuItem key={href}>
+                  <Popover>
+                    <PopoverTrigger
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "group max-w-full text-header-foreground/90 data-popup-open:bg-accent/30",
+                        active && "bg-muted/50"
+                      )}
+                    >
+                      {label}{" "}
+                      <CaretDownIcon
+                        weight="bold"
+                        className="relative top-px ml-1 size-4 shrink-0 transition duration-300 group-data-popup-open:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-[320px] max-w-full border-0 bg-transparent p-0 pt-1 shadow-none ring-0"
+                      align="start"
+                      sideOffset={8}
+                    >
+                      <ul className="grid gap-1 rounded-[1rem] border border-border/60 bg-popover p-2 shadow-md ring-1 ring-border/40">
+                        {children.map((component) =>
+                          isOpenPresetChild(component) ? (
+                            <MegaMenuPresetRow
+                              key={component.label}
+                              label={component.label}
+                              description={component.description}
+                              icon={component.icon}
+                              onOpen={onOpenPreset}
+                            />
+                          ) : (
+                            <ListItem
+                              key={component.label}
+                              title={component.label}
+                              href={component.href}
+                              icon={component.icon}
+                              openInNewTab={component.openInNewTab}
+                            >
+                              {component.description}
+                            </ListItem>
+                          )
+                        )}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </NavigationMenuItem>
+              )
+            }
+            return (
+              <NavigationMenuItem key={href}>
+                <NavigationMenuLink
+                  active={isPathActive(pathname, href)}
+                  render={
+                    <Link
+                      href={href}
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "text-header-foreground/80 hover:text-header-foreground"
+                      )}
+                      {...(openInNewTab && {
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      })}
+                    />
+                  }
+                >
+                  {label}
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )
+          })}
+        </NavigationMenuList>
+      </NavigationMenu>
+      <div className="flex min-w-0 flex-wrap items-center gap-6 xl:gap-12">
+        <div className="grid items-center gap-1 md:flex">{actions}</div>
+      </div>
+    </div>
+  )
+}
+
+function MegaMenuPresetRow({
+  label,
+  description,
+  icon: Icon,
+  onOpen,
+}: {
+  label: string
+  description?: string
+  icon: React.ElementType
+  onOpen: () => void
+}) {
+  return (
+    <li className="list-none">
+      <button
+        type="button"
+        className={cn(
+          "grid w-full grid-cols-[auto_1fr] items-start gap-2.5 rounded-[0.55rem] p-2 text-left transition-colors",
+          "hover:bg-accent hover:text-accent-foreground"
+        )}
+        onClick={onOpen}
+      >
+        <div className="grid size-9 place-items-center rounded-[0.35rem] bg-accent/60 p-1">
+          <Icon className="size-4" aria-hidden />
+        </div>
+        <div className="mt-0.5 grid gap-1">
+          <div className="text-sm leading-none font-medium">{label}</div>
+          {description ? (
+            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
+        </div>
+      </button>
+    </li>
+  )
+}
+
+interface MobileNavProps {
+  links: ComponentLink[]
+  actions: ReactNode
+  pathname: string
+  className?: string
+  onOpenPreset: () => void
+}
+
+function MobileNav({
+  links,
+  pathname,
+  className,
+  actions,
+  onOpenPreset,
+}: MobileNavProps) {
+  const [isOpen, setOpen] = React.useState(false)
+  const flat = React.useMemo(() => flattenMobileLinks(links), [links])
+
+  React.useEffect(() => {
+    if (pathname) {
+      setOpen(false)
+    }
+  }, [pathname])
+
+  return (
+    <div className={className}>
+      <Sheet open={isOpen} onOpenChange={setOpen}>
+        <SheetTrigger
+          render={<Button size="icon" variant="outline" className="size-8" />}
+        >
+          <HamburgerIcon weight="bold" className="size-5" aria-hidden />
+        </SheetTrigger>
+        <SheetContent className="pt-2">
+          <SheetHeader className="sr-only text-start">
+            <SheetTitle>Menu</SheetTitle>
+            <SheetDescription>Choose your destination</SheetDescription>
+          </SheetHeader>
+          <nav className="grid py-1">
+            {flat.map((entry) =>
+              entry.kind === "open-preset" ? (
+                <button
+                  key={`open:${entry.label}`}
+                  type="button"
+                  className="inline-grid h-10 items-center px-4 py-2 text-left text-sm font-medium transition hover:text-header-foreground"
+                  onClick={() => {
+                    setOpen(false)
+                    onOpenPreset()
+                  }}
+                >
+                  {entry.label}
+                </button>
+              ) : (
+                <NavItemMobile
+                  key={entry.href}
+                  href={entry.href}
+                  isActive={isPathActive(pathname, entry.href)}
+                  openInNewTab={entry.openInNewTab}
+                >
+                  {entry.label}
+                </NavItemMobile>
+              )
+            )}
+
+            <div className="grid gap-2 px-4 pt-4">
+              <hr className="-mx-4 my-2 border-border/60" />
+              {actions}
+            </div>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}
+
+function ListItem({
+  title,
+  children,
+  href,
+  icon,
+  openInNewTab,
+  ...props
+}: React.ComponentPropsWithoutRef<"li"> & {
+  href: string
+  icon: React.ElementType
+  openInNewTab?: boolean
+}) {
+  const Icon = icon
+  return (
+    <li {...props}>
+      <NavigationMenuLink
+        render={
+          <Link
+            href={href}
+            className="grid grid-cols-[auto_1fr] items-start gap-2.5 rounded-[0.55rem] p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+            {...(openInNewTab && {
+              target: "_blank",
+              rel: "noopener noreferrer",
+            })}
+          />
+        }
+      >
+        <div className="grid size-9 place-items-center rounded-[0.35rem] bg-accent/60 p-1">
+          <Icon className="size-4" aria-hidden />
+        </div>
+        <div className="mt-0.5 grid gap-1">
+          <div className="text-sm leading-none font-medium">{title}</div>
+          {children ? (
+            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+              {children}
+            </p>
+          ) : null}
+        </div>
+      </NavigationMenuLink>
+    </li>
+  )
+}
+
+export interface Header1Props {
+  logo?: ReactNode
+  links?: ComponentLink[]
+  actions?: ReactNode
+  pathname?: string
+  className?: string
+  wrapperClassName?: string
 }
 
 function LogoLink() {
@@ -68,191 +497,79 @@ function LogoLink() {
   )
 }
 
-function NavItemDesktop({ isActive, href, children }: NavItemProps) {
-  return (
-    <Link
-      className={cn(
-        "relative inline-grid h-8 items-center text-sm font-medium text-header-foreground/60 transition hover:text-header-foreground",
-        {
-          "text-header-foreground": isActive,
-        }
-      )}
-      href={href}
-      key={href}
-    >
-      {children}
-    </Link>
-  )
-}
-
-function NavItemMobile({ isActive, href, children }: NavItemProps) {
-  return (
-    <Link
-      className={cn(
-        "inline-grid h-10 items-center px-4 py-2 text-sm font-medium text-header-foreground/60 transition hover:text-header-foreground",
-        {
-          "text-foreground": isActive,
-        }
-      )}
-      href={href}
-      key={href}
-    >
-      {children}
-    </Link>
-  )
-}
-
-interface DesktopNavProps {
-  links: ComponentLink[]
-  pathname: string
-  className?: string
-}
-
-function DesktopNav({ links, pathname, className }: DesktopNavProps) {
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-6 md:flex md:flex-1 md:justify-end",
-        className
-      )}
-    >
-      <nav className="flex items-center gap-6">
-        {links.map((link) => {
-          if (link.type === "link") {
-            return (
-              <NavItemDesktop
-                key={link.href}
-                href={link.href}
-                isActive={isPathActive(pathname, link.href)}
-              >
-                {link.label}
-              </NavItemDesktop>
-            )
-          }
-
-          return (
-            <OpenPresetDialog
-              key={link.action}
-              className="relative inline-grid h-8 items-center text-sm font-medium text-header-foreground/60 transition hover:text-header-foreground"
-            >
-              {link.label}
-            </OpenPresetDialog>
-          )
-        })}
-      </nav>
-      <div className="flex items-center gap-2">
-        <Separator orientation="vertical" className="h-6 self-center!" />
-        <GitHubLink />
-        <Separator orientation="vertical" className="h-6 self-center!" />
-        <ModeSwitcher />
-        <Separator orientation="vertical" className="h-6 self-center!" />
-        <UserMenu />
-      </div>
-    </div>
-  )
-}
-
-interface MobileNavProps {
-  logo: ReactNode
-  links: ComponentLink[]
-  pathname: string
-  className?: string
-}
-
-function MobileNav({ logo, links, pathname, className }: MobileNavProps) {
-  const [isOpen, setOpen] = React.useState(false)
-
-  React.useEffect(() => {
-    if (pathname) {
-      setOpen(false)
-    }
-  }, [pathname])
-
-  return (
-    <div className={className}>
-      <Sheet open={isOpen} onOpenChange={setOpen}>
-        <div className="flex items-center gap-2">
-          <UserMenu variant="sm" />
-          <SheetTrigger render={<Button size="icon" variant="outline" />}>
-            <MenuIcon />
-          </SheetTrigger>
-        </div>
-        <SheetContent className="pt-2">
-          <SheetHeader className="text-start">
-            {logo}
-            <SheetTitle className="sr-only">Menu</SheetTitle>
-            <SheetDescription className="sr-only">
-              Choose your destination
-            </SheetDescription>
-          </SheetHeader>
-          <div className="grid gap-2">
-            <nav className="grid">
-              {links.map((link) => {
-                if (link.type === "link") {
-                  return (
-                    <NavItemMobile
-                      key={link.href}
-                      href={link.href}
-                      isActive={isPathActive(pathname, link.href)}
-                    >
-                      {link.label}
-                    </NavItemMobile>
-                  )
-                }
-
-                return (
-                  <OpenPresetDialog
-                    key={link.action}
-                    className="inline-grid h-10 w-full items-center px-4 py-2 text-left text-sm font-medium text-header-foreground/60 transition hover:text-header-foreground"
-                  >
-                    {link.label}
-                  </OpenPresetDialog>
-                )
-              })}
-            </nav>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
-  )
-}
-
-export interface Header1Props {
-  logo?: ReactNode
-  links?: ComponentLink[]
-  pathname?: string
-  className?: string
-  wrapperClassName?: string
-}
+const defaultToolbar = (
+  <>
+    <ModeSwitcher />
+    <GitHubLink />
+    <Separator
+      orientation="vertical"
+      className="mx-1 mt-1 mr-3 hidden h-6 sm:inline-flex"
+    />
+    <UserMenu />
+  </>
+)
 
 export function Header1({
   logo = <LogoLink />,
   links = HEADER_LINKS,
+  actions = defaultToolbar,
   pathname: pathnameProp,
   className,
   wrapperClassName,
 }: Header1Props) {
   const pathnameFromRouter = usePathname()
   const pathname = pathnameProp ?? pathnameFromRouter ?? ""
+  const [presetDialogOpen, setPresetDialogOpen] = React.useState(false)
+  const onOpenPreset = React.useCallback(() => setPresetDialogOpen(true), [])
+
+  const mobileActions = React.useMemo(
+    () => (
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        {actions}
+      </div>
+    ),
+    [actions]
+  )
 
   return (
-    <Container
-      component="header"
-      className={cn("flex items-center justify-between py-4", className)}
-      wrapperClassName={cn(wrapperClassName, "bg-header")}
-    >
-      {logo}
-      <MobileNav
-        logo={logo}
-        links={links}
-        pathname={pathname}
-        className="md:hidden"
+    <>
+      <div className={cn("bg-header", wrapperClassName)}>
+        <Container
+          component="header"
+          className={cn(
+            "grid !max-w-[unset] items-center gap-6 py-3 text-header-foreground md:py-4",
+            className
+          )}
+          wrapperClassName="bg-transparent"
+        >
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-6 lg:gap-12">
+            {logo}
+
+            <div className="col-start-2 row-start-1 flex min-w-0 justify-end lg:justify-between">
+              <DesktopNav
+                links={links}
+                actions={actions}
+                pathname={pathname}
+                onOpenPreset={onOpenPreset}
+                className="hidden min-w-0 md:flex lg:justify-between"
+              />
+
+              <MobileNav
+                links={links}
+                actions={mobileActions}
+                pathname={pathname}
+                onOpenPreset={onOpenPreset}
+                className="md:hidden"
+              />
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      <OpenPresetDialog
+        open={presetDialogOpen}
+        onOpenChange={setPresetDialogOpen}
       />
-      <DesktopNav
-        links={links}
-        pathname={pathname}
-        className="hidden md:flex"
-      />
-    </Container>
+    </>
   )
 }

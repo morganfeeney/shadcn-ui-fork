@@ -21,12 +21,25 @@ import { resolvePresetFromCode } from "@/lib/preset"
 export function OpenPresetDialog({
   className,
   children = "Open Preset",
+  open: openControlled,
+  onOpenChange,
 }: {
   className?: string
   children?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }) {
   const router = useRouter()
-  const [open, setOpen] = React.useState(false)
+  const [internalOpen, setInternalOpen] = React.useState(false)
+  const controlled = openControlled !== undefined
+  const open = controlled ? openControlled : internalOpen
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (!controlled) setInternalOpen(next)
+      onOpenChange?.(next)
+    },
+    [controlled, onOpenChange]
+  )
   const [value, setValue] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
 
@@ -58,9 +71,11 @@ export function OpenPresetDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<button type="button" className={className} />}>
-        {children}
-      </DialogTrigger>
+      {!controlled ? (
+        <DialogTrigger render={<button type="button" className={className} />}>
+          {children}
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Open Preset</DialogTitle>

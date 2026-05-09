@@ -10,8 +10,16 @@ import { OpenPresetDialog } from "@/components/open-preset-dialog"
 
 const COLUMNS = [
   {
-    header: "Resources",
+    header: "Tools",
     links: [
+      {
+        label: "Preset Theme CSS Generator",
+        href: "/tools/preset-theme-generator",
+      },
+      {
+        label: "Preset color contrast checker",
+        href: "/tools/color-contrast-checker",
+      },
       {
         label: "shadcn theme generator",
         href: "https://zippystarter.com/tools/shadcn-ui-theme-generator",
@@ -26,6 +34,12 @@ const COLUMNS = [
       { label: "Ask AI", href: "/assistant" },
       { label: "Community", href: "/community" },
       { type: "link", href: "/tools", label: "Tools" },
+    ],
+  },
+  {
+    header: "Presets",
+    links: [
+      { label: "High contrast presets", href: "/accessible-presets" },
       { label: "Open Preset", action: "open-preset" as const },
       { label: "My presets", href: "/my-presets" },
     ],

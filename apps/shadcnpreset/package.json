@@ -12,8 +12,9 @@
     "test:watch": "vitest",
     "verify:search": "node --import tsx/esm ./scripts/verify-search.ts",
     "generate:preset-embeddings": "node --import tsx/esm ./scripts/generate-preset-embeddings.ts",
+    "generate:high-contrast-dataset": "node --import tsx/esm ./scripts/find-perfect-contrast-presets.ts --random --target 8000 --max-tries 20000000 --out ./data/high-contrast-presets.json",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.52",
@@ -25,6 +26,9 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hugeicons/core-free-icons": "^1.2.1",
     "@hugeicons/react": "^1.1.1",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "16.1.7",
     "@next/third-parties": "^16.2.2",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -42,6 +46,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "culori": "^4.0.2",
+    "date-fns": "^4.1.0",
     "eslint-plugin-prettier": "^5.5.5",
     "jotai": "^2.15.0",
     "lucide-react": "1.7.0",
@@ -65,9 +70,13 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@content-collections/core": "^0.15.0",
+    "@content-collections/mdx": "^0.2.2",
+    "@content-collections/next": "^0.2.11",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/culori": "^4.0.1",
+    "@types/mdx": "^2.0.13",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
@@ -81,6 +90,7 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "zod-cc": "npm:zod@^4.2.27"
   }
 }
