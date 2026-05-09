@@ -11,6 +11,9 @@
 # testing
 /coverage
 
+# content-collections (regenerated via next dev / next build / next typegen)
+.content-collections
+
 # next.js
 /.next/
 /out/

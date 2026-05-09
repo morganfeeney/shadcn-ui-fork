@@ -22,13 +22,17 @@
     "paths": {
       "@/app/(create)/components/*": ["./app/(create)/components/*"],
       "@/*": ["./*"],
-      "@/examples/*": ["../v4/examples/*"]
+      "@/examples/*": ["../v4/examples/*"],
+      "content-collections": ["./.content-collections/generated"]
     }
   },
   "include": [
     "next-env.d.ts",
+    "mdx-modules.d.ts",
+    ".content-collections/generated/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mdx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
