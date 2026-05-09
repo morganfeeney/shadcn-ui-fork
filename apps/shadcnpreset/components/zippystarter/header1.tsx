@@ -26,15 +26,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {
-  ArrowRightIcon,
   CaretDownIcon,
   CircleHalfIcon,
   FolderOpenIcon,
   GaugeIcon,
-  HamburgerIcon,
   HeartIcon,
   PaintBrushIcon,
   WrenchIcon,
+  ListIcon,
 } from "@phosphor-icons/react"
 
 import {
@@ -389,7 +388,7 @@ function MobileNav({
         <SheetTrigger
           render={<Button size="icon" variant="outline" className="size-8" />}
         >
-          <HamburgerIcon weight="bold" className="size-5" aria-hidden />
+          <ListIcon weight="bold" className="size-5" aria-hidden />
         </SheetTrigger>
         <SheetContent className="pt-2">
           <SheetHeader className="sr-only text-start">
