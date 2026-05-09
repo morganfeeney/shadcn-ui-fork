@@ -6,7 +6,7 @@ export const revalidate = 86_400
 const STATIC_PATHS = [
   "/",
   "/community",
-  "/accessible-presets",
+  "/high-contrast-presets",
   "/changelog",
   "/assistant",
   "/my-presets",

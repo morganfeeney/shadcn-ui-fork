@@ -1,6 +1,7 @@
 # Generated data
 
-- **`high-contrast-presets.json`** — committed dataset (~8k codes). `/accessible-presets` loads this file when present; otherwise it falls back to `lib/accessible-preset-codes.ts`.
+- **`high-contrast-presets.json`** — committed dataset (~8k codes). `/high-contrast-presets` loads this file when
+  present; otherwise it falls back to `lib/accessible-preset-codes.ts`.
 
 Regenerate (from `apps/shadcnpreset`):
 

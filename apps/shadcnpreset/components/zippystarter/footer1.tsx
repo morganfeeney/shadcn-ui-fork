@@ -39,7 +39,7 @@ const COLUMNS = [
   {
     header: "Presets",
     links: [
-      { label: "High contrast presets", href: "/accessible-presets" },
+      { label: "High contrast presets", href: "/high-contrast-presets" },
       { label: "Open Preset", action: "open-preset" as const },
       { label: "My presets", href: "/my-presets" },
     ],

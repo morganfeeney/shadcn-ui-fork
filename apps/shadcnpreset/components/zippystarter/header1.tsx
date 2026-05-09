@@ -86,7 +86,7 @@ const HEADER_LINKS: ComponentLink[] = [
     children: [
       {
         label: "High contrast",
-        href: "/accessible-presets",
+        href: "/high-contrast-presets",
         description: "Presets with a 100% color contrast score",
         icon: CircleHalfIcon,
       },

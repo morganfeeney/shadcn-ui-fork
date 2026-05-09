@@ -16,12 +16,12 @@ export const metadata: Metadata = {
   title: "High-contrast presets",
   description: pageDescription,
   alternates: {
-    canonical: "/accessible-presets",
+    canonical: "/high-contrast-presets",
   },
   openGraph: {
     title: `High-contrast presets | ${siteConfig.name}`,
     description: pageDescription,
-    url: "/accessible-presets",
+    url: "/high-contrast-presets",
     siteName: siteConfig.name,
     type: "website",
     images: [

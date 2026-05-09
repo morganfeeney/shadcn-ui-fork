@@ -11,7 +11,13 @@ export default function AccessiblePresetsPage() {
 
   return (
     <main className="flex min-h-0 flex-1 flex-col px-safe">
-      <Suspense fallback={<p className="px-2 py-6 text-sm text-muted-foreground md:px-4">Loading…</p>}>
+      <Suspense
+        fallback={
+          <p className="px-2 py-6 text-sm text-muted-foreground md:px-4">
+            Loading…
+          </p>
+        }
+      >
         <AccessiblePresetsExplorer items={items} />
       </Suspense>
     </main>
