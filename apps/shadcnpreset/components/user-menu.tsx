@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Heart, LogOutIcon } from "lucide-react"
 
@@ -19,6 +18,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
 import type { SessionUser } from "@/stores/auth-store"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 function initialsFor(user: SessionUser) {
   const raw = user.name?.trim() || user.email?.split("@")[0] || ""
@@ -38,27 +38,15 @@ function UserAvatar({
   user: SessionUser
   className?: string
 }) {
-  if (user.image) {
-    return (
-      <Image
-        fill
-        src={user.image}
-        alt=""
-        className={cn("size-full object-cover", className)}
-        referrerPolicy="no-referrer"
-      />
-    )
-  }
   const initials = initialsFor(user)
+
   return (
-    <span
-      className={cn(
-        "flex size-full items-center justify-center bg-muted text-[10px] font-medium text-muted-foreground",
-        className
-      )}
-    >
-      {initials}
-    </span>
+    <Avatar size="sm" className={cn("size-full", className)}>
+      {user.image ? (
+        <AvatarImage src={user.image} alt="" referrerPolicy="no-referrer" />
+      ) : null}
+      <AvatarFallback>{initials}</AvatarFallback>
+    </Avatar>
   )
 }
 

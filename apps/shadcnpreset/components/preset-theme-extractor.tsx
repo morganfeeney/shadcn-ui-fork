@@ -150,6 +150,9 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
             className="max-2xl:order-1"
             code={bundle.resolved.code}
             title={bundle.resolved.code}
+            previewVariant="v4-iframe"
+            virtualWidth={2000}
+            virtualHeight={1000}
             description={`${bundle.resolved.style} style, ${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
           />
         ) : null}

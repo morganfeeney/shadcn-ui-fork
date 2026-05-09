@@ -97,6 +97,33 @@ export function getOverallContrastScore(
   }
 }
 
+/** Share of evaluated pairs that meet AAA normal text (7:1). Unresolved pairs excluded. */
+export function getOverallAaaScore(
+  mode: PresetColorContrastModeReport
+): OverallContrastScore {
+  let passAaa = 0
+  let failAaa = 0
+  for (const p of mode.pairs) {
+    if (p.ratio === null) continue
+    if (p.passAaaNormal) {
+      passAaa++
+    } else {
+      failAaa++
+    }
+  }
+  const evaluated = passAaa + failAaa
+  const percent =
+    evaluated === 0 ? null : Math.round((passAaa / evaluated) * 100)
+
+  return {
+    percent,
+    evaluatedCount: evaluated,
+    passCount: passAaa,
+    failCount: failAaa,
+    unresolvedCount: mode.unresolvedCount,
+  }
+}
+
 function evaluatePair(
   vars: Record<string, string>,
   def: (typeof PRESET_THEME_CONTRAST_PAIRS)[number]

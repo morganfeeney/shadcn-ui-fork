@@ -81,14 +81,14 @@ function toLocalFilters(filters: PresetFilters): LocalFilters {
   }
 }
 
-function formatPickerValue(value: string) {
+export function formatPickerValue(value: string) {
   return value
     .split("-")
     .map((part) => (part ? `${part[0].toUpperCase()}${part.slice(1)}` : part))
     .join(" ")
 }
 
-type FilterPickerProps = {
+export type FilterPickerProps = {
   label: string
   value: string
   options: readonly string[]
@@ -98,7 +98,7 @@ type FilterPickerProps = {
   anchorRef: React.RefObject<HTMLDivElement | null>
 }
 
-function FilterPicker({
+export function FilterPicker({
   label,
   value,
   options,
