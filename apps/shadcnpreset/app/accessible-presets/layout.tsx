@@ -10,7 +10,7 @@ import {
 } from "@/components/page-header"
 
 const pageDescription =
-  "Browse shadcn/ui theme presets that pass WCAG 2.x AA contrast on evaluated token pairs in both light and dark mode—filtered and paginated like Community."
+  "Browse shadcn/ui theme presets that pass WCAG 2.x AA contrast in both light and dark mode."
 
 export const metadata: Metadata = {
   title: "High-contrast presets",
@@ -24,7 +24,12 @@ export const metadata: Metadata = {
     url: "/accessible-presets",
     siteName: siteConfig.name,
     type: "website",
-    images: [{ url: siteConfig.ogImage, alt: `High-contrast presets | ${siteConfig.name}` }],
+    images: [
+      {
+        url: siteConfig.ogImage,
+        alt: `High-contrast presets | ${siteConfig.name}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -42,15 +47,14 @@ export default function Layout({ children }: PropsWithChildren) {
           High-contrast presets
         </PageHeaderHeading>
         <PageHeaderDescription className="text-muted-foreground">
-          Presets where light and dark both score 100% on the{" "}
+          Presets that score 100% for{" "}
           <Link
             href="/tools/color-contrast-checker"
             className="font-medium text-foreground underline-offset-4 hover:underline"
           >
-            token contrast checker
+            color contrast
           </Link>{" "}
-          (WCAG 2.x AA normal text for all evaluated pairs). Same card layout as
-          Community.
+          (WCAG 2.x AA normal text).
         </PageHeaderDescription>
       </PageHeader>
       <div className="grid min-h-0 flex-1 flex-col [--accessible-sidebar-top:7rem] md:[--accessible-sidebar-top:8rem]">
