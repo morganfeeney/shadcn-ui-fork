@@ -11,17 +11,21 @@ export type PresetSocialMetaPayload = {
 
 /**
  * Pure values written by {@link syncPresetPageSocialMeta} — testable without a DOM.
+ * @param useDynamicOg — when true, use the expensive `/opengraph-image` route; otherwise `/og-card.png`.
  */
 export function buildPresetSocialMetaPayload(
   resolved: ResolvedPreset,
   origin: string,
-  siteName: string
+  siteName: string,
+  useDynamicOg: boolean
 ): PresetSocialMetaPayload {
   const title = `shadcn preset: ${resolved.code}`
   const description = presetMetaDescription(resolved)
   const path = `/preset/${encodeURIComponent(resolved.code)}`
   const pageUrl = `${origin}${path}`
-  const ogImageUrl = `${pageUrl}/opengraph-image?v=${encodeURIComponent(resolved.code)}`
+  const ogImageUrl = useDynamicOg
+    ? `${pageUrl}/opengraph-image?v=${encodeURIComponent(resolved.code)}`
+    : `${origin}/og-card.png`
   const branded = `${title} | ${siteName}`
 
   return {

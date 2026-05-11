@@ -11,7 +11,12 @@ describe("buildPresetSocialMetaPayload", () => {
     const resolved = resolvePresetFromCode("bw4UuDRY")
     expect(resolved).not.toBeNull()
 
-    const payload = buildPresetSocialMetaPayload(resolved!, origin, siteName)
+    const payload = buildPresetSocialMetaPayload(
+      resolved!,
+      origin,
+      siteName,
+      true
+    )
 
     expect(payload.pageUrl).toBe(`${origin}/preset/bw4UuDRY`)
     expect(payload.ogImageUrl).toBe(
@@ -21,5 +26,19 @@ describe("buildPresetSocialMetaPayload", () => {
     expect(payload.documentTitle).toContain(siteName)
     expect(payload.ogTitle).toBe(payload.documentTitle)
     expect(payload.description.length).toBeGreaterThan(40)
+  })
+
+  it("uses static og-card when useDynamicOg is false", () => {
+    const resolved = resolvePresetFromCode("bw4UuDRY")
+    expect(resolved).not.toBeNull()
+
+    const payload = buildPresetSocialMetaPayload(
+      resolved!,
+      origin,
+      siteName,
+      false
+    )
+
+    expect(payload.ogImageUrl).toBe(`${origin}/og-card.png`)
   })
 })

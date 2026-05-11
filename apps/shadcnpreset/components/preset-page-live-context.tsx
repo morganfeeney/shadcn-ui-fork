@@ -41,7 +41,18 @@ export function PresetPageLiveProvider({
   }, [])
 
   React.useEffect(() => {
-    syncPresetPageSocialMeta(livePresetCode)
+    let cancelled = false
+
+    void (async () => {
+      await syncPresetPageSocialMeta(livePresetCode)
+      if (cancelled) {
+        return
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
   }, [livePresetCode])
 
   const value = React.useMemo(

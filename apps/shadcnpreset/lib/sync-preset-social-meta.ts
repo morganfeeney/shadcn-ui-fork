@@ -50,11 +50,27 @@ function setCanonicalLink(href: string) {
   el.setAttribute("href", href)
 }
 
+async function fetchDynamicOgFlag(canonicalCode: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `/api/presets/${encodeURIComponent(canonicalCode)}/community-og`,
+      { priority: "low" }
+    )
+    if (!response.ok) {
+      return false
+    }
+    const body = (await response.json()) as { dynamicOg?: boolean }
+    return body.dynamicOg === true
+  } catch {
+    return false
+  }
+}
+
 /**
  * Keeps `<title>`, canonical, and Open Graph / Twitter tags aligned with the current preset when
  * the URL is updated client-side (`history.replaceState`).
  */
-export function syncPresetPageSocialMeta(presetCode: string) {
+export async function syncPresetPageSocialMeta(presetCode: string) {
   if (typeof document === "undefined") {
     return
   }
@@ -64,10 +80,13 @@ export function syncPresetPageSocialMeta(presetCode: string) {
     return
   }
 
+  const useDynamicOg = await fetchDynamicOgFlag(resolved.code)
+
   const payload = buildPresetSocialMetaPayload(
     resolved,
     window.location.origin,
-    siteConfig.name
+    siteConfig.name,
+    useDynamicOg
   )
 
   document.title = payload.documentTitle

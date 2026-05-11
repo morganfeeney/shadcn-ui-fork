@@ -11,6 +11,24 @@ type HighContrastDatasetFile = {
   codes?: string[]
 }
 
+/**
+ * Cap how many codes are used (first N after load). Set `HIGH_CONTRAST_PRESET_LIMIT` in Vercel.
+ * `/high-contrast-presets` is `force-static` — redeploy after changing this so the build picks it up.
+ */
+function applyHighContrastPresetLimit(
+  codes: readonly string[]
+): readonly string[] {
+  const raw = process.env.HIGH_CONTRAST_PRESET_LIMIT?.trim()
+  if (!raw) {
+    return codes
+  }
+  const limit = Number.parseInt(raw, 10)
+  if (!Number.isFinite(limit) || limit <= 0) {
+    return codes
+  }
+  return codes.slice(0, limit)
+}
+
 function loadCodesFromDataFile(): string[] | null {
   try {
     const filePath = path.join(process.cwd(), "data", DATA_FILENAME)
@@ -27,7 +45,8 @@ function loadCodesFromDataFile(): string[] | null {
 
 /** Codes for the high-contrast list: optional generated dataset, else static fallback. */
 export function getHighContrastPresetCodes(): readonly string[] {
-  return loadCodesFromDataFile() ?? HIGH_CONTRAST_PRESET_CODES
+  const codes = loadCodesFromDataFile() ?? HIGH_CONTRAST_PRESET_CODES
+  return applyHighContrastPresetLimit(codes)
 }
 
 /** Resolved preset rows for the static high-contrast list (invalid codes are skipped). */

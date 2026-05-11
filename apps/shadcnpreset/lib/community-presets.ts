@@ -25,3 +25,28 @@ export async function getCommunityPresetCodes() {
 
   return codes
 }
+
+/** True when this preset has at least one vote (community sitemap set). Matches DB rows by canonical or raw URL code. */
+export async function isCommunityPresetCode(
+  canonicalPresetCode: string,
+  rawUrlCode?: string
+): Promise<boolean> {
+  if (!process.env.DATABASE_URL) {
+    return false
+  }
+  try {
+    const codes =
+      rawUrlCode && rawUrlCode !== canonicalPresetCode
+        ? [canonicalPresetCode, rawUrlCode]
+        : [canonicalPresetCode]
+    const result = await query<{ exists: boolean }>(
+      `SELECT EXISTS (
+        SELECT 1 FROM preset_votes WHERE preset_code IN (${codes.map((_, i) => `$${i + 1}`).join(", ")}) LIMIT 1
+      ) AS "exists"`,
+      codes
+    )
+    return Boolean(result.rows[0]?.exists)
+  } catch {
+    return false
+  }
+}

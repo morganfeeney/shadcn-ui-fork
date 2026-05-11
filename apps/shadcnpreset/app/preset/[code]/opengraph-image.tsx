@@ -1,9 +1,11 @@
 import { parse, wcagContrast } from "culori"
 import { ImageResponse } from "next/og"
+import { NextResponse } from "next/server"
 import { notFound } from "next/navigation"
 
 import { logoMarkDataUrl } from "@/components/zippystarter/logo"
 import { siteConfig } from "@/lib/config"
+import { isCommunityPresetCode } from "@/lib/community-presets"
 import { getPresetOgSwatchHexes } from "@/lib/oklch-swatch"
 import { resolvePresetFromCode } from "@/lib/preset"
 
@@ -65,6 +67,10 @@ export default async function Image({ params }: ImageProps) {
   const preset = resolvePresetFromCode(code)
   if (!preset) {
     notFound()
+  }
+
+  if (!(await isCommunityPresetCode(preset.code, code))) {
+    return NextResponse.redirect(new URL("/og-card.png", siteConfig.url))
   }
 
   const metaLine = `${preset.style} · ${preset.theme} · ${preset.baseColor}`
