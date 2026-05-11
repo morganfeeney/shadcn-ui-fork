@@ -1,7 +1,3 @@
-import { getPresetPage, PRESET_TOTAL_COMBINATIONS } from "@/lib/preset-catalog"
-
-export const SITEMAP_MAX_URLS = 50_000
-
 type SitemapEntry = {
   loc: string
   lastmod?: string
@@ -16,25 +12,6 @@ function escapeXml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;")
-}
-
-export function getPresetSitemapChunkCount() {
-  return Math.ceil(PRESET_TOTAL_COMBINATIONS / SITEMAP_MAX_URLS)
-}
-
-export function getPresetSitemapEntriesForChunk({
-  chunk,
-  baseUrl,
-}: {
-  chunk: number
-  baseUrl: string
-}): SitemapEntry[] {
-  const page = chunk + 1
-  const presets = getPresetPage(page, SITEMAP_MAX_URLS)
-
-  return presets.map(({ code }) => ({
-    loc: `${baseUrl}/preset/${code}`,
-  }))
 }
 
 export function buildUrlSetXml(entries: SitemapEntry[]) {

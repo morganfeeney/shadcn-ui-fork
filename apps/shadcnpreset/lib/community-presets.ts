@@ -26,7 +26,7 @@ export async function getCommunityPresetCodes() {
   return codes
 }
 
-/** True when this preset has at least one vote (community sitemap set). Matches DB rows by canonical or raw URL code. */
+/** True when this preset has at least one vote (`preset_votes`, canonical or raw URL code). */
 export async function isCommunityPresetCode(
   canonicalPresetCode: string,
   rawUrlCode?: string
