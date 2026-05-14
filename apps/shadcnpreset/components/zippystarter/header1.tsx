@@ -536,7 +536,7 @@ export function Header1({
         <Container
           component="header"
           className={cn(
-            "grid !max-w-[unset] items-center gap-6 py-3 text-header-foreground md:py-4",
+            "grid !max-w-[unset] items-center gap-6 py-2 text-header-foreground",
             className
           )}
           wrapperClassName="bg-transparent"

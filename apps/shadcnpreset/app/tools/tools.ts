@@ -25,7 +25,16 @@ export const PRESET_COLOR_CONTRAST_TOOL = {
     "Check WCAG contrast for core theme token pairs from a preset code, with light and dark previews.",
 } as const
 
+export const PRESET_FIGMA_PLUGIN = {
+  slug: "shadcn-preset-variables",
+  href: "https://www.figma.com/community/plugin/1629785761451501897",
+  title: "Shadcn preset variables Figma plugin",
+  cardDescription:
+    "Enter a preset code, click generate, and you get light and dark mode variables for the shadcn theme belonging to that preset, perfect for syncing your Figma designs with your codebase.",
+}
+
 export const TOOLS = [
   PRESET_THEME_GENERATOR_TOOL,
   PRESET_COLOR_CONTRAST_TOOL,
+  PRESET_FIGMA_PLUGIN,
 ] as const

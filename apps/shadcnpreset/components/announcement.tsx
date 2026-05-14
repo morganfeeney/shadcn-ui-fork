@@ -30,7 +30,7 @@ export function Announcement({
       <Badge
         render={
           <Link href="/changelog">
-            WCAG Contrast checker
+            New Figma plugin
             <ArrowRightIcon
               weight="bold"
               className="size-3.5 shrink-0"
