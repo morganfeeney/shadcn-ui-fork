@@ -15,9 +15,6 @@ const pageDescription =
 export const metadata: Metadata = {
   title: "High-contrast presets",
   description: pageDescription,
-  alternates: {
-    canonical: "/high-contrast-presets",
-  },
   openGraph: {
     title: `High-contrast presets | ${siteConfig.name}`,
     description: pageDescription,

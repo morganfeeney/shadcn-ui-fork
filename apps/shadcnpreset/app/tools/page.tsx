@@ -12,9 +12,6 @@ import { TOOLS, TOOLS_PAGE } from "@/app/tools/tools"
 export const metadata: Metadata = {
   title: TOOLS_PAGE.title,
   description: TOOLS_PAGE.description,
-  alternates: {
-    canonical: TOOLS_PAGE.href,
-  },
   openGraph: {
     title: `${TOOLS_PAGE.title} | ${siteConfig.name}`,
     description: TOOLS_PAGE.description,

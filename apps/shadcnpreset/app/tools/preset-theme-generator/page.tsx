@@ -16,9 +16,6 @@ type PresetThemeGeneratorPageProps = {
 export const metadata: Metadata = {
   title: PRESET_THEME_GENERATOR_TOOL.title,
   description: PRESET_THEME_GENERATOR_TOOL.description,
-  alternates: {
-    canonical: PRESET_THEME_GENERATOR_TOOL.href,
-  },
   openGraph: {
     title: `${PRESET_THEME_GENERATOR_TOOL.title} | ${siteConfig.name}`,
     description: PRESET_THEME_GENERATOR_TOOL.description,

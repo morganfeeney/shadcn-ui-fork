@@ -7,9 +7,6 @@ import { PRESET_COLOR_CONTRAST_TOOL } from "@/app/tools/tools"
 export const metadata: Metadata = {
   title: PRESET_COLOR_CONTRAST_TOOL.title,
   description: PRESET_COLOR_CONTRAST_TOOL.description,
-  alternates: {
-    canonical: PRESET_COLOR_CONTRAST_TOOL.href,
-  },
   openGraph: {
     title: `${PRESET_COLOR_CONTRAST_TOOL.title} | ${siteConfig.name}`,
     description: PRESET_COLOR_CONTRAST_TOOL.description,
@@ -26,6 +23,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ColorContrastToolLayout({ children }: PropsWithChildren) {
+export default function ColorContrastToolLayout({
+  children,
+}: PropsWithChildren) {
   return children
 }

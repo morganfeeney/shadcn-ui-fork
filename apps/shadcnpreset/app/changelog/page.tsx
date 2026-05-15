@@ -20,9 +20,6 @@ const CHANGELOG_DESCRIPTION =
 export const metadata: Metadata = {
   title: CHANGELOG_TITLE,
   description: CHANGELOG_DESCRIPTION,
-  alternates: {
-    canonical: CHANGELOG_PATH,
-  },
   openGraph: {
     title: `${CHANGELOG_TITLE} | ${siteConfig.name}`,
     description: CHANGELOG_DESCRIPTION,

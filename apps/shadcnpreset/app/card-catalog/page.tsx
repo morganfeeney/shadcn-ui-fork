@@ -16,9 +16,6 @@ const CATALOG_SAMPLE_COUNT = 4
 export const metadata: Metadata = {
   title: "Card catalog",
   description: "Reference layouts for preset cards and related UI patterns.",
-  alternates: {
-    canonical: "/card-catalog",
-  },
   openGraph: {
     title: `Card catalog | ${siteConfig.name}`,
     description: "Reference layouts for preset cards and related UI patterns.",
@@ -54,9 +51,7 @@ function toCatalogSample(item: PresetPageItem): CardCatalogSample {
 
 export default async function CardCatalogPage() {
   const feedItems = await getHomepageFeed(CATALOG_SAMPLE_COUNT * 2)
-  const samples = feedItems
-    .slice(0, CATALOG_SAMPLE_COUNT)
-    .map(toCatalogSample)
+  const samples = feedItems.slice(0, CATALOG_SAMPLE_COUNT).map(toCatalogSample)
 
   return (
     <main className="grid gap-4">
