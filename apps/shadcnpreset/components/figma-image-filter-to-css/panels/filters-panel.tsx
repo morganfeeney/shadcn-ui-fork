@@ -12,10 +12,8 @@ import {
 } from "@/components/ui/card"
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -123,8 +121,8 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
                           </span>
                         </>
                       </PopoverTrigger>
-                      <PopoverContent align="start">
-                        <div className="w-105 p-3">
+                      <PopoverContent align="start" className="w-100">
+                        <div className="p-3">
                           <Tabs defaultValue="custom">
                             <div className="w-full">
                               <TabsList>
@@ -170,7 +168,7 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
                             <TabsContent value="tailwind-v4">
                               <div className="grid gap-2">
                                 <Input
-                                  placeholder="Search colors, e.g. purple-700"
+                                  placeholder="Search Tailwind colors"
                                   value={model.tailwindColorSearch}
                                   onChange={(event) =>
                                     model.setTailwindColorSearch(
@@ -178,46 +176,67 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
                                     )
                                   }
                                 />
-                                <div className="max-h-[280px] overflow-y-auto rounded-md border border-border/60 p-2">
-                                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                                    {model.filteredTailwindPalette.map(
-                                      (swatch) => {
-                                        const isActive =
-                                          model.overlayTailwindClassName ===
-                                          swatch.className
+                                <div className="max-h-70 overflow-y-auto">
+                                  <div className="grid gap-3">
+                                    {Object.entries(
+                                      model.filteredTailwindPalette.reduce(
+                                        (groups, swatch) => {
+                                          if (!groups[swatch.family]) {
+                                            groups[swatch.family] = []
+                                          }
+                                          groups[swatch.family].push(swatch)
+                                          return groups
+                                        },
+                                        {} as Record<
+                                          string,
+                                          typeof model.filteredTailwindPalette
+                                        >
+                                      )
+                                    ).map(([family, swatches]) => (
+                                      <div key={family} className="grid gap-1.5">
+                                        <p className="text-xs font-medium text-muted-foreground">
+                                          {family}
+                                        </p>
+                                        <div className="grid gap-1">
+                                          {swatches.map((swatch) => {
+                                            const isActive =
+                                              model.overlayTailwindClassName ===
+                                              swatch.className
 
-                                        return (
-                                          <button
-                                            key={swatch.id}
-                                            type="button"
-                                            onClick={() => {
-                                              model.setOverlaySource("tailwind")
-                                              model.setOverlayTailwindClassName(
-                                                swatch.className
-                                              )
-                                            }}
-                                            className={cn(
-                                              "grid gap-1 rounded-md border p-1.5 text-left transition-colors",
-                                              "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
-                                              isActive
-                                                ? "border-primary ring-1 ring-primary/40"
-                                                : "border-border/60 hover:border-border"
-                                            )}
-                                            aria-pressed={isActive}
-                                          >
-                                            <span
-                                              className="h-7 rounded-sm border border-black/10"
-                                              style={{
-                                                backgroundColor: swatch.color,
-                                              }}
-                                            />
-                                            <span className="text-[10px] leading-tight font-medium">
-                                              {swatch.label}
-                                            </span>
-                                          </button>
-                                        )
-                                      }
-                                    )}
+                                            return (
+                                              <button
+                                                key={swatch.id}
+                                                type="button"
+                                                onClick={() => {
+                                                  model.setOverlaySource("tailwind")
+                                                  model.setOverlayTailwindClassName(
+                                                    swatch.className
+                                                  )
+                                                }}
+                                                className={cn(
+                                                  "flex items-center gap-2 rounded-sm px-2 py-1.5 text-left transition-colors",
+                                                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
+                                                  isActive
+                                                    ? "bg-accent text-accent-foreground"
+                                                    : "hover:bg-accent/40"
+                                                )}
+                                                aria-pressed={isActive}
+                                              >
+                                                <span
+                                                  className="size-5 rounded-sm border border-black/10"
+                                                  style={{
+                                                    backgroundColor: swatch.color,
+                                                  }}
+                                                />
+                                                <span className="text-sm">
+                                                  {swatch.label}
+                                                </span>
+                                              </button>
+                                            )
+                                          })}
+                                        </div>
+                                      </div>
+                                    ))}
                                   </div>
                                 </div>
                               </div>

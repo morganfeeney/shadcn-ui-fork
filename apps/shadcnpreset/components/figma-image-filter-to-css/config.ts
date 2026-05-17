@@ -35,6 +35,7 @@ export type TailwindPaletteEntry = {
   label: string
   className: string
   color: string
+  family: string
 }
 
 export const FILTER_FIELDS: readonly FilterField[] = [
@@ -153,7 +154,22 @@ function isTailwindScale(value: unknown): value is Record<string, unknown> {
 
 function createTailwindPaletteEntries(): TailwindPaletteEntry[] {
   const source = tailwindColors as Record<string, unknown>
-  const entries: TailwindPaletteEntry[] = []
+  const entries: TailwindPaletteEntry[] = [
+    {
+      id: "common-black",
+      label: "black",
+      className: "bg-black",
+      color: "#000000",
+      family: "Common",
+    },
+    {
+      id: "common-white",
+      label: "white",
+      className: "bg-white",
+      color: "#ffffff",
+      family: "Common",
+    },
+  ]
 
   for (const family of TAILWIND_FAMILIES) {
     const scale = source[family]
@@ -171,6 +187,7 @@ function createTailwindPaletteEntries(): TailwindPaletteEntry[] {
         label: `${family}-${shade}`,
         className: `bg-${family}-${shade}`,
         color: color as string,
+        family: family[0].toUpperCase() + family.slice(1),
       })
     }
   }
