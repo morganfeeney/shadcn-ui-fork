@@ -1,10 +1,15 @@
 import type { ColorValue } from "chromakit-react"
 
-import type { FigmaFilterState } from "@/components/figma-image-filter-to-css/config"
+import {
+  FILTER_FIELD_BY_KEY,
+  type FigmaFilterKey,
+  type FigmaFilterState,
+} from "@/components/figma-image-filter-to-css/config"
 
-export function clampFigmaValue(value: number) {
-  if (Number.isNaN(value)) return 0
-  return Math.max(-1, Math.min(1, value))
+export function clampFilterValue(key: FigmaFilterKey, value: number) {
+  const field = FILTER_FIELD_BY_KEY[key]
+  if (Number.isNaN(value) || !Number.isFinite(value)) return field.min
+  return Math.max(field.min, Math.min(field.max, value))
 }
 
 export function clampPercentage(value: number) {
@@ -12,33 +17,43 @@ export function clampPercentage(value: number) {
   return Math.max(0, Math.min(100, value))
 }
 
-export function formatFigmaValue(value: number) {
-  return clampFigmaValue(value).toFixed(2)
-}
-
 function formatFilterAmount(value: number) {
   const rounded = Number.parseFloat(value.toFixed(3))
   return rounded.toString()
 }
 
-function toCssMultiplier(value: number) {
-  return Math.max(0, 1 + clampFigmaValue(value))
+export function formatFilterValue(key: FigmaFilterKey, value: number) {
+  const field = FILTER_FIELD_BY_KEY[key]
+  const clamped = clampFilterValue(key, value)
+  return `${formatFilterAmount(clamped)}${field.unit}`
 }
 
 export function getDirectCssFunctions(filters: FigmaFilterState) {
   return [
-    `brightness(${formatFilterAmount(toCssMultiplier(filters.exposure))})`,
-    `contrast(${formatFilterAmount(toCssMultiplier(filters.contrast))})`,
-    `saturate(${formatFilterAmount(toCssMultiplier(filters.saturation))})`,
+    `blur(${formatFilterAmount(filters.blur)}px)`,
+    `brightness(${formatFilterAmount(filters.brightness)}%)`,
+    `contrast(${formatFilterAmount(filters.contrast)}%)`,
+    `grayscale(${formatFilterAmount(filters.grayscale)}%)`,
+    `hue-rotate(${formatFilterAmount(filters.hueRotate)}deg)`,
+    `invert(${formatFilterAmount(filters.invert)}%)`,
+    `opacity(${formatFilterAmount(filters.opacity)}%)`,
+    `saturate(${formatFilterAmount(filters.saturate)}%)`,
+    `sepia(${formatFilterAmount(filters.sepia)}%)`,
   ]
 }
 
 export function getTailwindUtilities(filters: FigmaFilterState) {
   return [
     "filter",
-    `brightness-[${formatFilterAmount(toCssMultiplier(filters.exposure))}]`,
-    `contrast-[${formatFilterAmount(toCssMultiplier(filters.contrast))}]`,
-    `saturate-[${formatFilterAmount(toCssMultiplier(filters.saturation))}]`,
+    `blur-[${formatFilterAmount(filters.blur)}px]`,
+    `brightness-[${formatFilterAmount(filters.brightness)}%]`,
+    `contrast-[${formatFilterAmount(filters.contrast)}%]`,
+    `grayscale-[${formatFilterAmount(filters.grayscale)}%]`,
+    `hue-rotate-[${formatFilterAmount(filters.hueRotate)}deg]`,
+    `invert-[${formatFilterAmount(filters.invert)}%]`,
+    `opacity-[${formatFilterAmount(filters.opacity)}%]`,
+    `saturate-[${formatFilterAmount(filters.saturate)}%]`,
+    `sepia-[${formatFilterAmount(filters.sepia)}%]`,
   ]
 }
 

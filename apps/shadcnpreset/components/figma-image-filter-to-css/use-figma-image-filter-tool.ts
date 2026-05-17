@@ -7,7 +7,6 @@ import { copyToClipboardWithMeta } from "@/components/copy-button"
 import {
   DEFAULT_FILTERS,
   DEFAULT_IMAGE_URL,
-  READY_MADE_FILTER_PRESETS,
   TAILWIND_PALETTE,
   type FigmaFilterKey,
   type FigmaFilterState,
@@ -15,12 +14,11 @@ import {
   type OverlaySource,
 } from "@/components/figma-image-filter-to-css/config"
 import {
-  clampFigmaValue,
+  clampFilterValue,
   clampPercentage,
   formatOklchFromColorValue,
   getDirectCssFunctions,
   getTailwindUtilities,
-  toTailwindFilterArbitraryValue,
 } from "@/components/figma-image-filter-to-css/utils"
 
 export function useFigmaImageFilterTool() {
@@ -33,7 +31,7 @@ export function useFigmaImageFilterTool() {
   const [imageUrl, setImageUrl] = React.useState(DEFAULT_IMAGE_URL)
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null)
   const [activePresetId, setActivePresetId] = React.useState("custom")
-  const [includeOverlay, setIncludeOverlay] = React.useState(true)
+  const [includeOverlay, setIncludeOverlay] = React.useState(false)
   const [overlaySource, setOverlaySource] = React.useState<OverlaySource>("custom")
   const [overlayTailwindClassName, setOverlayTailwindClassName] = React.useState("bg-purple-700")
   const [tailwindColorSearch, setTailwindColorSearch] = React.useState("")
@@ -69,21 +67,9 @@ export function useFigmaImageFilterTool() {
 
   const directCssFunctions = React.useMemo(() => getDirectCssFunctions(filters), [filters])
 
-  const cssFilterValue = React.useMemo(() => {
-    const activePreset = READY_MADE_FILTER_PRESETS.find((preset) => preset.id === activePresetId)
-    const cssExtras = activePreset?.cssExtras ?? []
-    return [...directCssFunctions, ...cssExtras].join(" ")
-  }, [activePresetId, directCssFunctions])
+  const cssFilterValue = React.useMemo(() => directCssFunctions.join(" "), [directCssFunctions])
 
-  const tailwindClasses = React.useMemo(() => {
-    const baseUtilities = getTailwindUtilities(filters)
-    const activePreset = READY_MADE_FILTER_PRESETS.find((preset) => preset.id === activePresetId)
-    if (!activePreset?.cssExtras?.length) {
-      return baseUtilities
-    }
-
-    return ["filter", toTailwindFilterArbitraryValue(cssFilterValue)]
-  }, [activePresetId, cssFilterValue, filters])
+  const tailwindClasses = React.useMemo(() => getTailwindUtilities(filters), [filters])
 
   const overlayColorClassName = React.useMemo(
     () =>
@@ -142,7 +128,7 @@ ${overlayLine}  <Image
 
   async function handleCopy(value: string, key: string) {
     const hasCopied = await copyToClipboardWithMeta(value, {
-      name: "figma_filter_css_copy",
+      name: "image_filter_css_copy",
       properties: { key },
     })
 
@@ -153,7 +139,7 @@ ${overlayLine}  <Image
 
   function updateFilter(key: FigmaFilterKey, nextValue: number) {
     setActivePresetId("custom")
-    setFilters((current) => ({ ...current, [key]: clampFigmaValue(nextValue) }))
+    setFilters((current) => ({ ...current, [key]: clampFilterValue(key, nextValue) }))
   }
 
   function resetFilters() {

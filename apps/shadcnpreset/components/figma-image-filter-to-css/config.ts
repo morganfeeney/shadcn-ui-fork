@@ -1,6 +1,15 @@
 import tailwindColors from "tailwindcss/colors.js"
 
-export type FigmaFilterKey = "exposure" | "contrast" | "saturation"
+export type FigmaFilterKey =
+  | "blur"
+  | "brightness"
+  | "contrast"
+  | "grayscale"
+  | "hueRotate"
+  | "invert"
+  | "opacity"
+  | "saturate"
+  | "sepia"
 
 export type FigmaFilterState = Record<FigmaFilterKey, number>
 export type OverlaySource = "custom" | "tailwind"
@@ -8,6 +17,10 @@ export type OverlaySource = "custom" | "tailwind"
 export type FilterField = {
   key: FigmaFilterKey
   label: string
+  min: number
+  max: number
+  step: number
+  unit: "%" | "deg" | "px"
 }
 
 export type FilterPreset = {
@@ -15,7 +28,6 @@ export type FilterPreset = {
   name: string
   description: string
   values: Partial<FigmaFilterState>
-  cssExtras?: string[]
 }
 
 export type TailwindPaletteEntry = {
@@ -26,15 +38,27 @@ export type TailwindPaletteEntry = {
 }
 
 export const FILTER_FIELDS: readonly FilterField[] = [
-  { key: "exposure", label: "Exposure" },
-  { key: "contrast", label: "Contrast" },
-  { key: "saturation", label: "Saturation" },
+  { key: "blur", label: "Blur Radius", min: 0, max: 50, step: 1, unit: "px" },
+  { key: "brightness", label: "Brightness", min: 0, max: 200, step: 1, unit: "%" },
+  { key: "contrast", label: "Contrast", min: 0, max: 200, step: 1, unit: "%" },
+  { key: "grayscale", label: "Grayscale", min: 0, max: 100, step: 1, unit: "%" },
+  { key: "hueRotate", label: "Hue Rotate", min: 0, max: 360, step: 1, unit: "deg" },
+  { key: "invert", label: "Invert", min: 0, max: 100, step: 1, unit: "%" },
+  { key: "opacity", label: "Opacity", min: 0, max: 100, step: 1, unit: "%" },
+  { key: "saturate", label: "Saturate", min: 0, max: 200, step: 1, unit: "%" },
+  { key: "sepia", label: "Sepia", min: 0, max: 100, step: 1, unit: "%" },
 ]
 
 export const DEFAULT_FILTERS: FigmaFilterState = {
-  exposure: 0,
-  contrast: 0,
-  saturation: 0,
+  blur: 0,
+  brightness: 100,
+  contrast: 100,
+  grayscale: 0,
+  hueRotate: 0,
+  invert: 0,
+  opacity: 100,
+  saturate: 100,
+  sepia: 0,
 }
 
 export const DEFAULT_IMAGE_URL =
@@ -46,35 +70,37 @@ export const READY_MADE_FILTER_PRESETS: readonly FilterPreset[] = [
     id: "washed-out",
     name: "Washed out",
     description: "Bright + muted",
-    values: { exposure: 0.2, contrast: -0.35, saturation: -0.45 },
+    values: { brightness: 112, contrast: 92, saturate: 78 },
   },
   {
     id: "cinematic",
     name: "Cinematic",
     description: "Punchy contrast",
-    values: { exposure: -0.12, contrast: 0.35, saturation: 0.18 },
+    values: { brightness: 92, contrast: 130, saturate: 118 },
   },
   {
     id: "cool-tone",
     name: "Cool tone",
     description: "Colder blues",
-    values: { exposure: 0.08, contrast: 0.1, saturation: -0.15 },
+    values: { brightness: 104, contrast: 110, saturate: 90, hueRotate: 12 },
   },
   {
     id: "sepia",
     name: "Sepia",
     description: "Vintage warm",
-    values: { exposure: 0.1, contrast: -0.08, saturation: -0.22 },
-    cssExtras: ["sepia(1)"],
+    values: { brightness: 110, contrast: 92, saturate: 78, sepia: 100 },
   },
   {
     id: "noir",
     name: "Noir",
     description: "Monochrome drama",
-    values: { contrast: 0.3 },
-    cssExtras: ["grayscale(1)"],
+    values: { contrast: 130, saturate: 0, grayscale: 100 },
   },
 ]
+
+export const FILTER_FIELD_BY_KEY = Object.fromEntries(
+  FILTER_FIELDS.map((field) => [field.key, field])
+) as Record<FigmaFilterKey, FilterField>
 
 const TAILWIND_FAMILIES = [
   "slate",

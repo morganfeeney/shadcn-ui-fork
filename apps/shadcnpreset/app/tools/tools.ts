@@ -28,11 +28,11 @@ export const PRESET_COLOR_CONTRAST_TOOL = {
 export const FIGMA_FILTER_CSS_TOOL = {
   slug: "figma-image-filter-to-css",
   href: "/tools/figma-image-filter-to-css",
-  title: "Figma image filters to CSS",
+  title: "Image filters to CSS",
   description:
-    "Convert Figma image filter values into CSS filter functions and copy Tailwind utility classes.",
+    "Build CSS filter chains with sliders and copy CSS or Tailwind utility output.",
   cardDescription:
-    "Use Figma-style sliders to generate copy-ready CSS and Tailwind filter output.",
+    "Use image filter sliders, presets, and copy-ready CSS/Tailwind output.",
 } as const
 
 export const PRESET_FIGMA_PLUGIN = {
