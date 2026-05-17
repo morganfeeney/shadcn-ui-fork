@@ -34,7 +34,6 @@ export function useFigmaImageFilterTool() {
   const [includeOverlay, setIncludeOverlay] = React.useState(false)
   const [overlaySource, setOverlaySource] = React.useState<OverlaySource>("custom")
   const [overlayTailwindClassName, setOverlayTailwindClassName] = React.useState("bg-purple-700")
-  const [tailwindColorSearch, setTailwindColorSearch] = React.useState("")
   const [overlayOklchColor, setOverlayOklchColor] = React.useState("oklch(0.63 0.21 304)")
   const { hsva, colorValue, updateColor } = useColorState(overlayOklchColor)
 
@@ -55,15 +54,6 @@ export function useFigmaImageFilterTool() {
       TAILWIND_PALETTE[0],
     [overlayTailwindClassName]
   )
-
-  const filteredTailwindPalette = React.useMemo(() => {
-    const query = tailwindColorSearch.trim().toLowerCase()
-    if (!query) return TAILWIND_PALETTE
-
-    return TAILWIND_PALETTE.filter((entry) =>
-      `${entry.label} ${entry.className}`.toLowerCase().includes(query)
-    )
-  }, [tailwindColorSearch])
 
   const directCssFunctions = React.useMemo(() => getDirectCssFunctions(filters), [filters])
 
@@ -169,7 +159,6 @@ ${imageClassLine}    src="${imageUrl}"
     defaultContainerClassName,
     overlaySource,
     overlayTailwindClassName,
-    tailwindColorSearch,
     overlayOklchColor,
     defaultOverlayBlendClassName,
     defaultOverlayOpacity,
@@ -177,7 +166,7 @@ ${imageClassLine}    src="${imageUrl}"
     hsva,
     updateColor,
     selectedOverlaySwatch,
-    filteredTailwindPalette,
+    tailwindPalette: TAILWIND_PALETTE,
     cssFilterValue,
     overlayColorClassName,
     overlayPreviewColor,
@@ -192,7 +181,6 @@ ${imageClassLine}    src="${imageUrl}"
     setIncludeOverlay,
     setOverlaySource,
     setOverlayTailwindClassName,
-    setTailwindColorSearch,
   }
 }
 
