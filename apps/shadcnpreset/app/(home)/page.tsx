@@ -6,6 +6,14 @@ import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import { Header1 } from "@/components/zippystarter/header1"
 import { Footer1 } from "@/components/zippystarter/footer1"
 import { ContainerOuter } from "@/components/zippystarter/container"
+import {
+  SplitMedia,
+  SplitMediaHeading,
+  SplitMediaSubHeading,
+  SplitMediaDescription,
+  SplitMediaContent,
+  SplitMediaHeader,
+} from "@/components/marketing-cards/split-media"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -29,6 +37,24 @@ export default async function HomePage() {
           }))}
         />
       </section>
+      <SplitMedia>
+        <SplitMediaContent>
+          <SplitMediaHeader>
+            <SplitMediaHeading>
+              Find your perfect preset using AI
+            </SplitMediaHeading>
+            <SplitMediaSubHeading>
+              Go beyond clicking random
+            </SplitMediaSubHeading>
+          </SplitMediaHeader>
+          <SplitMediaDescription>
+            Describe what you’re building or the vibe you want. AI surfaces
+            matching presets, shows real components, and helps you choose fast.
+            Free for a limited time only.
+          </SplitMediaDescription>
+        </SplitMediaContent>
+        media
+      </SplitMedia>
       <Features1 />
       <Footer1 />
     </ContainerOuter>
