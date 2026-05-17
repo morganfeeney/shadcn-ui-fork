@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { AlphaSlider, ColorArea, HueSlider } from "chromakit-react"
 
 import { Button } from "@/components/ui/button"
@@ -38,6 +39,24 @@ type FiltersPanelProps = {
 }
 
 export function FiltersPanel({ model }: FiltersPanelProps) {
+  const tailwindPalette = model.tailwindPalette
+  const tailwindGroups = React.useMemo(
+    () =>
+      Object.entries(
+        tailwindPalette.reduce(
+          (groups, swatch) => {
+            if (!groups[swatch.family]) {
+              groups[swatch.family] = []
+            }
+            groups[swatch.family].push(swatch)
+            return groups
+          },
+          {} as Record<string, typeof tailwindPalette>
+        )
+      ),
+    [tailwindPalette]
+  )
+
   return (
     <Card>
       <CardHeader>
@@ -173,21 +192,7 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
                                 <CommandInput placeholder="Search Tailwind colors" />
                                 <CommandList className="max-h-70">
                                   <CommandEmpty>No colors found.</CommandEmpty>
-                                  {Object.entries(
-                                    model.tailwindPalette.reduce(
-                                      (groups, swatch) => {
-                                        if (!groups[swatch.family]) {
-                                          groups[swatch.family] = []
-                                        }
-                                        groups[swatch.family].push(swatch)
-                                        return groups
-                                      },
-                                      {} as Record<
-                                        string,
-                                        typeof model.tailwindPalette
-                                      >
-                                    )
-                                  ).map(([family, swatches]) => (
+                                  {tailwindGroups.map(([family, swatches]) => (
                                     <CommandGroup key={family} heading={family}>
                                       {swatches.map((swatch) => {
                                         const isActive =
@@ -197,7 +202,11 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
                                         return (
                                           <CommandItem
                                             key={swatch.id}
-                                            value={`${swatch.label} ${swatch.className} ${swatch.family}`}
+                                            value={swatch.label}
+                                            keywords={[
+                                              swatch.className,
+                                              swatch.family,
+                                            ]}
                                             onSelect={() => {
                                               model.setOverlaySource("tailwind")
                                               model.setOverlayTailwindClassName(
