@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { getPresetThemeCssBundle } from "@/lib/preset-theme-css"
 import { InfoIcon } from "@phosphor-icons/react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
 
 type PresetThemeExtractorProps = {
   code: string
@@ -153,7 +154,7 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
             previewVariant="v4-iframe"
             virtualWidth={2000}
             virtualHeight={1000}
-            description={`${bundle.resolved.style} style, ${bundle.resolved.baseColor} base, ${bundle.resolved.theme} theme, ${bundle.resolved.effectiveChartColor} charts, ${bundle.resolved.iconLibrary}`}
+            description={formatPresetCardDescription(bundle.resolved)}
           />
         ) : null}
       </div>

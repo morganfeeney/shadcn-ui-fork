@@ -5,6 +5,7 @@ import {
   type CardCatalogSample,
 } from "@/components/card-catalog/card-catalog-content"
 import { getHomepageFeed } from "@/lib/preset-feed"
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 import { siteConfig } from "@/lib/config"
 
@@ -32,20 +33,11 @@ export const metadata: Metadata = {
   },
 }
 
-function formatTypographyLine(fontHeading: string, font: string) {
-  if (fontHeading === "inherit" || fontHeading === font) {
-    return `${font} font`
-  }
-  return `${fontHeading} & ${font} fonts`
-}
-
 function toCatalogSample(item: PresetPageItem): CardCatalogSample {
-  const { baseColor, theme, chartColor, iconLibrary, font, fontHeading } =
-    item.config
   return {
     code: item.code,
     title: item.code,
-    description: `${baseColor} base, ${theme} theme, ${chartColor ?? theme} charts, ${iconLibrary}, ${formatTypographyLine(fontHeading, font)}`,
+    description: formatPresetCardDescription(item.config),
   }
 }
 

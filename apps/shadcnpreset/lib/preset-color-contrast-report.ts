@@ -1,5 +1,6 @@
 import { parse, wcagContrast } from "culori"
 
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import { getPresetThemeCssBundle } from "@/lib/preset-theme-css"
 
 const AA_NORMAL = 4.5
@@ -64,7 +65,7 @@ export type PresetColorContrastModeReport = {
 
 export type PresetColorContrastReport = {
   code: string
-  /** Subtitle for preset preview cards (style, base, theme, charts, icons). */
+  /** Subtitle for preset preview cards (style, colors, icons, typography). */
   overviewDescription: string
   light: PresetColorContrastModeReport
   dark: PresetColorContrastModeReport
@@ -230,7 +231,10 @@ export function getPresetColorContrastReport(
     bundle.darkVars
   )
   const r = bundle.resolved
-  const overviewDescription = `${r.style} style, ${r.baseColor} base, ${r.theme} theme, ${r.effectiveChartColor} charts, ${r.iconLibrary}`
+  const overviewDescription = formatPresetCardDescription({
+    ...r,
+    chartColor: r.effectiveChartColor,
+  })
 
   return {
     code: bundle.resolved.code,

@@ -7,6 +7,8 @@ import {
   type PresetConfig,
 } from "shadcn/preset"
 
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
+
 const SERIF_FONTS = new Set<PresetConfig["font"]>(PRESET_SERIF_FONTS)
 const BASE_COLOR_SET = new Set<PresetConfig["baseColor"]>(PRESET_BASE_COLORS)
 const THEME_SET = new Set<PresetConfig["theme"]>(PRESET_THEMES)
@@ -446,10 +448,5 @@ export function applyStagePreservation(
 }
 
 export function buildPresetCardDescription(c: PresetConfig): string {
-  const chart = c.chartColor ?? c.theme
-  const typo =
-    c.fontHeading === "inherit" || c.fontHeading === c.font
-      ? `${c.font} font`
-      : `${c.fontHeading} & ${c.font} fonts`
-  return `${c.baseColor} base, ${c.theme} theme, ${chart} charts, ${c.iconLibrary}, ${typo}`
+  return formatPresetCardDescription(c)
 }

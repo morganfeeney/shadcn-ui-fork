@@ -3,6 +3,7 @@
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { usePresetFeed } from "@/hooks/use-preset-feed"
 import { type ListViewItem, toListViewItem } from "@/lib/list-view"
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 
 interface ListViewProps {
@@ -12,13 +13,6 @@ interface ListViewProps {
   pageSize?: number
   useLiveFeed?: boolean
   initialFeedItems?: PresetPageItem[]
-}
-
-function formatTypographyLine(fontHeading: string, font: string) {
-  if (fontHeading === "inherit" || fontHeading === font) {
-    return `${font} font`
-  }
-  return `${fontHeading} & ${font} fonts`
 }
 
 export function ListView({
@@ -53,7 +47,7 @@ export function ListView({
             <PresetStyleOverviewCard
               code={item.code}
               title={item.code}
-              description={`${item.style} style, ${item.baseColor} base, ${item.theme} theme, ${item.chartColor} charts, ${item.iconLibrary}, ${formatTypographyLine(item.fontHeading, item.font)}`}
+              description={formatPresetCardDescription(item)}
             />
           </li>
         ))}
