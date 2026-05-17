@@ -1,5 +1,7 @@
+"use client"
 import { cn } from "@/lib/utils"
-import Link, { LinkProps } from "next/link"
+import { ArrowRightIcon } from "@phosphor-icons/react"
+import Link from "next/link"
 
 function SplitMedia({
   className,
@@ -37,7 +39,7 @@ function SplitMediaSubHeading({
   return (
     <p
       className={cn(
-        "text-2xl font-medium tracking-tighter text-muted-foreground",
+        "-mt-0.5 text-2xl font-medium tracking-tighter text-muted-foreground",
         className
       )}
       {...props}
@@ -75,12 +77,9 @@ function SplitMediaContent({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <header
-      className={cn("grid place-content-center gap-4 p-10", className)}
-      {...props}
-    >
+    <div className={cn("grid content-center gap-5 p-10", className)} {...props}>
       {children}
-    </header>
+    </div>
   )
 }
 
@@ -88,10 +87,14 @@ function SplitMediaLink({
   className,
   children,
   ...props
-}: React.ComponentProps<"LinkProps">) {
+}: React.ComponentProps<typeof Link>) {
   return (
-    <Link className={cn("grid", className)} {...props}>
+    <Link
+      className={cn("flex items-center gap-2 text-sm", className)}
+      {...props}
+    >
       {children}
+      <ArrowRightIcon size={16} />
     </Link>
   )
 }
@@ -103,4 +106,5 @@ export {
   SplitMediaDescription,
   SplitMediaHeader,
   SplitMediaContent,
+  SplitMediaLink,
 }
