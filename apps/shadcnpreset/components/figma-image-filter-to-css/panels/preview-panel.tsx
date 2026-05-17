@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import type { FigmaImageFilterToolModel } from "@/components/figma-image-filter-to-css/use-figma-image-filter-tool"
 import { cn } from "@/lib/utils"
 
@@ -18,8 +20,8 @@ export function PreviewPanel({ model }: PreviewPanelProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Preview</CardTitle>
-        <CardDescription>Applies converted CSS filters in real time.</CardDescription>
+        <CardTitle>Preview image</CardTitle>
+        <CardDescription>CSS filters are applied in real time.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-3">
@@ -32,7 +34,10 @@ export function PreviewPanel({ model }: PreviewPanelProps) {
             >
               {model.includeOverlay ? (
                 <div
-                  className={cn("absolute inset-0 z-30", model.defaultOverlayBlendClassName)}
+                  className={cn(
+                    "absolute inset-0 z-30",
+                    model.defaultOverlayBlendClassName
+                  )}
                   style={{
                     opacity: model.defaultOverlayOpacity / 100,
                     backgroundColor: model.overlayPreviewColor,
@@ -43,14 +48,23 @@ export function PreviewPanel({ model }: PreviewPanelProps) {
               <img
                 src={model.imageUrl}
                 alt="Filter preview"
-                className={cn("h-full w-full object-cover", model.defaultImageExtraClasses)}
+                className={cn(
+                  "h-full w-full object-cover",
+                  model.defaultImageExtraClasses
+                )}
                 style={{ filter: model.cssFilterValue }}
               />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Active filter: <code>{model.cssFilterValue}</code>
-          </p>
+          <Field>
+            <FieldLabel htmlFor="preview-image-url">Image source</FieldLabel>
+            <Input
+              id="preview-image-url"
+              value={model.imageUrl}
+              onChange={(event) => model.setImageUrl(event.target.value)}
+              placeholder="https://..."
+            />
+          </Field>
         </div>
       </CardContent>
     </Card>

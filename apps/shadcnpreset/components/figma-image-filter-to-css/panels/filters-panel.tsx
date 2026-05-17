@@ -27,15 +27,8 @@ import {
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  DEFAULT_FILTERS,
-  FILTER_FIELDS,
-  READY_MADE_FILTER_PRESETS,
-} from "@/components/figma-image-filter-to-css/config"
-import {
-  formatFilterValue,
-  getDirectCssFunctions,
-} from "@/components/figma-image-filter-to-css/utils"
+import { FILTER_FIELDS } from "@/components/figma-image-filter-to-css/config"
+import { formatFilterValue } from "@/components/figma-image-filter-to-css/utils"
 import type { FigmaImageFilterToolModel } from "@/components/figma-image-filter-to-css/use-figma-image-filter-tool"
 import { cn } from "@/lib/utils"
 
@@ -51,85 +44,11 @@ export function FiltersPanel({ model }: FiltersPanelProps) {
         <CardDescription>
           Use sliders to build a CSS filter chain.
         </CardDescription>
-        <p className="text-sm text-muted-foreground">
-          Figma mapping note: Exposure maps to CSS <code>brightness()</code>,
-          Contrast maps to <code>contrast()</code>, and Saturation maps to{" "}
-          <code>saturate()</code>.
-        </p>
       </CardHeader>
       <CardContent>
         <FieldSet>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="preview-image-url">
-                Preview image URL
-              </FieldLabel>
-              <FieldDescription>
-                Use any image URL to test filters and overlay composition.
-              </FieldDescription>
-              <Input
-                id="preview-image-url"
-                value={model.imageUrl}
-                onChange={(event) => model.setImageUrl(event.target.value)}
-                placeholder="https://..."
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>Ready-made looks</FieldLabel>
-              <FieldDescription>
-                Choose a starting look, then fine-tune with sliders.
-              </FieldDescription>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {READY_MADE_FILTER_PRESETS.map((preset) => {
-                  const previewFilter = [
-                    ...getDirectCssFunctions({
-                      ...DEFAULT_FILTERS,
-                      ...preset.values,
-                    }),
-                  ].join(" ")
-                  const isActive = model.activePresetId === preset.id
-
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => model.applyPreset(preset)}
-                      className={cn(
-                        "overflow-hidden rounded-lg border text-left transition-colors",
-                        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
-                        isActive
-                          ? "border-primary ring-1 ring-primary/40"
-                          : "border-border/60 hover:border-border"
-                      )}
-                      aria-pressed={isActive}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={model.imageUrl}
-                        alt={`${preset.name} preview`}
-                        className="h-16 w-full object-cover"
-                        style={{ filter: previewFilter }}
-                      />
-                      <div className="grid gap-0.5 px-2 py-1.5">
-                        <span className="text-xs font-medium">
-                          {preset.name}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {preset.description}
-                        </span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </Field>
-
             <FieldSet>
-              <FieldLegend variant="label">Filter controls</FieldLegend>
-              <FieldDescription>
-                Every slider maps directly to a CSS filter function.
-              </FieldDescription>
               <FieldGroup>
                 {FILTER_FIELDS.map((field) => {
                   const value = model.filters[field.key]

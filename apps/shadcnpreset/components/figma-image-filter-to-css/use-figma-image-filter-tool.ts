@@ -23,14 +23,14 @@ import {
 
 export function useFigmaImageFilterTool() {
   const defaultContainerClassName = "relative aspect-square"
-  const defaultImageExtraClasses = "grayscale"
+  const defaultImageExtraClasses = ""
   const defaultOverlayBlendClassName = "mix-blend-color"
   const defaultOverlayOpacity = 25
 
   const [filters, setFilters] = React.useState<FigmaFilterState>(DEFAULT_FILTERS)
   const [imageUrl, setImageUrl] = React.useState(DEFAULT_IMAGE_URL)
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null)
-  const [activePresetId, setActivePresetId] = React.useState("custom")
+  const [activePresetId, setActivePresetId] = React.useState("")
   const [includeOverlay, setIncludeOverlay] = React.useState(false)
   const [overlaySource, setOverlaySource] = React.useState<OverlaySource>("custom")
   const [overlayTailwindClassName, setOverlayTailwindClassName] = React.useState("bg-purple-700")
@@ -67,7 +67,10 @@ export function useFigmaImageFilterTool() {
 
   const directCssFunctions = React.useMemo(() => getDirectCssFunctions(filters), [filters])
 
-  const cssFilterValue = React.useMemo(() => directCssFunctions.join(" "), [directCssFunctions])
+  const cssFilterValue = React.useMemo(
+    () => (directCssFunctions.length > 0 ? directCssFunctions.join(" ") : "none"),
+    [directCssFunctions]
+  )
 
   const tailwindClasses = React.useMemo(() => getTailwindUtilities(filters), [filters])
 
@@ -88,7 +91,10 @@ export function useFigmaImageFilterTool() {
   )
 
   const tailwindSnippet = React.useMemo(
-    () => `className="${tailwindClasses.join(" ")}"`,
+    () =>
+      tailwindClasses.length > 0
+        ? `className="${tailwindClasses.join(" ")}"`
+        : "No filter classes needed at default values.",
     [tailwindClasses]
   )
 
@@ -105,13 +111,15 @@ export function useFigmaImageFilterTool() {
     const overlayLine = includeOverlay
       ? `      <div className="absolute inset-0 z-30 ${overlayColorClassName} ${overlayOpacityClass} ${defaultOverlayBlendClassName}" />\n`
       : ""
+    const imageClassLine = mergedImageClassName
+      ? `    className="${mergedImageClassName}"\n`
+      : ""
 
     return `import Image from "next/image"
 
 <div className="${defaultContainerClassName}">
 ${overlayLine}  <Image
-    className="${mergedImageClassName}"
-    src="${imageUrl}"
+${imageClassLine}    src="${imageUrl}"
     alt=""
     fill
   />
@@ -144,7 +152,7 @@ ${overlayLine}  <Image
 
   function resetFilters() {
     setFilters(DEFAULT_FILTERS)
-    setActivePresetId("custom")
+    setActivePresetId("")
   }
 
   function applyPreset(preset: FilterPreset) {

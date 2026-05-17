@@ -29,32 +29,83 @@ export function formatFilterValue(key: FigmaFilterKey, value: number) {
 }
 
 export function getDirectCssFunctions(filters: FigmaFilterState) {
-  return [
-    `blur(${formatFilterAmount(filters.blur)}px)`,
-    `brightness(${formatFilterAmount(filters.brightness)}%)`,
-    `contrast(${formatFilterAmount(filters.contrast)}%)`,
-    `grayscale(${formatFilterAmount(filters.grayscale)}%)`,
-    `hue-rotate(${formatFilterAmount(filters.hueRotate)}deg)`,
-    `invert(${formatFilterAmount(filters.invert)}%)`,
-    `opacity(${formatFilterAmount(filters.opacity)}%)`,
-    `saturate(${formatFilterAmount(filters.saturate)}%)`,
-    `sepia(${formatFilterAmount(filters.sepia)}%)`,
-  ]
+  const functions: string[] = []
+
+  if (filters.blur > 0) {
+    functions.push(`blur(${formatFilterAmount(filters.blur)}px)`)
+  }
+
+  if (filters.brightness !== 100) {
+    functions.push(`brightness(${formatFilterAmount(filters.brightness)}%)`)
+  }
+
+  if (filters.contrast !== 100) {
+    functions.push(`contrast(${formatFilterAmount(filters.contrast)}%)`)
+  }
+
+  if (filters.grayscale > 0) {
+    functions.push(`grayscale(${formatFilterAmount(filters.grayscale)}%)`)
+  }
+
+  if (filters.hueRotate > 0) {
+    functions.push(`hue-rotate(${formatFilterAmount(filters.hueRotate)}deg)`)
+  }
+
+  if (filters.invert > 0) {
+    functions.push(`invert(${formatFilterAmount(filters.invert)}%)`)
+  }
+
+  if (filters.opacity !== 100) {
+    functions.push(`opacity(${formatFilterAmount(filters.opacity)}%)`)
+  }
+
+  if (filters.saturate !== 100) {
+    functions.push(`saturate(${formatFilterAmount(filters.saturate)}%)`)
+  }
+
+  if (filters.sepia > 0) {
+    functions.push(`sepia(${formatFilterAmount(filters.sepia)}%)`)
+  }
+
+  return functions
 }
 
 export function getTailwindUtilities(filters: FigmaFilterState) {
-  return [
-    "filter",
-    `blur-[${formatFilterAmount(filters.blur)}px]`,
-    `brightness-[${formatFilterAmount(filters.brightness)}%]`,
-    `contrast-[${formatFilterAmount(filters.contrast)}%]`,
-    `grayscale-[${formatFilterAmount(filters.grayscale)}%]`,
-    `hue-rotate-[${formatFilterAmount(filters.hueRotate)}deg]`,
-    `invert-[${formatFilterAmount(filters.invert)}%]`,
-    `opacity-[${formatFilterAmount(filters.opacity)}%]`,
-    `saturate-[${formatFilterAmount(filters.saturate)}%]`,
-    `sepia-[${formatFilterAmount(filters.sepia)}%]`,
-  ]
+  const utilities: string[] = []
+
+  if (filters.brightness !== 100) {
+    utilities.push(`brightness-[${formatFilterAmount(filters.brightness)}%]`)
+  }
+
+  if (filters.contrast !== 100) {
+    utilities.push(`contrast-[${formatFilterAmount(filters.contrast)}%]`)
+  }
+
+  if (filters.saturate !== 100) {
+    utilities.push(`saturate-[${formatFilterAmount(filters.saturate)}%]`)
+  }
+
+  if (filters.blur > 0) {
+    utilities.push(`blur-[${formatFilterAmount(filters.blur)}px]`)
+  }
+
+  if (filters.grayscale > 0) {
+    utilities.push(`grayscale-[${formatFilterAmount(filters.grayscale)}%]`)
+  }
+
+  if (filters.hueRotate > 0) {
+    utilities.push(`hue-rotate-[${formatFilterAmount(filters.hueRotate)}deg]`)
+  }
+
+  if (filters.invert > 0) {
+    utilities.push(`invert-[${formatFilterAmount(filters.invert)}%]`)
+  }
+
+  if (filters.sepia > 0) {
+    utilities.push(`sepia-[${formatFilterAmount(filters.sepia)}%]`)
+  }
+
+  return utilities.length > 0 ? ["filter", ...utilities] : []
 }
 
 export function toTailwindFilterArbitraryValue(filterValue: string) {
@@ -69,9 +120,12 @@ export function formatOklchFromColorValue(color: ColorValue): string {
     a: 1,
   }
 
-  const rawL = Number(color.oklch?.l)
-  const rawC = Number(color.oklch?.c)
-  const rawH = Number(color.oklch?.h)
+  const oklch = color.oklch as
+    | { L?: number; C?: number; H?: number; l?: number; c?: number; h?: number }
+    | undefined
+  const rawL = Number(oklch?.L ?? oklch?.l)
+  const rawC = Number(oklch?.C ?? oklch?.c)
+  const rawH = Number(oklch?.H ?? oklch?.h)
   const rawA = Number(color.rgba?.a)
 
   const l = Number.isFinite(rawL)

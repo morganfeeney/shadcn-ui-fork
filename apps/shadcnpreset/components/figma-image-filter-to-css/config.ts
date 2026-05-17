@@ -39,10 +39,31 @@ export type TailwindPaletteEntry = {
 
 export const FILTER_FIELDS: readonly FilterField[] = [
   { key: "blur", label: "Blur Radius", min: 0, max: 50, step: 1, unit: "px" },
-  { key: "brightness", label: "Brightness", min: 0, max: 200, step: 1, unit: "%" },
+  {
+    key: "brightness",
+    label: "Brightness",
+    min: 0,
+    max: 200,
+    step: 1,
+    unit: "%",
+  },
   { key: "contrast", label: "Contrast", min: 0, max: 200, step: 1, unit: "%" },
-  { key: "grayscale", label: "Grayscale", min: 0, max: 100, step: 1, unit: "%" },
-  { key: "hueRotate", label: "Hue Rotate", min: 0, max: 360, step: 1, unit: "deg" },
+  {
+    key: "grayscale",
+    label: "Grayscale",
+    min: 0,
+    max: 100,
+    step: 1,
+    unit: "%",
+  },
+  {
+    key: "hueRotate",
+    label: "Hue Rotate",
+    min: 0,
+    max: 360,
+    step: 1,
+    unit: "deg",
+  },
   { key: "invert", label: "Invert", min: 0, max: 100, step: 1, unit: "%" },
   { key: "opacity", label: "Opacity", min: 0, max: 100, step: 1, unit: "%" },
   { key: "saturate", label: "Saturate", min: 0, max: 200, step: 1, unit: "%" },
@@ -65,7 +86,6 @@ export const DEFAULT_IMAGE_URL =
   "https://images.unsplash.com/photo-1691435828932-911a7801adfb?q=80&w=1200&h=1200&auto=format&fit=crop"
 
 export const READY_MADE_FILTER_PRESETS: readonly FilterPreset[] = [
-  { id: "natural", name: "Natural", description: "Balanced correction", values: {} },
   {
     id: "washed-out",
     name: "Washed out",
@@ -140,7 +160,9 @@ function createTailwindPaletteEntries(): TailwindPaletteEntry[] {
     if (!isTailwindScale(scale)) continue
 
     const shades = Object.entries(scale)
-      .filter(([shade, value]) => /^\d+$/.test(shade) && typeof value === "string")
+      .filter(
+        ([shade, value]) => /^\d+$/.test(shade) && typeof value === "string"
+      )
       .sort((a, b) => Number(a[0]) - Number(b[0]))
 
     for (const [shade, color] of shades) {
