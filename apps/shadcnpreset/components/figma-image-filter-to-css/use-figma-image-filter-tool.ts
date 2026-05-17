@@ -201,3 +201,5 @@ ${overlayLine}  <Image
     setTailwindColorSearch,
   }
 }
+
+export type FigmaImageFilterToolModel = ReturnType<typeof useFigmaImageFilterTool>
