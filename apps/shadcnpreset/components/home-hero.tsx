@@ -26,7 +26,9 @@ export function HomeHero({ children }: HomeHeroProps) {
         {siteConfig.description}
       </PageHeaderDescription>
       {children ? (
-        <div className="flex w-full max-w-2xl justify-center">{children}</div>
+        <div className="mt-1 flex w-full max-w-2xl justify-center">
+          {children}
+        </div>
       ) : null}
     </PageHeader>
   )

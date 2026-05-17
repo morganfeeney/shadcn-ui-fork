@@ -13,7 +13,7 @@ export default function Layout({ children }: PropsWithChildren) {
         <PageHeaderHeading className="max-w-4xl">
           Community presets
         </PageHeaderHeading>
-        <PageHeaderDescription className="text-muted-foreground">
+        <PageHeaderDescription>
           Explore presets voted for by the community. Find inspiration, remix
           presets, and share your own.
         </PageHeaderDescription>
