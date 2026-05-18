@@ -176,6 +176,15 @@ export function useFigmaImageFilterTool() {
     setActivePresetId(preset.id)
   }
 
+  function setIncludeOverlayWithDefaults(next: boolean) {
+    setIncludeOverlay(next)
+
+    if (!next) return
+
+    setActivePresetId("custom")
+    setFilters((current) => ({ ...current, grayscale: 100 }))
+  }
+
   return {
     filters,
     imageUrl,
@@ -201,7 +210,7 @@ export function useFigmaImageFilterTool() {
     resetFilters,
     applyPreset,
     setImageUrl,
-    setIncludeOverlay,
+    setIncludeOverlay: setIncludeOverlayWithDefaults,
     setOverlaySource,
     setOverlayTailwindClassName,
   }
