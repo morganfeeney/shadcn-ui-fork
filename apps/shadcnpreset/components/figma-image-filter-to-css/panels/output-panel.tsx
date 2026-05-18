@@ -1,8 +1,10 @@
 "use client"
 
-import { Check, Copy } from "lucide-react"
+import { cjk } from "@streamdown/cjk"
+import { code } from "@streamdown/code"
+import type { ComponentProps } from "react"
+import { Streamdown } from "streamdown"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -10,44 +12,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { FigmaImageFilterToolModel } from "@/components/figma-image-filter-to-css/use-figma-image-filter-tool"
 
 type OutputPanelProps = {
   model: FigmaImageFilterToolModel
 }
 
-function CopyValueButton({
+type StreamdownProps = ComponentProps<typeof Streamdown>
+
+const streamdownPlugins = { cjk, code } as unknown as NonNullable<
+  StreamdownProps["plugins"]
+>
+
+function SnippetBlock({
   value,
-  copyKey,
-  copiedKey,
-  onCopy,
-  label,
+  language,
 }: {
   value: string
-  copyKey: string
-  copiedKey: string | null
-  onCopy: (value: string, key: string) => void
-  label: string
+  language: "html" | "tsx"
 }) {
-  const copied = copiedKey === copyKey
+  const markdown = `\`\`\`${language}\n${value}\n\`\`\``
 
   return (
-    <div className="absolute top-3 right-3 z-10">
-      <Button
-        variant="secondary"
-        size="icon-sm"
-        onClick={() => onCopy(value, copyKey)}
-        aria-label={copied ? "Copied" : label}
-        title={copied ? "Copied" : label}
-      >
-        {copied ? (
-          <Check className="size-4" aria-hidden />
-        ) : (
-          <Copy className="size-4" aria-hidden />
-        )}
-      </Button>
-    </div>
+    <Streamdown key={`${language}:${value}`} plugins={streamdownPlugins}>
+      {markdown}
+    </Streamdown>
   )
 }
 
@@ -56,41 +46,23 @@ export function OutputPanel({ model }: OutputPanelProps) {
     <Card>
       <CardHeader>
         <CardTitle>Output</CardTitle>
-        <CardDescription>Copy direct CSS or Tailwind utility classes.</CardDescription>
+        <CardDescription>
+          Copy image block output in Tailwind or CSS form.
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
-          <div className="relative">
-            <CopyValueButton
-              value={model.cssSnippet}
-              copyKey="css"
-              copiedKey={model.copiedKey}
-              onCopy={model.handleCopy}
-              label="Copy CSS"
-            />
-            <Textarea readOnly value={model.cssSnippet} />
-          </div>
-          <div className="relative">
-            <CopyValueButton
-              value={model.tailwindSnippet}
-              copyKey="tailwind"
-              copiedKey={model.copiedKey}
-              onCopy={model.handleCopy}
-              label="Copy Tailwind classes"
-            />
-            <Textarea readOnly value={model.tailwindSnippet} />
-          </div>
-          <div className="relative">
-            <CopyValueButton
-              value={model.layeredJsxSnippet}
-              copyKey="layered-jsx"
-              copiedKey={model.copiedKey}
-              onCopy={model.handleCopy}
-              label="Copy layered JSX snippet"
-            />
-            <Textarea readOnly value={model.layeredJsxSnippet} />
-          </div>
-        </div>
+        <Tabs defaultValue="tailwind">
+          <TabsList>
+            <TabsTrigger value="tailwind">Tailwind</TabsTrigger>
+            <TabsTrigger value="css">CSS</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tailwind">
+            <SnippetBlock value={model.tailwindImageSnippet} language="html" />
+          </TabsContent>
+          <TabsContent value="css">
+            <SnippetBlock value={model.cssImageSnippet} language="html" />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   )

@@ -22,6 +22,14 @@ function formatFilterAmount(value: number) {
   return rounded.toString()
 }
 
+function toTailwindPercentUtility(name: string, value: number) {
+  if (Number.isInteger(value)) {
+    return `${name}-${value}`
+  }
+
+  return `${name}-[${formatFilterAmount(value)}%]`
+}
+
 export function formatFilterValue(key: FigmaFilterKey, value: number) {
   const field = FILTER_FIELD_BY_KEY[key]
   const clamped = clampFilterValue(key, value)
@@ -74,15 +82,15 @@ export function getTailwindUtilities(filters: FigmaFilterState) {
   const utilities: string[] = []
 
   if (filters.brightness !== 100) {
-    utilities.push(`brightness-[${formatFilterAmount(filters.brightness)}%]`)
+    utilities.push(toTailwindPercentUtility("brightness", filters.brightness))
   }
 
   if (filters.contrast !== 100) {
-    utilities.push(`contrast-[${formatFilterAmount(filters.contrast)}%]`)
+    utilities.push(toTailwindPercentUtility("contrast", filters.contrast))
   }
 
   if (filters.saturate !== 100) {
-    utilities.push(`saturate-[${formatFilterAmount(filters.saturate)}%]`)
+    utilities.push(toTailwindPercentUtility("saturate", filters.saturate))
   }
 
   if (filters.blur > 0) {
@@ -90,7 +98,7 @@ export function getTailwindUtilities(filters: FigmaFilterState) {
   }
 
   if (filters.grayscale > 0) {
-    utilities.push(`grayscale-[${formatFilterAmount(filters.grayscale)}%]`)
+    utilities.push(toTailwindPercentUtility("grayscale", filters.grayscale))
   }
 
   if (filters.hueRotate > 0) {
@@ -98,11 +106,11 @@ export function getTailwindUtilities(filters: FigmaFilterState) {
   }
 
   if (filters.invert > 0) {
-    utilities.push(`invert-[${formatFilterAmount(filters.invert)}%]`)
+    utilities.push(toTailwindPercentUtility("invert", filters.invert))
   }
 
   if (filters.sepia > 0) {
-    utilities.push(`sepia-[${formatFilterAmount(filters.sepia)}%]`)
+    utilities.push(toTailwindPercentUtility("sepia", filters.sepia))
   }
 
   return utilities.length > 0 ? ["filter", ...utilities] : []

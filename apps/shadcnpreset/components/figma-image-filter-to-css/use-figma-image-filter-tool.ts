@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useColorState } from "chromakit-react"
 
-import { copyToClipboardWithMeta } from "@/components/copy-button"
 import {
   DEFAULT_FILTERS,
   DEFAULT_IMAGE_URL,
@@ -29,7 +28,6 @@ export function useFigmaImageFilterTool() {
 
   const [filters, setFilters] = React.useState<FigmaFilterState>(DEFAULT_FILTERS)
   const [imageUrl, setImageUrl] = React.useState(DEFAULT_IMAGE_URL)
-  const [copiedKey, setCopiedKey] = React.useState<string | null>(null)
   const [activePresetId, setActivePresetId] = React.useState("")
   const [includeOverlay, setIncludeOverlay] = React.useState(false)
   const [overlaySource, setOverlaySource] = React.useState<OverlaySource>("custom")
@@ -41,12 +39,6 @@ export function useFigmaImageFilterTool() {
     setOverlaySource("custom")
     setOverlayOklchColor(formatOklchFromColorValue(colorValue))
   }, [colorValue])
-
-  React.useEffect(() => {
-    if (!copiedKey) return
-    const timeout = window.setTimeout(() => setCopiedKey(null), 1500)
-    return () => window.clearTimeout(timeout)
-  }, [copiedKey])
 
   const selectedOverlaySwatch = React.useMemo(
     () =>
@@ -75,19 +67,6 @@ export function useFigmaImageFilterTool() {
   const overlayPreviewColor =
     overlaySource === "tailwind" ? selectedOverlaySwatch.color : overlayOklchColor
 
-  const cssSnippet = React.useMemo(
-    () => `.image {\n  filter: ${cssFilterValue};\n}`,
-    [cssFilterValue]
-  )
-
-  const tailwindSnippet = React.useMemo(
-    () =>
-      tailwindClasses.length > 0
-        ? `className="${tailwindClasses.join(" ")}"`
-        : "No filter classes needed at default values.",
-    [tailwindClasses]
-  )
-
   const mergedImageClassName = React.useMemo(
     () =>
       [tailwindClasses.join(" "), defaultImageExtraClasses]
@@ -96,24 +75,39 @@ export function useFigmaImageFilterTool() {
     [tailwindClasses]
   )
 
-  const layeredJsxSnippet = React.useMemo(() => {
+  const tailwindImageSnippet = React.useMemo(() => {
+    const containerOutputClassName =
+      defaultContainerClassName
+        .replace(/\baspect-[^\s]+\b/g, "")
+        .trim() || "relative"
     const overlayOpacityClass = `opacity-${Math.round(clampPercentage(defaultOverlayOpacity))}`
-    const overlayLine = includeOverlay
-      ? `      <div className="absolute inset-0 z-30 ${overlayColorClassName} ${overlayOpacityClass} ${defaultOverlayBlendClassName}" />\n`
-      : ""
-    const imageClassLine = mergedImageClassName
-      ? `    className="${mergedImageClassName}"\n`
-      : ""
+    if (includeOverlay) {
+      const overlayLine = `  <div className="absolute inset-0 z-30 ${overlayColorClassName} ${overlayOpacityClass} ${defaultOverlayBlendClassName}" />\n`
+      const imageOutputClassName = [
+        "absolute inset-0 h-full w-full object-cover",
+        mergedImageClassName,
+      ]
+        .filter(Boolean)
+        .join(" ")
 
-    return `import Image from "next/image"
-
-<div className="${defaultContainerClassName}">
-${overlayLine}  <Image
-${imageClassLine}    src="${imageUrl}"
+      return `<div className="${containerOutputClassName}">
+${overlayLine}  <img
+    className="${imageOutputClassName}"
+    src="${imageUrl}"
     alt=""
-    fill
   />
 </div>`
+    }
+
+    const imageOutputClassName = ["h-full w-full object-cover", mergedImageClassName]
+      .filter(Boolean)
+      .join(" ")
+
+    return `<img
+  className="${imageOutputClassName}"
+  src="${imageUrl}"
+  alt=""
+/>`
   }, [
     defaultContainerClassName,
     defaultOverlayBlendClassName,
@@ -124,16 +118,52 @@ ${imageClassLine}    src="${imageUrl}"
     overlayColorClassName,
   ])
 
-  async function handleCopy(value: string, key: string) {
-    const hasCopied = await copyToClipboardWithMeta(value, {
-      name: "image_filter_css_copy",
-      properties: { key },
-    })
+  const cssImageSnippet = React.useMemo(() => {
+    const containerOutputClassName =
+      defaultContainerClassName
+        .replace(/\baspect-[^\s]+\b/g, "")
+        .trim() || "relative"
+    const overlayBlendMode = defaultOverlayBlendClassName.replace("mix-blend-", "")
+    const imageBaseClassName = includeOverlay
+      ? "absolute inset-0 h-full w-full object-cover"
+      : "h-full w-full object-cover"
 
-    if (hasCopied) {
-      setCopiedKey(key)
+    if (includeOverlay) {
+      return `<div className="${containerOutputClassName}">
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      zIndex: 30,
+      backgroundColor: "${overlayPreviewColor}",
+      opacity: ${defaultOverlayOpacity / 100},
+      mixBlendMode: "${overlayBlendMode}",
+    }}
+  />
+  <img
+    className="${imageBaseClassName}"
+    src="${imageUrl}"
+    alt=""
+    style={{ filter: "${cssFilterValue}" }}
+  />
+</div>`
     }
-  }
+
+    return `<img
+  className="${imageBaseClassName}"
+  src="${imageUrl}"
+  alt=""
+  style={{ filter: "${cssFilterValue}" }}
+/>`
+  }, [
+    cssFilterValue,
+    defaultContainerClassName,
+    defaultOverlayBlendClassName,
+    defaultOverlayOpacity,
+    imageUrl,
+    includeOverlay,
+    overlayPreviewColor,
+  ])
 
   function updateFilter(key: FigmaFilterKey, nextValue: number) {
     setActivePresetId("custom")
@@ -153,7 +183,6 @@ ${imageClassLine}    src="${imageUrl}"
   return {
     filters,
     imageUrl,
-    copiedKey,
     activePresetId,
     includeOverlay,
     defaultContainerClassName,
@@ -170,10 +199,8 @@ ${imageClassLine}    src="${imageUrl}"
     cssFilterValue,
     overlayColorClassName,
     overlayPreviewColor,
-    cssSnippet,
-    tailwindSnippet,
-    layeredJsxSnippet,
-    handleCopy,
+    tailwindImageSnippet,
+    cssImageSnippet,
     updateFilter,
     resetFilters,
     applyPreset,
