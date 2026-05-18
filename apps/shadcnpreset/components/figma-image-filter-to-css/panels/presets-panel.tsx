@@ -29,7 +29,7 @@ export function PresetsPanel({ model }: PresetsPanelProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className="flex flex-wrap gap-4">
           {READY_MADE_FILTER_PRESETS.map((preset) => {
             const previewFilter = getDirectCssFunctions({
               ...DEFAULT_FILTERS,
@@ -43,11 +43,8 @@ export function PresetsPanel({ model }: PresetsPanelProps) {
                 type="button"
                 onClick={() => model.applyPreset(preset)}
                 className={cn(
-                  "overflow-hidden rounded-lg border text-left transition-colors",
-                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
-                  isActive
-                    ? "border-primary ring-1 ring-primary/40"
-                    : "border-border/60 hover:border-border"
+                  "grid gap-2 text-left",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
                 )}
                 aria-pressed={isActive}
               >
@@ -55,15 +52,17 @@ export function PresetsPanel({ model }: PresetsPanelProps) {
                 <img
                   src={model.imageUrl}
                   alt={`${preset.name} preview`}
-                  className="h-16 w-full object-cover"
+                  className={cn(
+                    "aspect-square w-full max-w-30 rounded-md object-cover transition-colors",
+                    isActive
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border/60 hover:ring-border"
+                  )}
                   style={{ filter: previewFilter }}
                 />
-                <div className="grid gap-0.5 px-2 py-1.5">
-                  <span className="text-xs font-medium">{preset.name}</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    {preset.description}
-                  </span>
-                </div>
+                <span className="px-0.5 text-[11px] font-medium">
+                  {preset.name}
+                </span>
               </button>
             )
           })}
