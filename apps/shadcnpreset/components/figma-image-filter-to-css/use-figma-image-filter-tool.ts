@@ -82,7 +82,7 @@ export function useFigmaImageFilterTool() {
         .trim() || "relative"
     const overlayOpacityClass = `opacity-${Math.round(clampPercentage(defaultOverlayOpacity))}`
     if (includeOverlay) {
-      const overlayLine = `  <div className="absolute inset-0 z-30 ${overlayColorClassName} ${overlayOpacityClass} ${defaultOverlayBlendClassName}" />\n`
+      const overlayContainerClassName = `${containerOutputClassName} aspect-square`.trim()
       const imageOutputClassName = [
         "absolute inset-0 h-full w-full object-cover",
         mergedImageClassName,
@@ -90,9 +90,11 @@ export function useFigmaImageFilterTool() {
         .filter(Boolean)
         .join(" ")
 
-      return `<div className="${containerOutputClassName}">
-${overlayLine}  <img
-    className="${imageOutputClassName}"
+      return `<!-- Wrapper needs width/height or aspect-ratio for absolute overlay/image fill. -->
+<div class="${overlayContainerClassName}">
+  <div class="absolute inset-0 z-30 ${overlayColorClassName} ${overlayOpacityClass} ${defaultOverlayBlendClassName}"></div>
+  <img
+    class="${imageOutputClassName}"
     src="${imageUrl}"
     alt=""
   />
@@ -104,7 +106,7 @@ ${overlayLine}  <img
       .join(" ")
 
     return `<img
-  className="${imageOutputClassName}"
+  class="${imageOutputClassName}"
   src="${imageUrl}"
   alt=""
 />`
@@ -129,31 +131,25 @@ ${overlayLine}  <img
       : "h-full w-full object-cover"
 
     if (includeOverlay) {
-      return `<div className="${containerOutputClassName}">
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      zIndex: 30,
-      backgroundColor: "${overlayPreviewColor}",
-      opacity: ${defaultOverlayOpacity / 100},
-      mixBlendMode: "${overlayBlendMode}",
-    }}
-  />
+      const overlayContainerClassName = `${containerOutputClassName} aspect-square`.trim()
+
+      return `<!-- Wrapper needs width/height or aspect-ratio for absolute overlay/image fill. -->
+<div class="${overlayContainerClassName}">
+  <div style="position: absolute; inset: 0; z-index: 30; background-color: ${overlayPreviewColor}; opacity: ${defaultOverlayOpacity / 100}; mix-blend-mode: ${overlayBlendMode};"></div>
   <img
-    className="${imageBaseClassName}"
+    class="${imageBaseClassName}"
     src="${imageUrl}"
     alt=""
-    style={{ filter: "${cssFilterValue}" }}
+    style="filter: ${cssFilterValue};"
   />
 </div>`
     }
 
     return `<img
-  className="${imageBaseClassName}"
+  class="${imageBaseClassName}"
   src="${imageUrl}"
   alt=""
-  style={{ filter: "${cssFilterValue}" }}
+  style="filter: ${cssFilterValue};"
 />`
   }, [
     cssFilterValue,
