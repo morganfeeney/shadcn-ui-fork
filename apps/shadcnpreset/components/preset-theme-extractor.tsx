@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { Check, Copy } from "lucide-react"
+import { cjk } from "@streamdown/cjk"
+import { code } from "@streamdown/code"
+import type { ComponentProps } from "react"
+import { Streamdown } from "streamdown"
 
-import { copyToClipboardWithMeta } from "@/components/copy-button"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
 import { getPresetThemeCssBundle } from "@/lib/preset-theme-css"
 import { InfoIcon } from "@phosphor-icons/react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -79,69 +78,35 @@ const DETAIL_FIELDS: ReadonlyArray<{
   },
 ]
 
-function CssOutputBlock({
-  value,
-  copyLabel,
-  copyKey,
-  copiedKey,
-  onCopy,
-}: {
-  value: string
-  copyLabel: string
-  copyKey: string
-  copiedKey: string | null
-  onCopy: (value: string, key: string) => void
-}) {
+type StreamdownProps = ComponentProps<typeof Streamdown>
+
+const streamdownPlugins = { cjk, code } as unknown as NonNullable<
+  StreamdownProps["plugins"]
+>
+
+function CssOutputBlock({ value }: { value: string }) {
+  const markdown = `\`\`\`css\n${value}\n\`\`\``
+
   return (
-    <div className="relative">
-      <Button
-        variant="secondary"
-        size="icon-sm"
-        className="absolute top-3 right-3 z-10"
-        onClick={() => onCopy(value, copyKey)}
-        aria-label={copiedKey === copyKey ? "Copied" : copyLabel}
-        title={copiedKey === copyKey ? "Copied" : copyLabel}
+    <div className="min-h-140">
+      <Streamdown
+        key={value}
+        plugins={streamdownPlugins}
+        // className="**:data-[streamdown='code-block']:rounded-none"
       >
-        {copiedKey === copyKey ? (
-          <Check aria-hidden className="size-4" />
-        ) : (
-          <Copy aria-hidden className="size-4" />
-        )}
-      </Button>
-      <Textarea
-        readOnly
-        value={value}
-        className="min-h-140 font-mono text-xs"
-      />
+        {markdown}
+      </Streamdown>
     </div>
   )
 }
 
 export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
-  const [copiedKey, setCopiedKey] = React.useState<string | null>(null)
   const normalizedCode = code.trim()
 
   const bundle = React.useMemo(
     () => getPresetThemeCssBundle(normalizedCode),
     [normalizedCode]
   )
-
-  React.useEffect(() => {
-    if (!copiedKey) return
-    const timeout = window.setTimeout(() => setCopiedKey(null), 1500)
-    return () => window.clearTimeout(timeout)
-  }, [copiedKey])
-
-  async function handleCopy(value: string, key: string) {
-    const hasCopied = await copyToClipboardWithMeta(value, {
-      name: "preset_theme_copy",
-      properties: { key, code: normalizedCode },
-    })
-
-    if (hasCopied) {
-      setCopiedKey(key)
-    }
-  }
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-2">
@@ -159,30 +124,14 @@ export function PresetThemeExtractor({ code }: PresetThemeExtractorProps) {
         ) : null}
       </div>
       <div className="grid items-start gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Theme custom properties</CardTitle>
-            <CardDescription>
-              Copy and paste into your{" "}
-              <code className="text-[13px]">globals.css</code> file.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!bundle ? (
-              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                This preset code could not be decoded.
-              </div>
-            ) : (
-              <CssOutputBlock
-                value={bundle.combinedCss}
-                copyLabel="Copy code"
-                copyKey="combined"
-                copiedKey={copiedKey}
-                onCopy={handleCopy}
-              />
-            )}
-          </CardContent>
-        </Card>
+        {!bundle ? (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+            This preset code could not be decoded.
+          </div>
+        ) : (
+          <CssOutputBlock value={bundle.combinedCss} />
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>
