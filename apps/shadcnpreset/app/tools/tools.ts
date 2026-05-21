@@ -28,11 +28,11 @@ export const PRESET_COLOR_CONTRAST_TOOL = {
 export const FIGMA_FILTER_CSS_TOOL = {
   slug: "image-filter-generator",
   href: "/tools/image-filter-generator",
-  title: "Image filter generator",
+  title: "Tailwind & CSS Image filter generator",
   description:
-    "Use presets or configure image filters in real-time to generate CSS or Tailwind utility class output.",
+    "Use presets or configure image filters in real-time to generate Tailwind utility or vanilla CSS output.",
   cardDescription:
-    "Use presets or configure image filters in real-time to generate CSS or Tailwind utility class output.",
+    "Use presets or configure image filters in real-time to generate Tailwind utility or vanilla CSS output.",
 } as const
 
 export const PRESET_FIGMA_PLUGIN = {
