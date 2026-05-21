@@ -8,6 +8,10 @@ type LeaderboardRow = {
   votes: number
 }
 
+const RESPONSE_HEADERS = {
+  "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600",
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const requestedLimit = Number.parseInt(searchParams.get("limit") ?? "8", 10)
@@ -42,5 +46,5 @@ export async function GET(request: Request) {
     }
   })
 
-  return NextResponse.json({ items })
+  return NextResponse.json({ items }, { headers: RESPONSE_HEADERS })
 }

@@ -8,8 +8,7 @@ import { getHomepageFeed } from "@/lib/preset-feed"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 import { siteConfig } from "@/lib/config"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export const revalidate = 300
 
 const CATALOG_SAMPLE_COUNT = 4
 
