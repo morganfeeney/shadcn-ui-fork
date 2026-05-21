@@ -1,11 +1,13 @@
 import { Suspense } from "react"
+import { cacheLife } from "next/cache"
 import { AccessiblePresetsExplorer } from "@/components/accessible-presets-explorer"
 import { toListViewItem } from "@/lib/list-view"
 import { getHighContrastPresetFeed } from "@/lib/accessible-presets"
 
-export const dynamic = "force-static"
+export default async function AccessiblePresetsPage() {
+  "use cache"
+  cacheLife("max")
 
-export default function AccessiblePresetsPage() {
   const feedItems = getHighContrastPresetFeed()
   const items = feedItems.map(toListViewItem)
 

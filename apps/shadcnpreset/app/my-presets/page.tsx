@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react"
+import { connection } from "next/server"
 import { ListView } from "@/components/list-view"
 import { toListViewItem } from "@/lib/list-view"
 import { MyVotesSignInPrompt } from "@/components/my-votes-sign-in-prompt"
@@ -14,9 +15,9 @@ import { getSessionUser } from "@/lib/auth"
 import { getVotedPresetsForUser } from "@/lib/user-votes"
 import { SimpleHeader } from "@/app/my-presets/components"
 
-export const dynamic = "force-dynamic"
-
 export default async function MyVotesPage() {
+  await connection()
+
   const user = await getSessionUser()
 
   if (!user) {

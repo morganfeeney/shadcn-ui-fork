@@ -1,5 +1,6 @@
 import { Geist_Mono, Inter } from "next/font/google"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 import "./globals.css"
 import "../css/controls.css"
@@ -63,13 +64,15 @@ export default function RootLayout({
     >
       <HotJar />
       <body>
-        <QueryProvider>
-          <ThemeProvider>
-            <PendingVoteApplier />
-            <VoteAuthDialogHost />
-            <TooltipProvider>{children}</TooltipProvider>
-          </ThemeProvider>
-        </QueryProvider>
+        <Suspense fallback={null}>
+          <QueryProvider>
+            <ThemeProvider>
+              <PendingVoteApplier />
+              <VoteAuthDialogHost />
+              <TooltipProvider>{children}</TooltipProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </Suspense>
       </body>
       <GoogleAnalytics />
     </html>

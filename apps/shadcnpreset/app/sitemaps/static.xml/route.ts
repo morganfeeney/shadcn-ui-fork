@@ -1,8 +1,6 @@
 import { siteConfig } from "@/lib/config"
 import { buildUrlSetXml } from "@/lib/sitemap"
 
-export const revalidate = 86_400
-
 const STATIC_PATHS = [
   "/",
   "/community",

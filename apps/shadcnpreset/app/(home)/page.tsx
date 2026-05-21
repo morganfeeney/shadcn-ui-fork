@@ -5,8 +5,7 @@ import { getHomepageFeed } from "@/lib/preset-feed"
 import { Header1 } from "@/components/zippystarter/header1"
 import { Footer1 } from "@/components/zippystarter/footer1"
 import { ContainerOuter } from "@/components/zippystarter/container"
-
-export const revalidate = 300
+import { cacheLife } from "next/cache"
 
 function formatTypographyLine(fontHeading: string, font: string) {
   if (fontHeading === "inherit" || fontHeading === font) {
@@ -16,6 +15,9 @@ function formatTypographyLine(fontHeading: string, font: string) {
 }
 
 export default async function HomePage() {
+  "use cache"
+  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
+
   const featuredPresets = await getHomepageFeed(16)
 
   return (
