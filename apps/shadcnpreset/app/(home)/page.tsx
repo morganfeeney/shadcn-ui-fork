@@ -6,8 +6,7 @@ import { Header1 } from "@/components/zippystarter/header1"
 import { Footer1 } from "@/components/zippystarter/footer1"
 import { ContainerOuter } from "@/components/zippystarter/container"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export const revalidate = 300
 
 function formatTypographyLine(fontHeading: string, font: string) {
   if (fontHeading === "inherit" || fontHeading === font) {

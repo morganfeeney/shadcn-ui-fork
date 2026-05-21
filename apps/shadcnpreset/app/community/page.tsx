@@ -2,8 +2,7 @@ import { ListView } from "@/components/list-view"
 import { toListViewItem } from "@/lib/list-view"
 import { getVotedPresetsFeed } from "@/lib/preset-feed"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export const revalidate = 300
 
 const COMMUNITY_FEED_LIMIT = 100
 

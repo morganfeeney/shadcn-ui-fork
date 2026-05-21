@@ -3,7 +3,6 @@ import { siteConfig } from "@/lib/config"
 import { buildUrlSetXml } from "@/lib/sitemap"
 
 export const revalidate = 86_400
-export const dynamic = "force-dynamic"
 
 export async function GET() {
   const nowIso = new Date().toISOString()
