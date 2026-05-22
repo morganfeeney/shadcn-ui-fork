@@ -27,30 +27,34 @@ export async function getCommunityPresetCodes() {
   return codes
 }
 
+async function getCachedCommunityPresetCodes() {
+  "use cache"
+  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
+
+  if (!process.env.DATABASE_URL) {
+    return [] as string[]
+  }
+
+  try {
+    return await getCommunityPresetCodes()
+  } catch {
+    return [] as string[]
+  }
+}
+
 /** True when this preset has at least one vote (`preset_votes`, canonical or raw URL code). */
 export async function isCommunityPresetCode(
   canonicalPresetCode: string,
   rawUrlCode?: string
 ): Promise<boolean> {
-  "use cache"
-  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
+  const knownCodes = await getCachedCommunityPresetCodes()
+  if (!knownCodes.length) return false
 
-  if (!process.env.DATABASE_URL) {
-    return false
+  const codeSet = new Set(knownCodes)
+  if (codeSet.has(canonicalPresetCode)) return true
+  if (rawUrlCode && rawUrlCode !== canonicalPresetCode && codeSet.has(rawUrlCode)) {
+    return true
   }
-  try {
-    const codes =
-      rawUrlCode && rawUrlCode !== canonicalPresetCode
-        ? [canonicalPresetCode, rawUrlCode]
-        : [canonicalPresetCode]
-    const result = await query<{ exists: boolean }>(
-      `SELECT EXISTS (
-        SELECT 1 FROM preset_votes WHERE preset_code IN (${codes.map((_, i) => `$${i + 1}`).join(", ")}) LIMIT 1
-      ) AS "exists"`,
-      codes
-    )
-    return Boolean(result.rows[0]?.exists)
-  } catch {
-    return false
-  }
+
+  return false
 }
