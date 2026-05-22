@@ -1,8 +1,6 @@
 import { siteConfig } from "@/lib/config"
 import { buildSitemapIndexXml } from "@/lib/sitemap"
 
-export const revalidate = 86_400
-
 export function GET() {
   const nowIso = new Date().toISOString()
 

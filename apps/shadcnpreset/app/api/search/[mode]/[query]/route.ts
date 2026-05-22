@@ -4,7 +4,6 @@ import { getSearchPageData } from "@/lib/search/data"
 import { isSearchMode } from "@/lib/search/route"
 
 /** Search must never be statically cached; stale JSON looks like “search is broken”. */
-export const dynamic = "force-dynamic"
 
 export async function GET(
   _request: Request,

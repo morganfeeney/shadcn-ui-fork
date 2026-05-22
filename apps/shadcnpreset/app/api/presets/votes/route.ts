@@ -8,6 +8,10 @@ type VoteRow = {
   votes: number
 }
 
+const RESPONSE_HEADERS = {
+  "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600",
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const rawCodes = searchParams.get("codes") ?? ""
@@ -20,7 +24,10 @@ export async function GET(request: Request) {
   const codes = [...new Set(parsedCodes)].slice(0, 120)
 
   if (!codes.length) {
-    return NextResponse.json({ votesByCode: {} as Record<string, number> })
+    return NextResponse.json(
+      { votesByCode: {} as Record<string, number> },
+      { headers: RESPONSE_HEADERS }
+    )
   }
 
   const result = await query<VoteRow>(
@@ -41,5 +48,5 @@ export async function GET(request: Request) {
     votesByCode[row.preset_code] = row.votes
   }
 
-  return NextResponse.json({ votesByCode })
+  return NextResponse.json({ votesByCode }, { headers: RESPONSE_HEADERS })
 }

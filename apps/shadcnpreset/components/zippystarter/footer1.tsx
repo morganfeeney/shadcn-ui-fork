@@ -7,6 +7,7 @@ import { ICON_LINKS } from "@/data/icon-lists"
 import React from "react"
 import { siteConfig } from "@/lib/config"
 import { OpenPresetDialog } from "@/components/open-preset-dialog"
+import { CurrentYear } from "@/components/current-year"
 
 const COLUMNS = [
   {
@@ -136,7 +137,7 @@ export function Footer1({ className }: Footer1Props) {
           </div>
         </div>
         <p className="text-footer-foreground/60 col-span-12 pt-6 text-xs">
-          &copy; {new Date().getFullYear()} shadcnpreset. All rights reserved.
+          &copy; <CurrentYear /> shadcnpreset. All rights reserved.
         </p>
       </div>
     </Container>

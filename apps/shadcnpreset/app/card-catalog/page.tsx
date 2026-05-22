@@ -8,9 +8,7 @@ import { getHomepageFeed } from "@/lib/preset-feed"
 import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 import { siteConfig } from "@/lib/config"
-
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+import { cacheLife } from "next/cache"
 
 const CATALOG_SAMPLE_COUNT = 4
 
@@ -42,6 +40,9 @@ function toCatalogSample(item: PresetPageItem): CardCatalogSample {
 }
 
 export default async function CardCatalogPage() {
+  "use cache"
+  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
+
   const feedItems = await getHomepageFeed(CATALOG_SAMPLE_COUNT * 2)
   const samples = feedItems.slice(0, CATALOG_SAMPLE_COUNT).map(toCatalogSample)
 

@@ -5,6 +5,7 @@ import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import { Header1 } from "@/components/zippystarter/header1"
 import { Footer1 } from "@/components/zippystarter/footer1"
 import { ContainerOuter } from "@/components/zippystarter/container"
+import { cacheLife } from "next/cache"
 import {
   SplitMedia,
   SplitMediaHeading,
@@ -20,6 +21,9 @@ export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export default async function HomePage() {
+  "use cache"
+  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
+
   const featuredPresets = await getHomepageFeed(16)
 
   return (
