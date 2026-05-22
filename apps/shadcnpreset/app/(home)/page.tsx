@@ -16,9 +16,8 @@ import {
   SplitMediaLink,
 } from "@/components/marketing-cards/split-media"
 import Image from "next/image"
-
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+import NotoLight from "@/public/marketing/cta/notolight.png"
+import NotoDark from "@/public/marketing/cta/notodark.png"
 
 export default async function HomePage() {
   "use cache"
@@ -66,13 +65,17 @@ export default async function HomePage() {
         </SplitMedia>
         <SplitMedia>
           <div className="relative aspect-square">
-            <div className="absolute inset-0 z-30 bg-purple-700 opacity-25 mix-blend-color" />
             <Image
-              className="brightness-[4] grayscale"
+              className="brightness-[4] grayscale dark:brightness-[2]"
               src="https://images.unsplash.com/photo-1691435828932-911a7801adfb?auto=format&fit=crop&w=1200&h=1200&crop=focalpoint&fp-x=0.25&fp-y=0.35&fp-z=2.8&q=80"
               alt=""
               fill
             />
+            <div className="absolute inset-0 bg-purple-700 opacity-25 mix-blend-color" />
+            <div className="absolute right-0 bottom-0 h-[90%] w-[90%]">
+              <Image src={NotoLight} className="dark:hidden" alt="" fill />
+              <Image src={NotoDark} className="hidden dark:block" alt="" fill />
+            </div>
           </div>
           <SplitMediaContent>
             <SplitMediaHeader>

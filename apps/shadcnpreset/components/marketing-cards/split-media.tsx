@@ -24,7 +24,7 @@ function SplitMediaHeading({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
       className={cn(
-        "text-2xl font-medium tracking-tighter text-foreground",
+        "text-xl font-medium tracking-tighter text-foreground @6xl:text-2xl",
         className
       )}
       {...props}
@@ -39,7 +39,7 @@ function SplitMediaSubHeading({
   return (
     <p
       className={cn(
-        "-mt-0.5 text-2xl font-medium tracking-tighter text-muted-foreground",
+        "-mt-0.5 text-xl font-medium tracking-tighter text-muted-foreground @6xl:text-2xl",
         className
       )}
       {...props}
@@ -53,7 +53,7 @@ function SplitMediaDescription({
 }: React.ComponentProps<"p">) {
   return (
     <p
-      className={cn("text-sm text-balance text-muted-foreground", className)}
+      className={cn("max-w-[50ch] text-sm text-muted-foreground", className)}
       {...props}
     />
   )
@@ -77,7 +77,10 @@ function SplitMediaContent({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("grid content-center gap-5 p-10", className)} {...props}>
+    <div
+      className={cn("grid place-content-center gap-5 p-10", className)}
+      {...props}
+    >
       {children}
     </div>
   )
