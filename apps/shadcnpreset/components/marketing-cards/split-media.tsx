@@ -11,7 +11,7 @@ function SplitMedia({
   return (
     <div className="@container">
       <article
-        className={cn("grid bg-muted @xl:grid-cols-2", className)}
+        className={cn("grid bg-muted @2xl:grid-cols-2", className)}
         {...props}
       >
         {children}
@@ -78,7 +78,7 @@ function SplitMediaContent({
 }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("grid place-content-center gap-5 p-10", className)}
+      className={cn("grid gap-5 p-10 @2xl:place-content-center", className)}
       {...props}
     >
       {children}
