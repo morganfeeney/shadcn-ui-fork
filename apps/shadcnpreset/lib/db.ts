@@ -88,7 +88,12 @@ export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params: unknown[] = []
 ) {
-  await ensureDbInitialized()
+  // Keep auto-schema bootstrap for local/dev convenience (fresh DBs can run
+  // without a separate migration step), but disable it in production to avoid
+  // repeated CREATE TABLE/INDEX checks on request paths burning compute.
+  if (process.env.NODE_ENV !== "production") {
+    await ensureDbInitialized()
+  }
   const pool = getPool()
   return pool.query<T>(text, params)
 }
