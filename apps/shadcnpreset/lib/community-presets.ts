@@ -1,6 +1,5 @@
 import { query } from "@/lib/db"
 import { resolvePresetFromCode } from "@/lib/preset"
-import { cacheLife } from "next/cache"
 
 type CommunityPresetVoteRow = {
   preset_code: string
@@ -32,9 +31,6 @@ export async function isCommunityPresetCode(
   canonicalPresetCode: string,
   rawUrlCode?: string
 ): Promise<boolean> {
-  "use cache"
-  cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
-
   if (!process.env.DATABASE_URL) {
     return false
   }
