@@ -24,7 +24,7 @@ function SplitMediaHeading({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
       className={cn(
-        "text-xl font-medium tracking-tighter text-foreground @6xl:text-2xl",
+        "text-xl font-medium tracking-tighter text-foreground @6xl:text-3xl @6xl:font-normal",
         className
       )}
       {...props}
@@ -39,7 +39,7 @@ function SplitMediaSubHeading({
   return (
     <p
       className={cn(
-        "-mt-0.5 text-xl font-medium tracking-tighter text-muted-foreground @6xl:text-2xl",
+        "-mt-0.5 text-xl font-medium tracking-tighter text-muted-foreground @6xl:text-3xl @6xl:font-normal",
         className
       )}
       {...props}
@@ -53,7 +53,10 @@ function SplitMediaDescription({
 }: React.ComponentProps<"p">) {
   return (
     <p
-      className={cn("max-w-[50ch] text-sm text-muted-foreground", className)}
+      className={cn(
+        "max-w-[50ch] text-sm text-muted-foreground @6xl:text-base",
+        className
+      )}
       {...props}
     />
   )
@@ -93,7 +96,10 @@ function SplitMediaLink({
 }: React.ComponentProps<typeof Link>) {
   return (
     <Link
-      className={cn("flex items-center gap-2 text-sm", className)}
+      className={cn(
+        "flex items-center gap-2 text-sm @6xl:text-base",
+        className
+      )}
       {...props}
     >
       {children}
