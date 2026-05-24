@@ -22,7 +22,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@zippystarter": {
+    "@zippy-private": {
       "url": "https://zippystarter.com/api/r/{name}.json",
       "headers": {
         "Authorization": "Bearer ${REGISTRY_TOKEN}"
