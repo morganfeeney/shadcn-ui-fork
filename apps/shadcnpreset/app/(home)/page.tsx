@@ -18,6 +18,10 @@ import {
 import Image from "next/image"
 import NotoLight from "@/public/marketing/cta/notolight.png"
 import NotoDark from "@/public/marketing/cta/notodark.png"
+import SeraLight from "@/public/marketing/cta/seralight.png"
+import SeraDark from "@/public/marketing/cta/seradark.png"
+import WcagLight from "@/public/marketing/cta/wcaglight.png"
+import WcagDark from "@/public/marketing/cta/wcagdark.png"
 
 export default async function HomePage() {
   "use cache"
@@ -66,7 +70,7 @@ export default async function HomePage() {
         <SplitMedia>
           <div className="relative aspect-square">
             <Image
-              className="brightness-[4] grayscale dark:brightness-[2]"
+              className="brightness-400 grayscale dark:brightness-200"
               src="https://images.unsplash.com/photo-1691435828932-911a7801adfb?auto=format&fit=crop&w=1200&h=1200&crop=focalpoint&fp-x=0.25&fp-y=0.35&fp-z=2.8&q=80"
               alt=""
               fill
@@ -89,6 +93,38 @@ export default async function HomePage() {
               styles that match the direction you want to build.
             </SplitMediaDescription>
             <SplitMediaLink href="/community">Browse presets</SplitMediaLink>
+          </SplitMediaContent>
+        </SplitMedia>
+        <SplitMedia>
+          <div className="relative aspect-square">
+            <Image
+              className="dark:brightness-200"
+              src="https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1200&h=1200&q=80"
+              alt=""
+              fill
+            />
+            <div className="absolute top-[2.5%] left-[5%] h-[80%] w-[80%]">
+              <Image src={SeraLight} className="dark:hidden" alt="" fill />
+              <Image src={SeraDark} className="hidden dark:block" alt="" fill />
+            </div>
+            <div className="absolute right-[7.5%] bottom-[7.5%] h-[45%] w-[36.5%] overflow-hidden rounded-sm border shadow-lg drop-shadow-2xl">
+              <Image src={WcagLight} className="dark:hidden" alt="" fill />
+              <Image src={WcagDark} className="hidden dark:block" alt="" fill />
+            </div>
+          </div>
+          <SplitMediaContent>
+            <SplitMediaHeader>
+              <SplitMediaHeading>WCAG compliant presets</SplitMediaHeading>
+              <SplitMediaSubHeading>Color contrast ready</SplitMediaSubHeading>
+            </SplitMediaHeader>
+            <SplitMediaDescription>
+              Describe what you’re building or the vibe you want. AI surfaces
+              matching presets, shows real components, and helps you choose
+              fast. Free for a limited time only.
+            </SplitMediaDescription>
+            <SplitMediaLink href="/community">
+              Browse compliant presets
+            </SplitMediaLink>
           </SplitMediaContent>
         </SplitMedia>
       </div>
