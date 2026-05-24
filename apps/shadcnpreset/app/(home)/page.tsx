@@ -22,7 +22,7 @@ import SeraLight from "@/public/marketing/cta/seralight.png"
 import SeraDark from "@/public/marketing/cta/seradark.png"
 import WcagLight from "@/public/marketing/cta/wcaglight.png"
 import WcagDark from "@/public/marketing/cta/wcagdark.png"
-import { AvatarWithText } from "@/components/zippystarter/avatar-with-text"
+import { HomeTestimonials } from "@/app/(home)/home-testimonials"
 
 export default async function HomePage() {
   "use cache"
@@ -96,38 +96,7 @@ export default async function HomePage() {
             <SplitMediaLink href="/community">Browse presets</SplitMediaLink>
           </SplitMediaContent>
         </SplitMedia>
-        <div className="@container">
-          <div className="grid text-xl font-medium tracking-tighter @6xl:text-3xl">
-            <p className="text-foreground">Kind words</p>
-            <p className="text-muted-foreground">From the community</p>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="grid gap-10 bg-muted p-6">
-              <p className="text-base">“Brilliant use of presets”</p>
-              <AvatarWithText
-                className="self-end"
-                size="md"
-                name="shadcn"
-                src="/avatars/shadcn.png"
-                subtitle="Creator of shadcn/ui"
-              />
-            </div>
-            <div className="grid gap-10 bg-muted p-6">
-              <p className="text-base">
-                “If you want to create a preset in just a few moments using AI,
-                this is exactly the right solution. It’s also incredibly cool to
-                explore all the other presets created by the community.”
-              </p>
-              <AvatarWithText
-                className="self-end"
-                size="md"
-                name="Francesco Colombo"
-                src="/avatars/francesco.png"
-                subtitle="UX/UI Designer"
-              />
-            </div>
-          </div>
-        </div>
+        <HomeTestimonials />
         <SplitMedia>
           <div className="relative aspect-square">
             <Image
