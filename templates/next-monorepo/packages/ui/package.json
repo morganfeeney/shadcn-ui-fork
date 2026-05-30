@@ -24,7 +24,7 @@
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^9.39.2",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
