@@ -18,12 +18,16 @@ const TESTIMONIALS = [
 
 export function HomeTestimonials() {
   return (
-    <section className="@container">
+    <section className="@container grid gap-7">
       <div className="grid text-xl font-medium tracking-tighter @6xl:text-3xl">
-        <p className="text-foreground">Kind words</p>
-        <p className="text-muted-foreground">From the community</p>
+        <p className="text-xl font-medium tracking-tighter text-foreground @6xl:text-3xl @6xl:font-normal">
+          Kind words
+        </p>
+        <p className="-mt-0.5 text-xl font-medium tracking-tighter text-muted-foreground @6xl:text-3xl @6xl:font-normal">
+          From the community
+        </p>
       </div>
-      <div className="mt-4 grid gap-4 @5xl:grid-cols-2">
+      <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,350px),1fr))] gap-4">
         {TESTIMONIALS.map((testimonial) => (
           <article key={testimonial.name} className="grid gap-10 bg-muted p-6">
             <p className="pl-[0.5ch] -indent-[0.5ch] text-base leading-relaxed [hanging-punctuation:first]">
