@@ -10,7 +10,7 @@ This app now uses a snapshot-based flow for community ranking so build/runtime d
 
 ## Flow
 
-1. Vercel Cron triggers `GET /api/internal/community-snapshot/refresh` hourly.
+1. Vercel Cron triggers `GET /api/internal/community-snapshot/refresh` daily (Hobby plan limit).
 2. The refresh route queries `preset_votes` in Neon and gets ranked preset codes.
 3. Codes are normalized to canonical preset codes.
 4. Snapshot JSON is written to Vercel Blob.
@@ -59,6 +59,7 @@ Refresh endpoint authorization:
 Optional:
 
 - `COMMUNITY_SNAPSHOT_BLOB_PATH` (default: `community/community-presets-snapshot.json`)
+- `COMMUNITY_SNAPSHOT_BLOB_ACCESS` (default: `private`; set `public` only for public Blob stores)
 
 ## Local Development
 

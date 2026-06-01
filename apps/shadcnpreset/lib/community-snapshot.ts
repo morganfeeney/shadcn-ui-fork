@@ -9,6 +9,10 @@ const FALLBACK_PAGE_SIZE = 100
 const SNAPSHOT_BLOB_PATH =
   process.env.COMMUNITY_SNAPSHOT_BLOB_PATH ??
   "community/community-presets-snapshot.json"
+const SNAPSHOT_BLOB_ACCESS: "public" | "private" =
+  process.env.COMMUNITY_SNAPSHOT_BLOB_ACCESS === "public"
+    ? "public"
+    : "private"
 
 const snapshotSchema = z.object({
   generatedAt: z.string(),
@@ -134,6 +138,7 @@ export async function writeCommunitySnapshot(
   }
 
   await put(SNAPSHOT_BLOB_PATH, JSON.stringify(snapshot, null, 2), {
+    access: SNAPSHOT_BLOB_ACCESS,
     addRandomSuffix: false,
     contentType: "application/json; charset=utf-8",
   })
