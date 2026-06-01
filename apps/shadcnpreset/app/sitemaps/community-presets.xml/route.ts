@@ -1,4 +1,4 @@
-import { getCommunityPresetCodes } from "@/lib/community-presets"
+import { getCommunityPresetCodesForSitemap } from "@/lib/community-presets"
 import { siteConfig } from "@/lib/config"
 import { buildUrlSetXml } from "@/lib/sitemap"
 
@@ -6,7 +6,7 @@ export async function GET() {
   const nowIso = new Date().toISOString()
 
   try {
-    const codes = await getCommunityPresetCodes()
+    const codes = await getCommunityPresetCodesForSitemap()
     const entries = codes.map((code) => ({
       loc: `${siteConfig.url}/preset/${code}`,
       lastmod: nowIso,

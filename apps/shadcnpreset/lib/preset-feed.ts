@@ -1,15 +1,10 @@
-import { query } from "@/lib/db"
-import { resolvePresetFromCode } from "@/lib/preset"
+import { toPresetItems } from "@/lib/community-snapshot"
+import { getCommunityPresetCodesForDisplay } from "@/lib/community-presets"
 import {
   PRESET_TOTAL_COMBINATIONS,
   getPresetPage,
   type PresetPageItem,
 } from "@/lib/preset-catalog"
-
-type VoteRow = {
-  preset_code: string
-  votes: number
-}
 
 type PresetFeedPage = {
   items: PresetPageItem[]
@@ -48,7 +43,7 @@ export async function getHomepageFeed(limit = 100): Promise<PresetPageItem[]> {
   return homepageItems
 }
 
-/** Presets that appear in `preset_votes` at least once, most-voted first. No catalog backfill. */
+/** Snapshot-ranked presets for community pages. No catalog backfill. */
 export async function getVotedPresetsFeed(limit = 100): Promise<PresetPageItem[]> {
   const safeLimit = Math.min(100, Math.max(0, limit))
   const lovedItems = await getLovedItems()
@@ -65,26 +60,12 @@ export async function getVotedPresetsFeed(limit = 100): Promise<PresetPageItem[]
 }
 
 async function getLovedItems() {
-  const result = await query<VoteRow>(
-    `
-    SELECT preset_code, COUNT(*)::int as votes
-    FROM preset_votes
-    GROUP BY preset_code
-    ORDER BY votes DESC, preset_code ASC
-    `
-  )
-
-  const items: PresetPageItem[] = []
-  for (const row of result.rows) {
-    const preset = resolvePresetFromCode(row.preset_code)
-    if (!preset) continue
-    items.push({
-      index: 0,
-      code: preset.code,
-      config: preset,
-    })
+  if (process.env.DISABLE_VOTE_QUERIES === "1") {
+    return []
   }
-  return items
+
+  const codes = await getCommunityPresetCodesForDisplay(2000)
+  return toPresetItems(codes, 2000)
 }
 
 function collectDefaultItems(
