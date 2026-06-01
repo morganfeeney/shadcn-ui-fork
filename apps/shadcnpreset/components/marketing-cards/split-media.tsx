@@ -81,7 +81,10 @@ function SplitMediaContent({
 }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("grid gap-5 p-10 @2xl:place-content-center", className)}
+      className={cn(
+        "grid gap-5 p-6 @2xl:place-content-center @2xl:p-10",
+        className
+      )}
       {...props}
     >
       {children}
@@ -97,7 +100,7 @@ function SplitMediaLink({
   return (
     <Link
       className={cn(
-        "flex items-center gap-2 text-sm @6xl:text-base",
+        "flex items-center gap-2 justify-self-start text-sm @6xl:text-base",
         className
       )}
       {...props}

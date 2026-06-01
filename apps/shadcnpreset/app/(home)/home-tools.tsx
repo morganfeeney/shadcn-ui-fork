@@ -10,7 +10,7 @@ export function HomeTools() {
     <HomeSection title="Powerful free tools" subTitle="To help you ship">
       <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,350px),1fr))] gap-4">
         {TOOLS.map((tool) => (
-          <article key={tool.title} className="grid gap-8 bg-muted p-6">
+          <article key={tool.title} className="grid gap-5 bg-muted p-6">
             <div className="grid gap-2 self-start">
               <p className="text-lg font-display text-foreground">
                 {tool.title}
@@ -21,7 +21,9 @@ export function HomeTools() {
             </div>
             <Link
               href={tool.href}
-              className={cn("flex items-center gap-2 self-end text-sm")}
+              className={cn(
+                "flex items-center gap-2 self-end justify-self-start text-sm"
+              )}
             >
               Start using now
               <ArrowRightIcon size={16} />
