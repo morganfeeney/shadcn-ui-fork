@@ -1,4 +1,4 @@
-import { head, put } from "@vercel/blob"
+import { get, put } from "@vercel/blob"
 import { z } from "zod"
 
 import { resolvePresetFromCode } from "@/lib/preset"
@@ -93,11 +93,16 @@ async function readSnapshotPayload(): Promise<CommunitySnapshot | null> {
   }
 
   try {
-    const blob = await head(SNAPSHOT_BLOB_PATH)
-    const response = await fetch(blob.url, { cache: "no-store" })
-    if (!response.ok) return null
+    const result = await get(SNAPSHOT_BLOB_PATH, {
+      access: SNAPSHOT_BLOB_ACCESS,
+      useCache: false,
+    })
+    if (!result || result.statusCode !== 200 || !result.stream) {
+      return null
+    }
 
-    const parsed = snapshotSchema.safeParse(await response.json())
+    const rawText = await new Response(result.stream).text()
+    const parsed = snapshotSchema.safeParse(JSON.parse(rawText))
     if (!parsed.success) return null
     return parsed.data
   } catch {

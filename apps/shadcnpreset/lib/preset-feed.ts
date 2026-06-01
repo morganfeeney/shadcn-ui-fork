@@ -60,10 +60,6 @@ export async function getVotedPresetsFeed(limit = 100): Promise<PresetPageItem[]
 }
 
 async function getLovedItems() {
-  if (process.env.DISABLE_VOTE_QUERIES === "1") {
-    return []
-  }
-
   const codes = await getCommunityPresetCodesForDisplay(2000)
   return toPresetItems(codes, 2000)
 }
