@@ -134,7 +134,6 @@ export async function writeCommunitySnapshot(
   }
 
   await put(SNAPSHOT_BLOB_PATH, JSON.stringify(snapshot, null, 2), {
-    access: "public",
     addRandomSuffix: false,
     contentType: "application/json; charset=utf-8",
   })
