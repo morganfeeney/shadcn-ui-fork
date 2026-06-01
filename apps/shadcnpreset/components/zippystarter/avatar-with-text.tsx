@@ -9,7 +9,7 @@ const avatarWithTextVariants = cva("grid grid-cols-[auto_1fr] items-center", {
       "2xl": "gap-6 text-base",
       xl: "gap-4 text-base",
       lg: "gap-4 text-sm",
-      md: "gap-4 text-sm",
+      md: "gap-3 text-sm",
       sm: "gap-4 text-sm",
       xs: "gap-1 text-xs",
     },

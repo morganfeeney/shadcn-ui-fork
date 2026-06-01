@@ -1,4 +1,5 @@
 import { AvatarWithText } from "@/components/zippystarter/avatar-with-text"
+import { HomeSection } from "@/app/(home)/home-section"
 
 const TESTIMONIALS = [
   {
@@ -18,15 +19,7 @@ const TESTIMONIALS = [
 
 export function HomeTestimonials() {
   return (
-    <section className="@container grid gap-7">
-      <div className="grid text-xl font-medium tracking-tighter @6xl:text-3xl">
-        <p className="text-xl font-medium tracking-tighter text-foreground @6xl:text-3xl @6xl:font-normal">
-          Kind words
-        </p>
-        <p className="-mt-0.5 text-xl font-medium tracking-tighter text-muted-foreground @6xl:text-3xl @6xl:font-normal">
-          From the community
-        </p>
-      </div>
+    <HomeSection title="Kind words" subTitle="From the community">
       <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,350px),1fr))] gap-4">
         {TESTIMONIALS.map((testimonial) => (
           <article key={testimonial.name} className="grid gap-10 bg-muted p-6">
@@ -43,6 +36,6 @@ export function HomeTestimonials() {
           </article>
         ))}
       </div>
-    </section>
+    </HomeSection>
   )
 }

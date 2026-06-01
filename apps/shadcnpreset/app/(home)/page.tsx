@@ -23,6 +23,7 @@ import SeraDark from "@/public/marketing/cta/seradark.png"
 import WcagLight from "@/public/marketing/cta/wcaglight.png"
 import WcagDark from "@/public/marketing/cta/wcagdark.png"
 import { HomeTestimonials } from "@/app/(home)/home-testimonials"
+import { HomeTools } from "@/app/(home)/home-tools"
 
 export default async function HomePage() {
   "use cache"
@@ -129,6 +130,7 @@ export default async function HomePage() {
             </SplitMediaLink>
           </SplitMediaContent>
         </SplitMedia>
+        <HomeTools />
       </div>
       <Footer1 />
     </ContainerOuter>

@@ -196,7 +196,7 @@
 }
 
 @utility font-display {
-  @apply font-semibold tracking-tight;
+  @apply font-medium tracking-tighter;
 }
 
 @layer utilities {
