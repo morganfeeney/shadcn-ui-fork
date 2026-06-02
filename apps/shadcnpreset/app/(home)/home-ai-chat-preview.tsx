@@ -19,24 +19,24 @@ const CHAT_STEPS = [
   {
     key: "u-1",
     from: "user" as const,
-    text: "I want a modern look with tight spacing and muted colors",
+    text: "Educational app for kids",
   },
   {
     key: "a-1",
     from: "assistant" as const,
-    text: "By modern, do you mean sleek and minimal or bold and vibrant?",
+    text: "Are you looking for a fun, vibrant style or something more educational and calm?",
   },
   {
     key: "u-2",
     from: "user" as const,
-    text: "Sleek, muted colors, tight spacing",
+    text: "Fun · vibrant · playful",
   },
 ]
 
 const CHAT_COPY = {
   thinking: "Thinking and matching presets...",
   summary:
-    "Here are four presets matching that direction using subtle tones and clean spacing.",
+    'Here are four presets matching the phrase "fun, vibrant, playful" using the Nova style with bright colors and rounded fonts.',
 }
 
 type TimelineAction =
@@ -138,9 +138,9 @@ export function HomeAiChatPreview({
   return (
     <div
       ref={rootRef}
-      className="relative aspect-square overflow-hidden bg-[#d8d4cf] p-4 @2xl:p-5 dark:bg-zinc-600"
+      className="relative aspect-square overflow-hidden bg-[#d8d4cf] @2xl:p-5 dark:bg-zinc-600"
     >
-      <div className="relative grid h-full w-full content-start gap-6 overflow-hidden rounded-xl bg-background p-3">
+      <div className="relative grid h-full w-full content-start gap-6 overflow-hidden rounded-xl bg-background p-6">
         <div className="grid gap-6 text-[10px] leading-4 @2xl:text-xs">
           {CHAT_STEPS.slice(0, visibleStepCount).map((step) => (
             <motion.div

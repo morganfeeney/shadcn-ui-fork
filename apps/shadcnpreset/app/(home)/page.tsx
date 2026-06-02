@@ -2,6 +2,7 @@ import { HomeHero } from "@/components/home-hero"
 import { HomeHeroButtons, HomePresetCarousel } from "@/app/(home)/components"
 import { getHomepageFeed } from "@/lib/preset-feed"
 import { formatPresetCardDescription } from "@/lib/preset-card-description"
+import { resolvePresetFromCode } from "@/lib/preset"
 import { Header1 } from "@/components/zippystarter/header1"
 import { Footer1 } from "@/components/zippystarter/footer1"
 import { ContainerOuter } from "@/components/zippystarter/container"
@@ -26,15 +27,27 @@ import { HomeTestimonials } from "@/app/(home)/home-testimonials"
 import { HomeTools } from "@/app/(home)/home-tools"
 import { HomeAiChatPreview } from "@/app/(home)/home-ai-chat-preview"
 
+const HOME_AI_PRESET_CODES = [
+  "b3Qvr2po0",
+  "b43eDL5Kq",
+  "b6F9LTKNU",
+  "b2BVCNzPU",
+]
+
 export default async function HomePage() {
   "use cache"
   cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
 
   const featuredPresets = await getHomepageFeed(16)
-  const aiPreviewPresets = featuredPresets.slice(0, 4).map((item) => ({
-    code: item.code,
-    description: formatPresetCardDescription(item.config),
-  }))
+  const aiPreviewPresets = HOME_AI_PRESET_CODES.map((code) => {
+    const resolved = resolvePresetFromCode(code)
+    return {
+      code,
+      description: resolved
+        ? formatPresetCardDescription(resolved)
+        : "Preset preview",
+    }
+  })
 
   return (
     <ContainerOuter className="grid min-h-screen grid-rows-[auto_1fr_auto]">
