@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion } from "motion/react"
+import { motion } from "motion/react"
 import {
   Message,
   MessageContent,
@@ -158,31 +158,27 @@ export function HomeAiChatPreview({
           ))}
         </div>
         <div>
-          <AnimatePresence mode="wait">
-            {showThinking ? (
-              <motion.div
-                key="thinking"
-                initial={{ opacity: 0, y: 8, scale: 0.985 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.99 }}
-                transition={stepTransition}
-              >
-                <Message from="assistant">
-                  <MessageContent className="w-full rounded-lg">
-                    <Shimmer className="text-xs">{CHAT_COPY.thinking}</Shimmer>
-                    <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
-                      {Array.from({ length: 4 }, (_, index) => (
-                        <div
-                          key={`pending-card-${index}`}
-                          className="h-28 animate-pulse rounded-lg border border-border/60 bg-muted/30 @2xl:h-32"
-                        />
-                      ))}
-                    </div>
-                  </MessageContent>
-                </Message>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+          {showThinking ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={stepTransition}
+            >
+              <Message from="assistant">
+                <MessageContent className="w-full rounded-lg">
+                  <Shimmer className="text-xs">{CHAT_COPY.thinking}</Shimmer>
+                  <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
+                    {Array.from({ length: 4 }, (_, index) => (
+                      <div
+                        key={`pending-card-${index}`}
+                        className="h-28 animate-pulse rounded-lg border border-border/60 bg-muted/30 @2xl:h-32"
+                      />
+                    ))}
+                  </div>
+                </MessageContent>
+              </Message>
+            </motion.div>
+          ) : null}
 
           {showResults ? (
             <motion.div
