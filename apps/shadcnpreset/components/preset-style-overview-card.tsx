@@ -35,6 +35,18 @@ type PresetStyleOverviewCardProps = {
   className?: string
 }
 
+type PresetStyleOverviewCardRootProps = React.ComponentProps<typeof Card>
+
+type PresetStyleOverviewCardPreviewProps = {
+  code: string
+  title: string
+  description: string
+  previewVariant?: "inline" | "v4-iframe"
+  previewStepOrder?: readonly PresetPreviewStepItem[]
+  virtualWidth?: number
+  virtualHeight?: number
+}
+
 const voteTapTransition = {
   type: "spring" as const,
   stiffness: 520,
@@ -125,15 +137,56 @@ export function PresetStyleOverviewCard({
   virtualHeight = 700,
   className,
 }: PresetStyleOverviewCardProps) {
+  return (
+    <PresetStyleOverviewCardRoot className={className}>
+      <PresetStyleOverviewCardPreview
+        code={code}
+        title={title}
+        description={description}
+        previewVariant={previewVariant}
+        previewStepOrder={previewStepOrder}
+        virtualWidth={virtualWidth}
+        virtualHeight={virtualHeight}
+      />
+      <PresetStyleOverviewCardDefaultFooter
+        code={code}
+        title={title}
+        description={description}
+      />
+    </PresetStyleOverviewCardRoot>
+  )
+}
+
+export function PresetStyleOverviewCardRoot({
+  className,
+  children,
+  ...props
+}: PresetStyleOverviewCardRootProps) {
+  return (
+    <Card
+      className={cn("relative gap-0 rounded-sm bg-background pt-0 ring-0", className)}
+      {...props}
+    >
+      <div className="pointer-events-none relative z-10 flex flex-col">{children}</div>
+    </Card>
+  )
+}
+
+export function PresetStyleOverviewCardPreview({
+  code,
+  title,
+  description,
+  previewVariant = "inline",
+  previewStepOrder,
+  virtualWidth = 1400,
+  virtualHeight = 700,
+}: PresetStyleOverviewCardPreviewProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
   const [shouldRender, setShouldRender] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
-  /** Bumped only on this card's “add vote” click — not derived from `hasVoted` (reorder/async would replay). */
-  const [voteCelebrateGeneration, setVoteCelebrateGeneration] = useState(0)
   const isMobile = useIsMobile()
   const pathname = usePathname()
-  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     const node = wrapperRef.current
@@ -191,14 +244,6 @@ export function PresetStyleOverviewCard({
   const canRenderPreview = isV4Iframe
     ? shouldRender && containerWidth > 0 && previewSrc !== null
     : shouldRender && containerWidth > 0
-  const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(
-    code,
-    {
-      enabled: shouldRender,
-    }
-  )
-
-  const isAssistantSurface = pathname.startsWith("/assistant")
 
   function handlePreview() {
     trackEvent("preset_preview", {
@@ -209,7 +254,7 @@ export function PresetStyleOverviewCard({
       page_path: pathname,
       preset_code: code,
     })
-    if (isAssistantSurface) {
+    if (pathname.startsWith("/assistant")) {
       trackEvent("ai_assistant_result_click", {
         page_path: pathname,
         result_type: "action",
@@ -219,12 +264,118 @@ export function PresetStyleOverviewCard({
     setPreviewOpen(true)
   }
 
+  return (
+    <>
+      <button
+        type="button"
+        className={cn(
+          "absolute inset-0 z-0 rounded-sm border border-transparent bg-transparent p-0 transition-all outline-none select-none",
+          "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+        )}
+        aria-label={`Open preview for ${title}`}
+        onClick={handlePreview}
+      />
+
+      <div
+        ref={wrapperRef}
+        className="relative w-full overflow-hidden rounded-sm border"
+        style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
+      >
+        {showV4UrlError ? (
+          <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
+            Live preview URL could not be built for this preset code.
+          </div>
+        ) : canRenderPreview ? (
+          isV4Iframe ? (
+            <StyleOverviewV4ScaledPreview
+              key={previewSrc}
+              code={code}
+              scale={scale}
+              src={previewSrc!}
+              virtualHeight={virtualHeight}
+              virtualWidth={virtualWidth}
+            />
+          ) : (
+            <>
+              <CardContent
+                className="pointer-events-none absolute inset-0 p-0"
+                style={{
+                  width: virtualWidth,
+                  height: virtualHeight,
+                  transform: `scale(${scale})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                <div className="size-full" inert>
+                  <PresetCard1StyleOverview initialCode={code} className="h-full w-full" />
+                </div>
+              </CardContent>
+              <div
+                aria-hidden
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
+              >
+                <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
+                <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
+                  <span className={cn(buttonVariants())}>Preview</span>
+                </span>
+              </div>
+            </>
+          )
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </div>
+        )}
+      </div>
+
+      <PresetPreviewDialog
+        code={code}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title={title}
+        description={description}
+        previewStepOrder={previewStepOrder}
+      />
+    </>
+  )
+}
+
+export function PresetStyleOverviewCardFooter({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof CardFooter>) {
+  return (
+    <CardFooter
+      className={cn("grid justify-items-start gap-0.5 border-0 bg-background px-2 pt-2 pb-0", className)}
+      {...props}
+    >
+      {children}
+    </CardFooter>
+  )
+}
+
+export function PresetStyleOverviewCardDefaultFooter({
+  code,
+  title,
+  description,
+}: {
+  code: string
+  title: string
+  description: string
+}) {
+  /** Bumped only on this card's “add vote” click — not derived from `hasVoted` (reorder/async would replay). */
+  const [voteCelebrateGeneration, setVoteCelebrateGeneration] = useState(0)
+  const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
+  const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(code)
+
   function handleVoteClick() {
     trackEvent("preset_vote_click", {
       page_path: pathname,
       preset_code: code,
     })
-    if (isAssistantSurface) {
+    if (pathname.startsWith("/assistant")) {
       trackEvent("ai_assistant_result_click", {
         page_path: pathname,
         result_type: "action",
@@ -238,141 +389,51 @@ export function PresetStyleOverviewCard({
   }
 
   return (
-    <Card
-      className={cn(
-        "relative gap-0 rounded-sm bg-background pt-0 ring-0",
-        className
-      )}
-    >
-      <button
-        type="button"
-        className={cn(
-          "absolute inset-0 z-0 rounded-sm border border-transparent bg-transparent p-0 transition-all outline-none select-none",
-          "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
-        )}
-        aria-label={`Open preview for ${title}`}
-        onClick={handlePreview}
-      />
-
-      <div className="pointer-events-none relative z-10 flex flex-col">
-        <div
-          ref={wrapperRef}
-          className="relative w-full overflow-hidden rounded-sm border"
-          style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
-        >
-          {showV4UrlError ? (
-            <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
-              Live preview URL could not be built for this preset code.
-            </div>
-          ) : canRenderPreview ? (
-            isV4Iframe ? (
-              <StyleOverviewV4ScaledPreview
-                key={previewSrc}
-                code={code}
-                scale={scale}
-                src={previewSrc!}
-                virtualHeight={virtualHeight}
-                virtualWidth={virtualWidth}
-              />
-            ) : (
-              <>
-                <CardContent
-                  className="pointer-events-none absolute inset-0 p-0"
-                  style={{
-                    width: virtualWidth,
-                    height: virtualHeight,
-                    transform: `scale(${scale})`,
-                    transformOrigin: "top left",
-                  }}
-                >
-                  <div className="size-full" inert>
-                    <PresetCard1StyleOverview
-                      initialCode={code}
-                      className="h-full w-full"
-                    />
-                  </div>
-                </CardContent>
-                <div
-                  aria-hidden
-                  className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
-                >
-                  <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
-                  <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
-                    <span className={cn(buttonVariants())}>Preview</span>
-                  </span>
-                </div>
-              </>
-            )
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Spinner />
-            </div>
-          )}
+    <PresetStyleOverviewCardFooter>
+      <div className="flex w-full justify-between gap-2">
+        <div>
+          <p className="truncate font-mono text-sm font-medium">{title}</p>
+          <p className="line-clamp-1 text-xs text-muted-foreground">{description}</p>
         </div>
-
-        <PresetPreviewDialog
-          code={code}
-          open={previewOpen}
-          onOpenChange={setPreviewOpen}
-          title={title}
-          description={description}
-          previewStepOrder={previewStepOrder}
-        />
-
-        <CardFooter className="grid justify-items-start gap-0.5 border-0 bg-background px-2 pt-2 pb-0">
-          <div className="flex w-full justify-between gap-2">
-            <div>
-              <p className="truncate font-mono text-sm font-medium">{title}</p>
-              <p className="line-clamp-1 text-xs text-muted-foreground">
-                {description}
-              </p>
-            </div>
-          </div>
-          <Button
-            className={cn(
-              "pointer-events-auto -ml-2.5 rounded-full",
-              hasVoted
-                ? "bg-destructive/20 fill-destructive text-destructive"
-                : "text-muted-foreground"
-            )}
-            onClick={handleVoteClick}
-            disabled={isVoting}
-            aria-pressed={hasVoted}
-            variant="ghost"
-            title={
-              authStatus === "authenticated"
-                ? "Vote for this preset"
-                : "Sign in to vote"
+      </div>
+      <Button
+        className={cn(
+          "pointer-events-auto -ml-2.5 rounded-full",
+          hasVoted
+            ? "bg-destructive/20 fill-destructive text-destructive"
+            : "text-muted-foreground"
+        )}
+        onClick={handleVoteClick}
+        disabled={isVoting}
+        aria-pressed={hasVoted}
+        variant="ghost"
+        title={
+          authStatus === "authenticated" ? "Vote for this preset" : "Sign in to vote"
+        }
+      >
+        <motion.span
+          className="inline-flex items-center gap-1.5"
+          whileTap={
+            reduceMotion || isVoting
+              ? undefined
+              : { scale: 0.88, transition: voteTapTransition }
+          }
+        >
+          <motion.span
+            key={voteCelebrateGeneration}
+            className="inline-flex will-change-transform"
+            initial={false}
+            animate={
+              reduceMotion || voteCelebrateGeneration === 0
+                ? heartMotionRest
+                : heartMotionCelebrate
             }
           >
-            <motion.span
-              className="inline-flex items-center gap-1.5"
-              whileTap={
-                reduceMotion || isVoting
-                  ? undefined
-                  : { scale: 0.88, transition: voteTapTransition }
-              }
-            >
-              <motion.span
-                key={voteCelebrateGeneration}
-                className="inline-flex will-change-transform"
-                initial={false}
-                animate={
-                  reduceMotion || voteCelebrateGeneration === 0
-                    ? heartMotionRest
-                    : heartMotionCelebrate
-                }
-              >
-                <HeartIcon
-                  className="size-3.5"
-                  weight={hasVoted ? "fill" : "regular"}
-                />
-              </motion.span>
-              <span className="tabular-nums">{voteCount}</span>
-            </motion.span>
-          </Button>
-        </CardFooter>
-      </div>
-    </Card>
+            <HeartIcon className="size-3.5" weight={hasVoted ? "fill" : "regular"} />
+          </motion.span>
+          <span className="tabular-nums">{voteCount}</span>
+        </motion.span>
+      </Button>
+    </PresetStyleOverviewCardFooter>
   )
 }

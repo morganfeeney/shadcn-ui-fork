@@ -8,7 +8,10 @@ import {
   MessageResponse,
 } from "@/components/ai-elements/message"
 import { Shimmer } from "@/components/ai-elements/shimmer"
-import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
+import {
+  PresetStyleOverviewCardPreview,
+  PresetStyleOverviewCardRoot,
+} from "@/components/preset-style-overview-card"
 
 export type HomeAiPreviewPreset = {
   code: string
@@ -191,13 +194,16 @@ export function HomeAiChatPreview({
                   <MessageResponse>{CHAT_COPY.summary}</MessageResponse>
                   <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
                     {presets.slice(0, visibleCards).map((preset) => (
-                      <PresetStyleOverviewCard
+                      <PresetStyleOverviewCardRoot
                         key={preset.code}
-                        code={preset.code}
-                        title={preset.code}
-                        description={preset.description}
                         className="pointer-events-none overflow-hidden motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in motion-safe:slide-in-from-top-1"
-                      />
+                      >
+                        <PresetStyleOverviewCardPreview
+                          code={preset.code}
+                          title={preset.code}
+                          description={preset.description}
+                        />
+                      </PresetStyleOverviewCardRoot>
                     ))}
                   </div>
                 </MessageContent>
