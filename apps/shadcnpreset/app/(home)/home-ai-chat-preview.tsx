@@ -71,7 +71,7 @@ export function HomeAiChatPreview({
   const [hasStarted, setHasStarted] = useState(false)
   const [visibleStepCount, setVisibleStepCount] = useState(0)
   const [showThinking, setShowThinking] = useState(false)
-  const [showSummary, setShowSummary] = useState(false)
+  const [showResults, setshowResults] = useState(false)
   const [visibleCards, setVisibleCards] = useState(0)
 
   const stepTransition = {
@@ -119,7 +119,7 @@ export function HomeAiChatPreview({
             break
           case "show-summary":
             setShowThinking(false)
-            setShowSummary(true)
+            setshowResults(true)
             break
           case "show-cards":
             setVisibleCards(action.count)
@@ -140,7 +140,7 @@ export function HomeAiChatPreview({
       ref={rootRef}
       className="relative aspect-square overflow-hidden bg-[#d8d4cf] p-4 @2xl:p-5 dark:bg-zinc-600"
     >
-      <div className="relative grid h-full w-full items-start gap-6 overflow-hidden rounded-xl bg-background p-3">
+      <div className="relative grid h-full w-full content-start gap-6 overflow-hidden rounded-xl bg-background p-3">
         <div className="grid gap-6 text-[10px] leading-4 @2xl:text-xs">
           {CHAT_STEPS.slice(0, visibleStepCount).map((step) => (
             <motion.div
@@ -162,46 +162,52 @@ export function HomeAiChatPreview({
             {showThinking ? (
               <motion.div
                 key="thinking"
-                className="mt-3"
                 initial={{ opacity: 0, y: 8, scale: 0.985 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.99 }}
                 transition={stepTransition}
               >
                 <Message from="assistant">
-                  <MessageContent className="w-full rounded-lg border border-border/60 p-3">
+                  <MessageContent className="w-full rounded-lg">
                     <Shimmer className="text-xs">{CHAT_COPY.thinking}</Shimmer>
+                    <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
+                      {Array.from({ length: 4 }, (_, index) => (
+                        <div
+                          key={`pending-card-${index}`}
+                          className="h-28 animate-pulse rounded-lg border border-border/60 bg-muted/30 @2xl:h-32"
+                        />
+                      ))}
+                    </div>
                   </MessageContent>
                 </Message>
               </motion.div>
             ) : null}
           </AnimatePresence>
 
-          {showSummary ? (
+          {showResults ? (
             <motion.div
               initial={{ opacity: 0, y: 8, scale: 0.985 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={stepTransition}
             >
-              <Message from="assistant" className="max-w-full">
+              <Message from="assistant">
                 <MessageContent>
                   <MessageResponse>{CHAT_COPY.summary}</MessageResponse>
+                  <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
+                    {presets.slice(0, visibleCards).map((preset) => (
+                      <PresetStyleOverviewCard
+                        key={preset.code}
+                        code={preset.code}
+                        title={preset.code}
+                        description={preset.description}
+                        className="pointer-events-none overflow-hidden motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in motion-safe:slide-in-from-top-1"
+                      />
+                    ))}
+                  </div>
                 </MessageContent>
               </Message>
             </motion.div>
           ) : null}
-
-          <div className="mt-3 grid grid-cols-2 gap-2 @2xl:mt-4 @2xl:gap-3">
-            {presets.slice(0, visibleCards).map((preset) => (
-              <PresetStyleOverviewCard
-                key={preset.code}
-                code={preset.code}
-                title={preset.code}
-                description={preset.description}
-                className="pointer-events-none overflow-hidden motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in motion-safe:slide-in-from-bottom-1"
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
