@@ -24,12 +24,17 @@ import WcagLight from "@/public/marketing/cta/wcaglight.png"
 import WcagDark from "@/public/marketing/cta/wcagdark.png"
 import { HomeTestimonials } from "@/app/(home)/home-testimonials"
 import { HomeTools } from "@/app/(home)/home-tools"
+import { HomeAiChatPreview } from "@/app/(home)/home-ai-chat-preview"
 
 export default async function HomePage() {
   "use cache"
   cacheLife({ stale: 300, revalidate: 300, expire: 86400 })
 
   const featuredPresets = await getHomepageFeed(16)
+  const aiPreviewPresets = featuredPresets.slice(0, 4).map((item) => ({
+    code: item.code,
+    description: formatPresetCardDescription(item.config),
+  }))
 
   return (
     <ContainerOuter className="grid min-h-screen grid-rows-[auto_1fr_auto]">
@@ -67,7 +72,7 @@ export default async function HomePage() {
               Ask AI to find your prefect preset
             </SplitMediaLink>
           </SplitMediaContent>
-          media
+          <HomeAiChatPreview presets={aiPreviewPresets} />
         </SplitMedia>
         <SplitMedia>
           <div className="relative aspect-square">
@@ -94,7 +99,7 @@ export default async function HomePage() {
               Compare presets visually, inspect design decisions, and discover
               styles that match the direction you want to build.
             </SplitMediaDescription>
-            <SplitMediaLink href="/community">Browse presets</SplitMediaLink>
+            <SplitMediaLink href="/community">Explore presets</SplitMediaLink>
           </SplitMediaContent>
         </SplitMedia>
         <HomeTestimonials />
