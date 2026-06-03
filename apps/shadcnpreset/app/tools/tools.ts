@@ -38,7 +38,7 @@ export const FIGMA_FILTER_CSS_TOOL = {
 export const PRESET_FIGMA_PLUGIN = {
   slug: "shadcn-preset-variables",
   href: "https://www.figma.com/community/plugin/1629785761451501897",
-  title: "Shadcn preset variables Figma plugin",
+  title: "shadcn preset variables Figma plugin",
   cardDescription:
     "Enter a preset code, generate, and get light / dark mode variables for the shadcn preset theme, perfect for syncing Figma designs with code.",
 }
