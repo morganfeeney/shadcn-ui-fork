@@ -12,6 +12,7 @@ import {
   PresetStyleOverviewCardPreview,
   PresetStyleOverviewCardRoot,
 } from "@/components/preset-style-overview-card"
+import { cn } from "@/lib/utils"
 
 export type HomeAiPreviewPreset = {
   code: string
@@ -67,8 +68,10 @@ const VIEWPORT_THRESHOLD = 0.4
 
 export function HomeAiChatPreview({
   presets,
+  className,
 }: {
   presets: HomeAiPreviewPreset[]
+  className?: string
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [hasStarted, setHasStarted] = useState(false)
@@ -141,76 +144,77 @@ export function HomeAiChatPreview({
   return (
     <div
       ref={rootRef}
-      className="relative aspect-square overflow-hidden bg-[#d8d4cf] @2xl:p-5 dark:bg-zinc-600"
+      className={cn(
+        "relative grid h-full w-full content-start gap-6 overflow-hidden bg-background p-6",
+        className
+      )}
     >
-      <div className="relative grid h-full w-full content-start gap-6 overflow-hidden rounded-xl bg-background p-6">
-        <div className="grid gap-6 text-[10px] leading-4 @2xl:text-xs">
-          {CHAT_STEPS.slice(0, visibleStepCount).map((step) => (
-            <motion.div
-              key={step.key}
-              initial={{ opacity: 0, y: 8, scale: 0.985 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={stepTransition}
-            >
-              <Message from={step.from}>
-                <MessageContent>
-                  <MessageResponse>{step.text}</MessageResponse>
-                </MessageContent>
-              </Message>
-            </motion.div>
-          ))}
-        </div>
-        <div>
-          {showThinking ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.985 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={stepTransition}
-            >
-              <Message from="assistant">
-                <MessageContent className="w-full rounded-lg">
-                  <Shimmer className="text-xs">{CHAT_COPY.thinking}</Shimmer>
-                  <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
-                    {Array.from({ length: 4 }, (_, index) => (
-                      <div
-                        key={`pending-card-${index}`}
-                        className="h-28 animate-pulse rounded-lg border border-border/60 bg-muted/30 @2xl:h-32"
-                      />
-                    ))}
-                  </div>
-                </MessageContent>
-              </Message>
-            </motion.div>
-          ) : null}
+      <div className="grid gap-6 text-[10px] leading-4 @2xl:text-xs">
+        {CHAT_STEPS.slice(0, visibleStepCount).map((step) => (
+          <motion.div
+            key={step.key}
+            initial={{ opacity: 0, y: 8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={stepTransition}
+          >
+            <Message from={step.from}>
+              <MessageContent>
+                <MessageResponse>{step.text}</MessageResponse>
+              </MessageContent>
+            </Message>
+          </motion.div>
+        ))}
+      </div>
+      <div>
+        {showThinking ? (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={stepTransition}
+          >
+            <Message from="assistant">
+              <MessageContent className="w-full rounded-lg">
+                <Shimmer className="text-xs">{CHAT_COPY.thinking}</Shimmer>
+                <div className="mt-3 grid grid-cols-2 gap-3 @2xl:gap-5">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <div
+                      key={`pending-card-${index}`}
+                      className="h-28 animate-pulse rounded-lg border border-border/60 bg-muted/30 @2xl:h-32"
+                    />
+                  ))}
+                </div>
+              </MessageContent>
+            </Message>
+          </motion.div>
+        ) : null}
 
-          {showResults ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.985 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={stepTransition}
-            >
-              <Message from="assistant">
-                <MessageContent>
-                  <MessageResponse>{CHAT_COPY.summary}</MessageResponse>
-                  <div className="mt-3 grid grid-cols-2 gap-2 @2xl:gap-3">
-                    {presets.slice(0, visibleCards).map((preset) => (
-                      <PresetStyleOverviewCardRoot
-                        key={preset.code}
-                        className="pointer-events-none overflow-hidden motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in motion-safe:slide-in-from-top-1"
-                      >
-                        <PresetStyleOverviewCardPreview
-                          code={preset.code}
-                          title={preset.code}
-                          description={preset.description}
-                        />
-                      </PresetStyleOverviewCardRoot>
-                    ))}
-                  </div>
-                </MessageContent>
-              </Message>
-            </motion.div>
-          ) : null}
-        </div>
+        {showResults ? (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={stepTransition}
+          >
+            <Message from="assistant">
+              <MessageContent>
+                <MessageResponse>{CHAT_COPY.summary}</MessageResponse>
+                <div className="mt-3 grid grid-cols-2 gap-3 @2xl:gap-5">
+                  {presets.slice(0, visibleCards).map((preset) => (
+                    <PresetStyleOverviewCardRoot
+                      key={preset.code}
+                      className="pointer-events-none overflow-hidden motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in motion-safe:slide-in-from-bottom-1"
+                    >
+                      <PresetStyleOverviewCardPreview
+                        code={preset.code}
+                        title={preset.code}
+                        description={preset.description}
+                      />
+                    </PresetStyleOverviewCardRoot>
+                  ))}
+                </div>
+              </MessageContent>
+            </Message>
+          </motion.div>
+        ) : null}
       </div>
     </div>
   )

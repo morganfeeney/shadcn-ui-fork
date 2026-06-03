@@ -82,10 +82,21 @@ export default async function HomePage() {
               fast. Free for a limited time only.
             </SplitMediaDescription>
             <SplitMediaLink href="/assistant">
-              Ask AI to find your prefect preset
+              Use AI to find your perfect preset
             </SplitMediaLink>
           </SplitMediaContent>
-          <HomeAiChatPreview presets={aiPreviewPresets} />
+          <div className="relative aspect-square overflow-hidden">
+            <Image
+              className="brightness-90 dark:brightness-50"
+              src="https://images.unsplash.com/photo-1604147706283-d7119b5b822c?auto=format&fit=crop&w=1200&h=1200&q=80"
+              alt=""
+              fill
+            />
+            <HomeAiChatPreview
+              presets={aiPreviewPresets}
+              className="top-[4%] left-[4%] h-[92%] w-[92%] rounded-xs"
+            />
+          </div>
         </SplitMedia>
         <SplitMedia>
           <div className="relative aspect-square">
