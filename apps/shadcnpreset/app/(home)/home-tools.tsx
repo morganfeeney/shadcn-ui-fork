@@ -1,8 +1,14 @@
 "use client"
 import { HomeSection } from "@/app/(home)/home-section"
+import {
+  ToolCard,
+  ToolCardDescription,
+  ToolCardFooter,
+  ToolCardHeader,
+  ToolCardTitle,
+} from "@/components/tool-card"
 import { TOOLS } from "@/app/tools/tools"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
 import { ArrowRightIcon } from "@phosphor-icons/react"
 
 export function HomeTools() {
@@ -10,25 +16,23 @@ export function HomeTools() {
     <HomeSection title="Powerful free tools" subTitle="To help you ship">
       <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,350px),1fr))] gap-4">
         {TOOLS.map((tool) => (
-          <article key={tool.title} className="grid gap-5 bg-muted p-6">
-            <div className="grid gap-2 self-start">
-              <p className="text-lg font-display text-foreground">
-                {tool.title}
-              </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
+          <ToolCard key={tool.title}>
+            <ToolCardHeader>
+              <ToolCardTitle>{tool.title}</ToolCardTitle>
+              <ToolCardDescription>
                 {tool.cardDescription}
-              </p>
-            </div>
-            <Link
-              href={tool.href}
-              className={cn(
-                "flex items-center gap-2 self-end justify-self-start text-sm"
-              )}
-            >
-              Start using now
-              <ArrowRightIcon size={16} />
-            </Link>
-          </article>
+              </ToolCardDescription>
+            </ToolCardHeader>
+            <ToolCardFooter>
+              <Link
+                href={tool.href}
+                className="flex items-center gap-2 text-sm"
+              >
+                Start using now
+                <ArrowRightIcon size={16} />
+              </Link>
+            </ToolCardFooter>
+          </ToolCard>
         ))}
       </div>
     </HomeSection>
