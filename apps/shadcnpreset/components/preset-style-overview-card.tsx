@@ -167,7 +167,7 @@ export function PresetStyleOverviewCardRoot({
       className={cn("relative gap-0 rounded-sm bg-background pt-0 ring-0", className)}
       {...props}
     >
-      <div className="pointer-events-none relative z-10 flex flex-col">{children}</div>
+      <div className="relative z-10 flex flex-col">{children}</div>
     </Card>
   )
 }
@@ -266,21 +266,20 @@ export function PresetStyleOverviewCardPreview({
 
   return (
     <>
-      <button
-        type="button"
-        className={cn(
-          "absolute inset-0 z-0 rounded-sm border border-transparent bg-transparent p-0 transition-all outline-none select-none",
-          "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
-        )}
-        aria-label={`Open preview for ${title}`}
-        onClick={handlePreview}
-      />
-
       <div
         ref={wrapperRef}
         className="relative w-full overflow-hidden rounded-sm border"
         style={{ aspectRatio: `${virtualWidth} / ${virtualHeight}` }}
       >
+        <button
+          type="button"
+          className={cn(
+            "absolute inset-0 z-30 rounded-sm border border-transparent bg-transparent p-0 transition-all outline-none select-none",
+            "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+          )}
+          aria-label={`Open preview for ${title}`}
+          onClick={handlePreview}
+        />
         {showV4UrlError ? (
           <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
             Live preview URL could not be built for this preset code.
