@@ -8,19 +8,13 @@ import React from "react"
 import { siteConfig } from "@/lib/config"
 import { OpenPresetDialog } from "@/components/open-preset-dialog"
 import { CurrentYear } from "@/components/current-year"
+import { TOOLS } from "@/app/tools/tools"
 
 const COLUMNS = [
   {
     header: "Tools",
     links: [
-      {
-        label: "Preset Theme CSS Generator",
-        href: "/tools/preset-theme-generator",
-      },
-      {
-        label: "Preset color contrast checker",
-        href: "/tools/color-contrast-checker",
-      },
+      ...TOOLS.map((t) => ({ label: t.title, href: t.href })),
       {
         label: "shadcn theme generator",
         href: "https://zippystarter.com/tools/shadcn-ui-theme-generator",
@@ -88,8 +82,8 @@ function FooterColumn({ header, links }: FooterColumn) {
     <div className="grid gap-5 text-sm">
       <p className="inline-grid font-display text-foreground">{header}</p>
       <ul className="grid gap-4">
-        {links.map((link) => (
-          <li key={link.label}>
+        {links.map((link, index) => (
+          <li key={link.label + index}>
             {"href" in link ? (
               <Link
                 href={link.href}

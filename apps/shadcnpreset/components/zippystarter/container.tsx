@@ -50,7 +50,7 @@ export function Container({
         data-slot="container-inner"
         className={cn(
           className,
-          "relative z-10 mx-auto w-full max-w-500 px-safe"
+          "relative z-10 mx-auto w-full max-w-400 px-safe"
         )}
       >
         {children}

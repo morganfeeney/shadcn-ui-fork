@@ -25,16 +25,27 @@ export const PRESET_COLOR_CONTRAST_TOOL = {
     "Check WCAG contrast for core theme token pairs from a preset code, with light and dark previews.",
 } as const
 
+export const FIGMA_FILTER_CSS_TOOL = {
+  slug: "image-filter-generator",
+  href: "/tools/image-filter-generator",
+  title: "Tailwind / CSS Image filter generator",
+  description:
+    "Use presets or configure image filters in real-time to generate Tailwind utility or vanilla CSS output.",
+  cardDescription:
+    "Use presets or configure image filters in real-time to generate Tailwind utility or vanilla CSS output.",
+} as const
+
 export const PRESET_FIGMA_PLUGIN = {
   slug: "shadcn-preset-variables",
   href: "https://www.figma.com/community/plugin/1629785761451501897",
-  title: "Shadcn preset variables Figma plugin",
+  title: "shadcn preset variables Figma plugin",
   cardDescription:
-    "Enter a preset code, click generate, and you get light and dark mode variables for the shadcn theme belonging to that preset, perfect for syncing your Figma designs with your codebase.",
+    "Enter a preset code, generate, and get light / dark mode variables for the shadcn preset theme, perfect for syncing Figma designs with code.",
 }
 
 export const TOOLS = [
   PRESET_THEME_GENERATOR_TOOL,
   PRESET_COLOR_CONTRAST_TOOL,
+  FIGMA_FILTER_CSS_TOOL,
   PRESET_FIGMA_PLUGIN,
 ] as const

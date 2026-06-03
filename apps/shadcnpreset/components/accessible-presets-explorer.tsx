@@ -34,16 +34,10 @@ import {
   type AccessiblePresetExplorerFilters,
 } from "@/lib/accessible-preset-filter"
 import type { ListViewItem } from "@/lib/list-view"
+import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import { cn } from "@/lib/utils"
 
 const PAGE_SIZE = 24
-
-function formatTypographyLine(fontHeading: string, font: string) {
-  if (fontHeading === "inherit" || fontHeading === font) {
-    return `${font} font`
-  }
-  return `${fontHeading} & ${font} fonts`
-}
 
 type AccessiblePresetsExplorerProps = {
   items: ListViewItem[]
@@ -364,7 +358,7 @@ export function AccessiblePresetsExplorer({
                     <PresetStyleOverviewCard
                       code={item.code}
                       title={item.code}
-                      description={`${item.style} style, ${item.baseColor} base, ${item.theme} theme, ${item.chartColor} charts, ${item.iconLibrary}, ${formatTypographyLine(item.fontHeading, item.font)}`}
+                      description={formatPresetCardDescription(item)}
                     />
                   </li>
                 ))}

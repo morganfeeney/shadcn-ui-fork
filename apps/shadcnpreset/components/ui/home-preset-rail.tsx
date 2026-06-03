@@ -25,7 +25,7 @@ function HomePresetRailViewport({
       data-slot="home-preset-rail-viewport"
       aria-label={ariaLabel}
       className={cn(
-        "scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain",
+        "scrollbar-none flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain lg:gap-4",
         "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className
       )}
@@ -43,7 +43,7 @@ function HomePresetRailItem({
       role="listitem"
       data-slot="home-preset-rail-item"
       className={cn(
-        "w-[85vw] max-w-88 shrink-0 snap-center sm:max-w-120",
+        "w-[85vw] max-w-[60vw] shrink-0 snap-center md:max-w-70 lg:max-w-120",
         className
       )}
       {...props}

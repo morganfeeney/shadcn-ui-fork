@@ -19,14 +19,16 @@ export function HomeHero({ children }: HomeHeroProps) {
   return (
     <PageHeader>
       <Announcement />
-      <PageHeaderHeading className="max-w-4xl">
+      <PageHeaderHeading className="max-w-[15ch] text-balance lg:-mt-1">
         {siteConfig.title}
       </PageHeaderHeading>
-      <PageHeaderDescription className="text-muted-foreground">
+      <PageHeaderDescription className="max-w-[60ch] text-balance lg:-mt-1">
         {siteConfig.description}
       </PageHeaderDescription>
       {children ? (
-        <div className="flex w-full max-w-2xl justify-center">{children}</div>
+        <div className="mt-1 flex w-full max-w-2xl justify-center">
+          {children}
+        </div>
       ) : null}
     </PageHeader>
   )
