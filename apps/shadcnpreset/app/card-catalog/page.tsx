@@ -9,9 +9,6 @@ import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import type { PresetPageItem } from "@/lib/preset-catalog"
 import { siteConfig } from "@/lib/config"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
-
 const CATALOG_SAMPLE_COUNT = 4
 
 export const metadata: Metadata = {
