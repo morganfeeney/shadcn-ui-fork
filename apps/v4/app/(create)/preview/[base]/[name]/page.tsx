@@ -16,6 +16,8 @@ import { RandomizeScript } from "@/app/(app)/create/components/random-button"
 import { ThemeModeListener } from "@/app/(create)/components/theme-mode-listener"
 import { getBaseComponent, getBaseItem } from "@/app/(app)/create/lib/api"
 
+import "@/app/style-registry.css"
+
 export const revalidate = false
 export const dynamic = "force-static"
 export const dynamicParams = true
