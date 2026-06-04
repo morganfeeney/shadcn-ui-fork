@@ -36,11 +36,19 @@ type SwatchCell = {
 
 const SWATCH_ROWS: readonly (readonly SwatchCell[])[] = [
   [
-    { label: "Background", backgroundToken: "background", textToken: "foreground" },
+    {
+      label: "Background",
+      backgroundToken: "background",
+      textToken: "foreground",
+    },
     { label: "Border", backgroundToken: "border", textToken: "foreground" },
   ],
   [
-    { label: "Foreground", backgroundToken: "foreground", textToken: "background" },
+    {
+      label: "Foreground",
+      backgroundToken: "foreground",
+      textToken: "background",
+    },
     {
       label: "Chart 1",
       backgroundToken: "chart-1",
@@ -84,7 +92,11 @@ const SWATCH_ROWS: readonly (readonly SwatchCell[])[] = [
     },
   ],
   [
-    { label: "Accent", backgroundToken: "accent", textToken: "accent-foreground" },
+    {
+      label: "Accent",
+      backgroundToken: "accent",
+      textToken: "accent-foreground",
+    },
     {
       label: "Chart 5",
       backgroundToken: "chart-5",
@@ -148,10 +160,18 @@ export default async function DnaPage({ params }: DnaPageProps) {
   }
 
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
-  const fontHrefs = getPresetGoogleFontStylesheetHrefs([resolved.font, headingFont])
+  const fontHrefs = getPresetGoogleFontStylesheetHrefs([
+    resolved.font,
+    headingFont,
+  ])
   const title = `Preset: ${resolved.code}`
-  const lightSwatchRows = resolveSwatchRowsForMode(bundle.lightVars)
-  const darkSwatchRows = resolveSwatchRowsForMode(bundle.darkVars)
+  const swatchRowsByMode = {
+    light: resolveSwatchRowsForMode(bundle.lightVars),
+    dark: resolveSwatchRowsForMode(bundle.darkVars),
+  } as const
+  const scopedThemeCss = bundle.combinedCss
+    .replace(":root", ".preset-dna-scope")
+    .replace(".dark", ".dark .preset-dna-scope")
 
   return (
     <>
@@ -164,9 +184,9 @@ export default async function DnaPage({ params }: DnaPageProps) {
       {fontHrefs.map((href) => (
         <link key={href} rel="stylesheet" href={href} />
       ))}
-      <style dangerouslySetInnerHTML={{ __html: bundle.combinedCss }} />
+      <style dangerouslySetInnerHTML={{ __html: scopedThemeCss }} />
 
-      <main className="mx-auto w-full max-w-7xl space-y-8 p-6">
+      <main className="preset-dna-scope mx-auto w-full max-w-7xl space-y-8 p-6">
         <header className="space-y-2">
           <h1 className="text-3xl font-semibold">{title}</h1>
           <p className="text-sm text-muted-foreground">
@@ -181,48 +201,42 @@ export default async function DnaPage({ params }: DnaPageProps) {
 
         <section className="space-y-4">
           <h2 className="text-sm font-medium">Swatches</h2>
-          <div className="grid gap-3 dark:hidden">
-            {lightSwatchRows.map((row, rowIndex) => (
-              <div key={`light-row-${rowIndex}`} className="grid gap-3 md:grid-cols-2">
-                {row.map((swatch) => (
-                  <div
-                    key={`light-${swatch.label}`}
-                    className="min-h-24 rounded-md border p-6 text-2xl font-medium"
-                    style={{
-                      backgroundColor: `var(--${swatch.backgroundToken})`,
-                      color: `var(--${swatch.textToken})`,
-                    }}
-                  >
-                    {swatch.label}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="hidden gap-3 dark:grid">
-            {darkSwatchRows.map((row, rowIndex) => (
-              <div key={`row-${rowIndex}`} className="grid gap-3 md:grid-cols-2">
-                {row.map((swatch) => (
-                  <div
-                    key={`dark-${swatch.label}`}
-                    className="min-h-24 rounded-md border p-6 text-2xl font-medium"
-                    style={{
-                      backgroundColor: `var(--${swatch.backgroundToken})`,
-                      color: `var(--${swatch.textToken})`,
-                    }}
-                  >
-                    {swatch.label}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+          {(["light", "dark"] as const).map((mode) => (
+            <div
+              key={mode}
+              className={
+                mode === "light" ? "grid dark:hidden" : "hidden dark:grid"
+              }
+            >
+              {swatchRowsByMode[mode].map((row, rowIndex) => (
+                <div
+                  key={`${mode}-row-${rowIndex}`}
+                  className="grid md:grid-cols-2"
+                >
+                  {row.map((swatch) => (
+                    <div
+                      key={`${mode}-${swatch.label}`}
+                      className="min-h-24 p-6 text-base font-normal tracking-tight"
+                      style={{
+                        backgroundColor: `var(--${swatch.backgroundToken})`,
+                        color: `var(--${swatch.textToken})`,
+                      }}
+                    >
+                      {swatch.label}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
         </section>
 
         <section className="grid gap-6 rounded-lg border p-6 md:grid-cols-2">
           <div className="space-y-3" style={{ fontFamily: "var(--font-sans)" }}>
-            <p className="text-xs uppercase text-muted-foreground">Body font</p>
-            <p className="text-3xl font-semibold">{getFontDisplayName(resolved.font)}</p>
+            <p className="text-xs text-muted-foreground uppercase">Body font</p>
+            <p className="text-3xl font-semibold">
+              {getFontDisplayName(resolved.font)}
+            </p>
             <p className="text-base">
               ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
             </p>
@@ -231,13 +245,20 @@ export default async function DnaPage({ params }: DnaPageProps) {
             </p>
           </div>
 
-          <div className="space-y-3" style={{ fontFamily: "var(--font-heading)" }}>
-            <p className="text-xs uppercase text-muted-foreground">Heading font</p>
+          <div
+            className="space-y-3"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            <p className="text-xs text-muted-foreground uppercase">
+              Heading font
+            </p>
             <p className="text-5xl font-semibold">
               {getFontDisplayName(headingFont)}
             </p>
             <h3 className="text-4xl font-semibold">Preset Typography</h3>
-            <p className="text-lg">The quick brown fox jumps over the lazy dog.</p>
+            <p className="text-lg">
+              The quick brown fox jumps over the lazy dog.
+            </p>
           </div>
         </section>
       </main>
