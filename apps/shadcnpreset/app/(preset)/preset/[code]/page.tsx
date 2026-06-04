@@ -8,7 +8,7 @@ import { siteConfig } from "@/lib/config"
 import { isCommunityPresetCode } from "@/lib/community-presets"
 import { presetMetaDescription } from "@/lib/preset-meta"
 import { resolvePresetFromCode } from "@/lib/preset"
-import { PresetButtons, PresetCodeTitle } from "@/app/preset/[code]/components"
+import { PresetButtons, PresetCodeTitle } from "./components"
 import { PresetPageLiveProvider } from "@/components/preset-page-live-context"
 
 type PresetPageProps = {

@@ -1,11 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import * as React from "react"
 import { Check, Copy, Share2 } from "lucide-react"
 
 import { PresetVoteButton } from "@/components/preset-vote-button"
 import { copyToClipboardWithMeta } from "@/components/copy-button"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 import { usePresetPageLiveOptional } from "@/components/preset-page-live-context"
 
@@ -74,6 +75,12 @@ export function PresetButtons({ preset }: { preset: string }) {
   return (
     <>
       <PresetVoteButton code={effectivePreset} />
+      <Link
+        href={`/dna/${effectivePreset}`}
+        className={buttonVariants({ variant: "outline" })}
+      >
+        DNA
+      </Link>
       <Button variant="outline" onClick={handleShare}>
         {hasCopied ? "Copied" : "Share"}
         {hasCopied ? (
