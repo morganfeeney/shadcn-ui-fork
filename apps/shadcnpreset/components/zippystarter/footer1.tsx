@@ -75,11 +75,12 @@ export interface FooterColumn {
         action: "open-preset"
       }
   >
+  className?: string
 }
 
-function FooterColumn({ header, links }: FooterColumn) {
+function FooterColumn({ header, links, className }: FooterColumn) {
   return (
-    <div className="grid gap-5 text-sm">
+    <div className={cn("grid gap-5 text-sm", className)}>
       <p className="inline-grid font-display text-foreground">{header}</p>
       <ul className="grid gap-4">
         {links.map((link, index) => (
@@ -87,12 +88,12 @@ function FooterColumn({ header, links }: FooterColumn) {
             {"href" in link ? (
               <Link
                 href={link.href}
-                className="text-footer-foreground/60 hover:text-footer-foreground transition hover:underline"
+                className="text-footer-foreground/60 transition hover:text-footer-foreground hover:underline"
               >
                 {link.label}
               </Link>
             ) : (
-              <OpenPresetDialog className="text-footer-foreground/60 hover:text-footer-foreground transition hover:underline">
+              <OpenPresetDialog className="text-footer-foreground/60 transition hover:text-footer-foreground hover:underline">
                 {link.label}
               </OpenPresetDialog>
             )}
@@ -111,26 +112,28 @@ export function Footer1({ className }: Footer1Props) {
   return (
     <Container
       component="footer"
-      className="mx-auto max-w-7xl gap-4 gap-y-8 pt-10 pb-8 text-sm md:pt-20"
+      className="mx-auto max-w-7xl gap-4 gap-y-8 pt-10 pb-8 text-sm md:pt-25"
       wrapperClassName={cn("bg-footer", className)}
     >
       <div className="grid grid-cols-12 gap-4 gap-y-16">
-        <div className="text-footer-foreground col-span-12 grid content-start justify-items-start gap-8 md:col-span-3">
+        <div className="col-span-12 grid content-start justify-items-start gap-5 text-footer-foreground md:col-span-3">
           <LogoLink />
-          <p>{siteConfig.description}</p>
+          <p className="leading-relaxed text-footer-foreground/60">
+            {siteConfig.description}
+          </p>
           <IconGroup
             links={ICON_LINKS}
-            className="[&_svg]:fill-footer-foreground"
+            className="[&_svg]:fill-footer-foreground/60"
           />
         </div>
         <div className="@container col-span-12 md:col-span-8 md:col-start-5">
-          <div className="grid grid-cols-2 items-start gap-4 gap-y-12 @xl:grid-cols-4">
+          <div className="grid grid-cols-2 items-start gap-4 gap-y-12 @2xl:grid-cols-4">
             {COLUMNS.map((column) => (
-              <FooterColumn key={column.header} {...column} />
+              <FooterColumn key={column.header} {...column} className="pr-2" />
             ))}
           </div>
         </div>
-        <p className="text-footer-foreground/60 col-span-12 pt-6 text-xs">
+        <p className="col-span-12 pt-6 text-xs text-footer-foreground/60">
           &copy; <CurrentYear /> shadcnpreset. All rights reserved.
         </p>
       </div>
