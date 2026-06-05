@@ -17,6 +17,9 @@ import { DEFAULT_CONFIG } from "@/registry/config"
 import { DnaSwatchGrid } from "./swatch-grid"
 import { resolveSwatchRowsForMode } from "./swatch-utils"
 import { DnaTypographySection } from "./typography-section"
+import Image from "next/image"
+import NotoLight from "@/public/marketing/cta/notolight.png"
+import NotoDark from "@/public/marketing/cta/notodark.png"
 
 type DnaSurfaceProps = {
   resolved: ResolvedPreset
@@ -55,12 +58,23 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
           {getFontDisplayName(headingFont)} headings.
         </p>
       </header>
-      <div className="grid grid-cols-2 gap-4">
-        <DnaSwatchGrid rows={swatchRows} />
-        <DnaTypographySection
-          bodyFont={resolved.font}
-          headingFont={headingFont}
-        />
+      <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <DnaSwatchGrid rows={swatchRows} />
+          <DnaTypographySection
+            bodyFont={resolved.font}
+            headingFont={headingFont}
+          />
+        </div>
+        <div className="relative aspect-video">
+          <Image
+            className="brightness-400 grayscale dark:brightness-200"
+            src="https://images.unsplash.com/photo-1691435828932-911a7801adfb?auto=format&fit=crop&w=1200&h=1200&crop=focalpoint&fp-x=0.25&fp-y=0.35&fp-z=2.8&q=80"
+            alt=""
+            fill
+          />
+          <div className="absolute inset-0 bg-primary opacity-25 mix-blend-color" />
+        </div>
       </div>
     </PresetThemeSurface>
   )
