@@ -15,9 +15,9 @@ export function DnaTypographySection({
   const headingFontFamily = getFontFamily(headingFont)
 
   return (
-    <section className="grid gap-6 bg-muted p-12">
+    <section className="@container grid gap-6 bg-muted p-12">
       <div style={{ fontFamily: bodyFontFamily }}>
-        <p className="text-5xl leading-snug break-all">
+        <p className="text-[clamp(2rem,10cqw,3rem)] leading-snug break-all">
           ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
           !?@&£$¥%(){}[]:;,.+-=/\*&quot;&apos;
         </p>
@@ -25,7 +25,7 @@ export function DnaTypographySection({
 
       <p
         style={{ fontFamily: headingFontFamily }}
-        className="self-end text-9xl"
+        className="self-end text-[clamp(4rem,20cqw,8rem)]"
       >
         {getFontDisplayName(headingFont)}
       </p>

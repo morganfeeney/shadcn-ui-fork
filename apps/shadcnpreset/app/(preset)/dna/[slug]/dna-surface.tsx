@@ -43,7 +43,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
       headingFont={DEFAULT_CONFIG.fontHeading}
       styleName={resolved.style}
     >
-      <header className="grid gap-10 pt-30 pb-6">
+      <header className="grid gap-6 pt-30 pb-10">
         <h1 className="text-5xl font-display font-normal">
           Preset: {resolved.code}
         </h1>
