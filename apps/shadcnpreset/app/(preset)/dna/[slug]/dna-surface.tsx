@@ -1,15 +1,18 @@
 "use client"
 
 import { useTheme } from "next-themes"
+import Image from "next/image"
 
 import {
   PresetThemeSurface,
   type RegistryThemeSurface,
 } from "@/components/preset-theme-surface"
+import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
 import { useMounted } from "@/hooks/use-mounted"
 import {
   effectiveHeadingFont,
   getFontDisplayName,
+  getPresetPreviewUrl,
   type ResolvedPreset,
 } from "@/lib/preset"
 import { DEFAULT_CONFIG } from "@/registry/config"
@@ -17,9 +20,6 @@ import { DEFAULT_CONFIG } from "@/registry/config"
 import { DnaSwatchGrid } from "./swatch-grid"
 import { resolveSwatchRowsForMode } from "./swatch-utils"
 import { DnaTypographySection } from "./typography-section"
-import Image from "next/image"
-import NotoLight from "@/public/marketing/cta/notolight.png"
-import NotoDark from "@/public/marketing/cta/notodark.png"
 
 type DnaSurfaceProps = {
   resolved: ResolvedPreset
@@ -37,6 +37,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
   const swatchRows = resolveSwatchRowsForMode(modeVars)
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
+  const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
 
   return (
     <PresetThemeSurface
@@ -66,14 +67,33 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
             headingFont={headingFont}
           />
         </div>
-        <div className="relative aspect-video">
+        <div className="relative aspect-video overflow-hidden border bg-background">
           <Image
-            className="brightness-400 grayscale dark:brightness-200"
+            className="object-cover brightness-400 grayscale dark:brightness-200"
             src="https://images.unsplash.com/photo-1691435828932-911a7801adfb?auto=format&fit=crop&w=1200&h=1200&crop=focalpoint&fp-x=0.25&fp-y=0.35&fp-z=2.8&q=80"
             alt=""
             fill
+            sizes="100vw"
+            priority
           />
           <div className="absolute inset-0 bg-primary opacity-25 mix-blend-color" />
+          <div className="absolute inset-0 p-4 md:p-20">
+            <div className="relative h-full w-full overflow-hidden rounded-xs">
+              {previewSrc ? (
+                <PresetV4ScaledFrame
+                  key={previewSrc}
+                  title={`shadcn v4 preview · ${resolved.code}`}
+                  src={previewSrc}
+                  virtualWidth={2150}
+                  virtualHeight={1100}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                  Could not build preview URL for this preset.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </PresetThemeSurface>
