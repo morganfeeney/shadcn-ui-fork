@@ -48,10 +48,7 @@ export function Container({
     >
       <ContainerInner
         data-slot="container-inner"
-        className={cn(
-          className,
-          "relative z-10 mx-auto w-full max-w-400 px-safe"
-        )}
+        className={cn(className, "container-inner")}
       >
         {children}
       </ContainerInner>
