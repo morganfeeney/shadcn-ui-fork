@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react"
 
 import { siteConfig } from "@/lib/config"
 import { FOCALPOINT_CROP_TOOL } from "@/app/tools/tools"
+import { WideLayout } from "@/components/wide-layout"
 
 export const metadata: Metadata = {
   title: FOCALPOINT_CROP_TOOL.title,
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function FocalpointCropHelperLayout({ children }: PropsWithChildren) {
-  return children
+export default function FocalpointCropHelperLayout({
+  children,
+}: PropsWithChildren) {
+  return <WideLayout showFooter={false}>{children}</WideLayout>
 }

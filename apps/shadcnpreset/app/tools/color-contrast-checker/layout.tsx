@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react"
 
 import { siteConfig } from "@/lib/config"
 import { PRESET_COLOR_CONTRAST_TOOL } from "@/app/tools/tools"
+import { DefaultLayout } from "@/components/default-layout"
 
 export const metadata: Metadata = {
   title: PRESET_COLOR_CONTRAST_TOOL.title,
@@ -26,5 +27,5 @@ export const metadata: Metadata = {
 export default function ColorContrastToolLayout({
   children,
 }: PropsWithChildren) {
-  return children
+  return <DefaultLayout>{children}</DefaultLayout>
 }
