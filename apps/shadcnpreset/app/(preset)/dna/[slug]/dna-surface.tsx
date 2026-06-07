@@ -24,6 +24,7 @@ import { DnaSwatchGrid } from "./swatch-grid"
 import { DnaSurfaceSkeleton } from "./dna-surface-skeleton"
 import { resolveSwatchRowsForMode } from "./swatch-utils"
 import { DnaTypographySection } from "./typography-section"
+import { DnaIconSection } from "./icon-section"
 
 type DnaSurfaceProps = {
   resolved: ResolvedPreset
@@ -120,6 +121,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
             </div>
           </div>
         </div>
+        <DnaIconSection iconLibrary={resolved.iconLibrary} />
       </div>
     </PresetThemeSurface>
   )
