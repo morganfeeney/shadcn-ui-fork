@@ -4,15 +4,20 @@ import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar"
 import {
   Select,
   SelectContent,
@@ -40,7 +45,20 @@ const DEFAULT_ZOOM = 1.9
 
 const DEFAULT_ASPECT_PRESET_ID = "1:1"
 
-export function FocalpointCropTool() {
+type FocalpointCropToolProps = {
+  title?: string
+  description?: string
+}
+
+type UnavailableState = {
+  title: string
+  description: React.ReactNode
+}
+
+export function FocalpointCropTool({
+  title = "Unsplash focalpoint crop helper",
+  description = "Tune focal point placement and zoom to generate Unsplash crop params.",
+}: FocalpointCropToolProps) {
   const referenceFrameRef = React.useRef<HTMLDivElement>(null)
   const dragStateRef = React.useRef<{
     pointerId: number
@@ -72,7 +90,6 @@ export function FocalpointCropTool() {
   const [imageSize, setImageSize] = React.useState({ width: 0, height: 0 })
   const [imageLoadError, setImageLoadError] = React.useState(false)
   const [isDragging, setIsDragging] = React.useState(false)
-  const [livePreviewEnabled, setLivePreviewEnabled] = React.useState(true)
   const [previewUrl, setPreviewUrl] = React.useState("")
 
   const fpX = fpXPercent / 100
@@ -82,12 +99,44 @@ export function FocalpointCropTool() {
     () => buildUnsplashImageUrl(photoId),
     [photoId]
   )
+  const isMissingPhotoId = photoId.trim().length === 0
   const isInvalidPhotoId = photoId.trim().length > 0 && !sourceImageUrl
-  const isUnavailablePhoto = !isInvalidPhotoId && !!sourceImageUrl && imageLoadError
+  const isUnavailablePhoto =
+    !isInvalidPhotoId && !!sourceImageUrl && imageLoadError
+  const unavailableState: UnavailableState | null = isMissingPhotoId
+    ? {
+        title: "Enter an Unsplash photo ID",
+        description:
+          "Paste a photo ID to generate the reference crop and preview.",
+      }
+    : isInvalidPhotoId
+      ? {
+          title: "Invalid Unsplash photo ID",
+          description: (
+            <>
+              Paste the photo ID only, for example
+              <span className="font-mono"> 1691435828932-911a7801adfb</span>.
+            </>
+          ),
+        }
+      : isUnavailablePhoto
+        ? {
+            title: "Photo not found",
+            description:
+              "We could not load this Unsplash photo ID. Check the ID and try again.",
+          }
+        : null
 
   const outputUrl = React.useMemo(
     () =>
-      buildFocalpointUrl(sourceImageUrl, fpX, fpY, fpZ, outputWidth, outputHeight),
+      buildFocalpointUrl(
+        sourceImageUrl,
+        fpX,
+        fpY,
+        fpZ,
+        outputWidth,
+        outputHeight
+      ),
     [sourceImageUrl, fpX, fpY, fpZ, outputWidth, outputHeight]
   )
   const previewSize = React.useMemo(() => {
@@ -115,14 +164,14 @@ export function FocalpointCropTool() {
 
   React.useEffect(() => {
     if (!previewUrlCandidate) return
-    if (!livePreviewEnabled || isDragging) return
+    if (isDragging) return
     const timeoutId = window.setTimeout(() => {
       setPreviewUrl(previewUrlCandidate)
     }, 220)
     return () => {
       window.clearTimeout(timeoutId)
     }
-  }, [isDragging, livePreviewEnabled, previewUrlCandidate])
+  }, [isDragging, previewUrlCandidate])
 
   React.useEffect(() => {
     if (!previewUrl) {
@@ -160,7 +209,8 @@ export function FocalpointCropTool() {
 
     const targetAspect = outputWidth / outputHeight
     const fullAspect = width / height
-    const baseCropWidth = targetAspect > fullAspect ? width : height * targetAspect
+    const baseCropWidth =
+      targetAspect > fullAspect ? width : height * targetAspect
     const baseCropHeight = baseCropWidth / targetAspect
 
     const cropWidth = clamp(baseCropWidth / fpZ, 1, width)
@@ -180,7 +230,15 @@ export function FocalpointCropTool() {
       centerXPercent: ((left + cropWidth / 2) / width) * 100,
       centerYPercent: ((top + cropHeight / 2) / height) * 100,
     }
-  }, [fpX, fpY, fpZ, imageSize.height, imageSize.width, outputHeight, outputWidth])
+  }, [
+    fpX,
+    fpY,
+    fpZ,
+    imageSize.height,
+    imageSize.width,
+    outputHeight,
+    outputWidth,
+  ])
 
   const updateFocalFromCenter = React.useCallback(
     (centerXPercent: number, centerYPercent: number) => {
@@ -253,8 +311,16 @@ export function FocalpointCropTool() {
     const bounds = frame.getBoundingClientRect()
     if (!bounds.width || !bounds.height) return null
 
-    const xPercent = clamp(((clientX - bounds.left) / bounds.width) * 100, 0, 100)
-    const yPercent = clamp(((clientY - bounds.top) / bounds.height) * 100, 0, 100)
+    const xPercent = clamp(
+      ((clientX - bounds.left) / bounds.width) * 100,
+      0,
+      100
+    )
+    const yPercent = clamp(
+      ((clientY - bounds.top) / bounds.height) * 100,
+      0,
+      100
+    )
 
     return { xPercent, yPercent }
   }
@@ -284,11 +350,7 @@ export function FocalpointCropTool() {
 
   function handleResizePointerDown(
     event: React.PointerEvent<HTMLDivElement>,
-    mode:
-      | "resize-right"
-      | "resize-bottom"
-      | "resize-corner"
-      | "resize-top-left"
+    mode: "resize-right" | "resize-bottom" | "resize-corner" | "resize-top-left"
   ) {
     event.stopPropagation()
     if (!cropOverlay) return
@@ -333,20 +395,27 @@ export function FocalpointCropTool() {
     let constrainedWidth = dragState.startWidthPercent
     let constrainedHeight = dragState.startHeightPercent
 
-    if (dragState.mode === "resize-right" || dragState.mode === "resize-corner") {
+    if (
+      dragState.mode === "resize-right" ||
+      dragState.mode === "resize-corner"
+    ) {
       constrainedWidth = dragState.startWidthPercent + deltaX
     } else if (dragState.mode === "resize-top-left") {
       constrainedWidth = dragState.startWidthPercent - deltaX
     }
 
-    if (dragState.mode === "resize-bottom" || dragState.mode === "resize-corner") {
+    if (
+      dragState.mode === "resize-bottom" ||
+      dragState.mode === "resize-corner"
+    ) {
       constrainedHeight = dragState.startHeightPercent + deltaY
     } else if (dragState.mode === "resize-top-left") {
       constrainedHeight = dragState.startHeightPercent - deltaY
     }
 
     if (event.shiftKey && dragState.startHeightPercent > 0) {
-      const startAspect = dragState.startWidthPercent / dragState.startHeightPercent
+      const startAspect =
+        dragState.startWidthPercent / dragState.startHeightPercent
 
       if (dragState.mode === "resize-right") {
         constrainedHeight = constrainedWidth / startAspect
@@ -433,24 +502,28 @@ export function FocalpointCropTool() {
     setOutputWidth(defaultPreset?.width ?? DEFAULT_OUTPUT_WIDTH)
     setOutputHeight(defaultPreset?.height ?? DEFAULT_OUTPUT_HEIGHT)
     setCopyLabel("Copy URL")
-    setLivePreviewEnabled(true)
     setPreviewUrl("")
   }
 
-  function handleRefreshPreview() {
-    setPreviewUrl(previewUrlCandidate)
-  }
-
   return (
-    <div className="grid gap-4 xl:grid-cols-[420px_minmax(0,1fr)]">
-      <Card>
-        <CardHeader>
-          <CardTitle>Crop Controls</CardTitle>
-          <CardDescription>
-            Tune focal point placement and zoom to generate Unsplash crop params.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <SidebarProvider
+      defaultOpen
+      className="min-h-0 flex-1"
+      style={
+        {
+          "--header-height": "52px",
+        } as React.CSSProperties
+      }
+    >
+      <Sidebar
+        collapsible="none"
+        className="md:sticky md:top-(--header-height) md:h-[calc(100svh-var(--header-height))]"
+      >
+        <SidebarHeader className="gap-1 p-4">
+          <h1 className="text-sm font-semibold">{title}</h1>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </SidebarHeader>
+        <SidebarContent className="px-4 pb-4">
           <FieldSet className="grid gap-4">
             <FieldGroup className="grid gap-2">
               <FieldLabel htmlFor="source-url">Unsplash photo ID</FieldLabel>
@@ -492,7 +565,10 @@ export function FocalpointCropTool() {
                   onChange={(event) => {
                     setSelectedAspectPreset("custom")
                     setOutputWidth(
-                      Math.max(100, Number(event.target.value) || DEFAULT_OUTPUT_WIDTH)
+                      Math.max(
+                        100,
+                        Number(event.target.value) || DEFAULT_OUTPUT_WIDTH
+                      )
                     )
                   }}
                 />
@@ -509,7 +585,10 @@ export function FocalpointCropTool() {
                 onChange={(event) => {
                   setSelectedAspectPreset("custom")
                   setOutputHeight(
-                    Math.max(100, Number(event.target.value) || DEFAULT_OUTPUT_HEIGHT)
+                    Math.max(
+                      100,
+                      Number(event.target.value) || DEFAULT_OUTPUT_HEIGHT
+                    )
                   )
                 }}
               />
@@ -527,7 +606,9 @@ export function FocalpointCropTool() {
                 max={100}
                 step={0.1}
                 value={[fpXPercent]}
-              onValueChange={(value) => setFpXPercent(getSliderSingleValue(value, 50))}
+                onValueChange={(value) =>
+                  setFpXPercent(getSliderSingleValue(value, 50))
+                }
               />
             </FieldGroup>
 
@@ -543,7 +624,9 @@ export function FocalpointCropTool() {
                 max={100}
                 step={0.1}
                 value={[fpYPercent]}
-              onValueChange={(value) => setFpYPercent(getSliderSingleValue(value, 50))}
+                onValueChange={(value) =>
+                  setFpYPercent(getSliderSingleValue(value, 50))
+                }
               />
             </FieldGroup>
 
@@ -559,76 +642,45 @@ export function FocalpointCropTool() {
                 max={8}
                 step={0.01}
                 value={[zoom]}
-              onValueChange={(value) => setZoom(getSliderSingleValue(value, 1))}
+                onValueChange={(value) =>
+                  setZoom(getSliderSingleValue(value, 1))
+                }
               />
             </FieldGroup>
 
             <FieldGroup className="grid gap-2">
-              <FieldLabel htmlFor="crop-url">Generated URL</FieldLabel>
-              <Input id="crop-url" readOnly value={outputUrl} />
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCopy}>
-                  {copyLabel}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setLivePreviewEnabled((value) => !value)}
-                >
-                  {livePreviewEnabled ? "Pause live preview" : "Resume live preview"}
-                </Button>
-                {!livePreviewEnabled ? (
-                  <Button variant="outline" onClick={handleRefreshPreview}>
-                    Refresh preview
-                  </Button>
-                ) : null}
-                <Button variant="ghost" onClick={handleReset}>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={handleReset}>
                   Reset
                 </Button>
               </div>
             </FieldGroup>
           </FieldSet>
-        </CardContent>
-      </Card>
+        </SidebarContent>
+      </Sidebar>
 
-      <div className="grid gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Reference + crop overlay</CardTitle>
-            <CardDescription>
-              Red box approximates what focalpoint crop selects from the full image.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isInvalidPhotoId ? (
-              <Empty className="min-h-[280px] rounded-lg border bg-muted">
-                <EmptyHeader>
-                  <EmptyTitle>Invalid Unsplash photo ID</EmptyTitle>
-                  <EmptyDescription>
-                    Paste the photo ID only, for example
-                    <span className="font-mono"> 1691435828932-911a7801adfb</span>.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : isUnavailablePhoto ? (
-              <Empty className="min-h-[280px] rounded-lg border bg-muted">
-                <EmptyHeader>
-                  <EmptyTitle>Photo not found</EmptyTitle>
-                  <EmptyDescription>
-                    We could not load this Unsplash photo ID. Check the ID and try
-                    again.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
+      <SidebarInset className="@container min-h-0 overflow-auto bg-muted md:h-[calc(100svh-var(--header-height))]">
+        <div className="grid grid-cols-[200px_1fr_200px] items-start gap-4 p-4 pb-24">
+          {unavailableState ? (
+            <Empty className="col-start-2 min-h-[320px] self-start rounded-lg border bg-muted">
+              <EmptyHeader>
+                <EmptyTitle>{unavailableState.title}</EmptyTitle>
+                <EmptyDescription>
+                  {unavailableState.description}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <div className="col-start-2 grid grid-cols-2 gap-4">
               <div
                 ref={referenceFrameRef}
-                className="relative overflow-hidden rounded-lg border bg-muted"
+                className="relative self-start overflow-hidden border bg-muted"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={sourceImageUrl}
                   alt=""
-                  className="h-auto w-full"
+                  className="block h-auto w-full"
                   crossOrigin="anonymous"
                 />
                 {cropOverlay ? (
@@ -646,7 +698,7 @@ export function FocalpointCropTool() {
                     onPointerCancel={handleOverlayPointerUp}
                   >
                     <div
-                      className="absolute top-1/2 right-0 h-10 w-3 -translate-y-1/2 translate-x-1/2 cursor-ew-resize rounded-full border border-red-600 bg-background/90"
+                      className="absolute top-1/2 right-0 h-10 w-3 translate-x-1/2 -translate-y-1/2 cursor-ew-resize rounded-full border border-red-600 bg-background/90"
                       onPointerDown={(event) =>
                         handleResizePointerDown(event, "resize-right")
                       }
@@ -684,45 +736,33 @@ export function FocalpointCropTool() {
                   </div>
                 ) : null}
               </div>
-            )}
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Cropped preview</CardTitle>
-            <CardDescription>
-              Debounced low-res preview while editing (full output URL above).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isInvalidPhotoId ? (
-              <Empty className="min-h-[280px] rounded-lg border bg-muted">
-                <EmptyHeader>
-                  <EmptyTitle>No preview available</EmptyTitle>
-                  <EmptyDescription>
-                    Enter a valid Unsplash photo ID to generate and preview the crop.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : isUnavailablePhoto ? (
-              <Empty className="min-h-[280px] rounded-lg border bg-muted">
-                <EmptyHeader>
-                  <EmptyTitle>No preview available</EmptyTitle>
-                  <EmptyDescription>
-                    This photo ID could not be loaded from Unsplash.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              <div className="relative overflow-hidden rounded-lg border bg-muted">
+              <div className="relative self-start overflow-hidden border bg-muted">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={previewUrl || outputUrl} alt="" className="h-auto w-full" />
+                <img
+                  src={previewUrl || outputUrl}
+                  alt=""
+                  className="block h-auto w-full"
+                />
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            </div>
+          )}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 px-4">
+          <div className="pointer-events-auto mx-auto w-full max-w-3xl rounded-lg border bg-background/90 p-3 shadow-lg backdrop-blur">
+            <div className="flex gap-2">
+              <Input id="crop-url" readOnly value={outputUrl} />
+              <Button
+                variant="outline"
+                onClick={handleCopy}
+                disabled={!outputUrl}
+              >
+                {copyLabel}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
