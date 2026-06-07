@@ -115,7 +115,7 @@ export function FocalpointCropTool({
     >
       <Sidebar
         collapsible="none"
-        className="md:sticky md:top-(--header-height) md:h-[calc(100svh-var(--header-height))]"
+        className="md:order-2 md:sticky md:top-(--header-height) md:h-[calc(100svh-var(--header-height))]"
       >
         <SidebarHeader className="gap-1 p-4">
           <h1 className="text-sm font-semibold">{title}</h1>
@@ -186,8 +186,8 @@ export function FocalpointCropTool({
                   setOutputHeight(
                     Math.max(
                       100,
-                        Number(event.target.value) ||
-                          FOCALPOINT_CROP_DEFAULTS.outputHeight
+                      Number(event.target.value) ||
+                        FOCALPOINT_CROP_DEFAULTS.outputHeight
                     )
                   )
                 }}
@@ -263,7 +263,7 @@ export function FocalpointCropTool({
         </SidebarContent>
       </Sidebar>
 
-      <SidebarInset className="@container min-h-0 overflow-auto bg-muted md:h-[calc(100svh-var(--header-height))]">
+      <SidebarInset className="@container min-h-0 overflow-auto bg-muted md:order-1 md:h-[calc(100svh-var(--header-height))]">
         <div className="grid grid-cols-[200px_1fr_200px] items-start gap-4 p-4 pb-24">
           {unavailableState ? (
             <Empty className="col-start-2 min-h-[320px] self-start rounded-lg border bg-muted">
