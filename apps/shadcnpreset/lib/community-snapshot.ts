@@ -1,4 +1,7 @@
-import { get, put } from "@vercel/blob"
+import fs from "node:fs"
+import path from "node:path"
+
+import { cacheLife } from "next/cache"
 import { z } from "zod"
 
 import { resolvePresetFromCode } from "@/lib/preset"
@@ -6,13 +9,8 @@ import { getPresetPage, type PresetPageItem } from "@/lib/preset-catalog"
 
 const DEFAULT_SNAPSHOT_LIMIT = 2000
 const FALLBACK_PAGE_SIZE = 100
-const SNAPSHOT_BLOB_PATH =
-  process.env.COMMUNITY_SNAPSHOT_BLOB_PATH ??
-  "community/community-presets-snapshot.json"
-const SNAPSHOT_BLOB_ACCESS: "public" | "private" =
-  process.env.COMMUNITY_SNAPSHOT_BLOB_ACCESS === "public"
-    ? "public"
-    : "private"
+const SNAPSHOT_DATA_FILENAME = "community-presets-snapshot.json"
+const SNAPSHOT_ROW_ID = "default"
 
 const snapshotSchema = z.object({
   generatedAt: z.string(),
@@ -24,6 +22,10 @@ type CommunitySnapshot = z.infer<typeof snapshotSchema>
 
 function getSafeLimit(limit: number, max = DEFAULT_SNAPSHOT_LIMIT) {
   return Math.min(max, Math.max(1, limit))
+}
+
+function shouldSkipDbSnapshotRead() {
+  return process.env.NEXT_PHASE === "phase-production-build"
 }
 
 function normalizePresetCodes(codes: string[], limit: number) {
@@ -87,27 +89,74 @@ export function getDeterministicCommunityFallbackItems(limit: number) {
   return toPresetItems(getDeterministicCommunityFallbackCodes(limit), limit)
 }
 
-async function readSnapshotPayload(): Promise<CommunitySnapshot | null> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return null
-  }
-
+function loadSnapshotFromDataFile(): CommunitySnapshot | null {
   try {
-    const result = await get(SNAPSHOT_BLOB_PATH, {
-      access: SNAPSHOT_BLOB_ACCESS,
-      useCache: false,
-    })
-    if (!result || result.statusCode !== 200 || !result.stream) {
-      return null
-    }
-
-    const rawText = await new Response(result.stream).text()
-    const parsed = snapshotSchema.safeParse(JSON.parse(rawText))
+    const filePath = path.join(process.cwd(), "data", SNAPSHOT_DATA_FILENAME)
+    const raw = fs.readFileSync(filePath, "utf8")
+    const parsed = snapshotSchema.safeParse(JSON.parse(raw))
     if (!parsed.success) return null
     return parsed.data
   } catch {
     return null
   }
+}
+
+async function ensureSnapshotTable() {
+  const { query } = await import("@/lib/db")
+  await query(`
+    CREATE TABLE IF NOT EXISTS community_snapshot (
+      id TEXT PRIMARY KEY,
+      payload JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `)
+}
+
+async function readSnapshotFromDb(): Promise<CommunitySnapshot | null> {
+  if (!process.env.DATABASE_URL) {
+    return null
+  }
+
+  try {
+    const { query } = await import("@/lib/db")
+    const result = await query<{ payload: CommunitySnapshot }>(
+      `
+      SELECT payload
+      FROM community_snapshot
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [SNAPSHOT_ROW_ID]
+    )
+    const row = result.rows[0]
+    if (!row) return null
+
+    const parsed = snapshotSchema.safeParse(row.payload)
+    if (!parsed.success) return null
+    return parsed.data
+  } catch {
+    return null
+  }
+}
+
+async function getCachedDbSnapshot() {
+  "use cache"
+  cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 })
+
+  return readSnapshotFromDb()
+}
+
+async function readSnapshotPayload(): Promise<CommunitySnapshot | null> {
+  if (shouldSkipDbSnapshotRead()) {
+    return loadSnapshotFromDataFile()
+  }
+
+  const fromDb = await getCachedDbSnapshot()
+  if (fromDb?.codes.length) {
+    return fromDb
+  }
+
+  return loadSnapshotFromDataFile()
 }
 
 export async function getCommunitySnapshotCodes(limit = DEFAULT_SNAPSHOT_LIMIT) {
@@ -142,11 +191,25 @@ export async function writeCommunitySnapshot(
     codes: normalized,
   }
 
-  await put(SNAPSHOT_BLOB_PATH, JSON.stringify(snapshot, null, 2), {
-    access: SNAPSHOT_BLOB_ACCESS,
-    addRandomSuffix: false,
-    contentType: "application/json; charset=utf-8",
-  })
+  await ensureSnapshotTable()
+  const { query } = await import("@/lib/db")
+  await query(
+    `
+    INSERT INTO community_snapshot (id, payload, updated_at)
+    VALUES ($1, $2::jsonb, NOW())
+    ON CONFLICT (id) DO UPDATE
+    SET payload = EXCLUDED.payload, updated_at = NOW()
+    `,
+    [SNAPSHOT_ROW_ID, JSON.stringify(snapshot)]
+  )
 
   return snapshot
+}
+
+export function writeCommunitySnapshotToDataFile(
+  snapshot: CommunitySnapshot,
+  filePath = path.join(process.cwd(), "data", SNAPSHOT_DATA_FILENAME)
+) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true })
+  fs.writeFileSync(filePath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8")
 }
