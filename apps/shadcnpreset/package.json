@@ -13,6 +13,7 @@
     "verify:search": "node --import tsx/esm ./scripts/verify-search.ts",
     "generate:preset-embeddings": "node --import tsx/esm ./scripts/generate-preset-embeddings.ts",
     "generate:high-contrast-dataset": "node --import tsx/esm ./scripts/find-perfect-contrast-presets.ts --random --target 8000 --max-tries 20000000 --out ./data/high-contrast-presets.json",
+    "refresh:community-snapshot": "node --import tsx/esm ./scripts/refresh-community-snapshot.ts",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "next typegen && tsc --noEmit"
   },
@@ -42,7 +43,6 @@
     "@tabler/icons-react": "^3.31.0",
     "@tanstack/react-query": "^5.95.2",
     "@tanstack/react-table": "^8.9.1",
-    "@vercel/blob": "^2.4.0",
     "ai": "^6.0.158",
     "better-auth": "^1.5.6",
     "chromakit-react": "^0.1.16",

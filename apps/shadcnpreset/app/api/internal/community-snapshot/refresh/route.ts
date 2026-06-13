@@ -35,13 +35,6 @@ export async function GET(request: Request) {
     )
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "BLOB_READ_WRITE_TOKEN is required for snapshot refresh" },
-      { status: 500 }
-    )
-  }
-
   try {
     const requestedLimit = Number.parseInt(
       new URL(request.url).searchParams.get("limit") ?? "",
