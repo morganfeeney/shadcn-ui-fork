@@ -110,18 +110,15 @@ export function FocalpointCropTool({
       style={
         {
           "--header-height": "52px",
+          "--pane-margin": "8px",
         } as React.CSSProperties
       }
     >
       <Sidebar
         collapsible="none"
-        className="md:sticky md:top-(--header-height) md:order-2 md:h-[calc(100svh-var(--header-height))]"
+        className="bg-background md:sticky md:top-(--header-height) md:order-2 md:h-[calc(100svh-var(--header-height)-var(--pane-margin))]"
       >
-        <SidebarHeader className="gap-1 p-4">
-          <h1 className="text-sm font-semibold">{title}</h1>
-          <p className="text-xs text-muted-foreground">{description}</p>
-        </SidebarHeader>
-        <SidebarContent className="px-4 pb-4">
+        <SidebarContent className="p-4">
           <FieldSet className="grid gap-4">
             <FieldGroup className="grid gap-2">
               <FieldLabel htmlFor="source-url">Unsplash photo ID</FieldLabel>
@@ -263,7 +260,7 @@ export function FocalpointCropTool({
         </SidebarContent>
       </Sidebar>
 
-      <SidebarInset className="@container min-h-0 overflow-auto bg-muted md:order-1 md:h-[calc(100svh-var(--header-height))]">
+      <SidebarInset className="@container mb-2 ml-2 min-h-0 overflow-auto rounded-lg border bg-background bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-size-[20px_20px] md:order-1 md:h-[calc(100svh-var(--header-height)-var(--pane-margin))]">
         <div className="grid items-start gap-4 p-4 pb-24 xl:grid-cols-[200px_1fr_200px]">
           {unavailableState ? (
             <Empty className="col-start-2 min-h-[320px] self-start rounded-lg border bg-muted">
@@ -276,6 +273,12 @@ export function FocalpointCropTool({
             </Empty>
           ) : (
             <div className="col-start-2 grid gap-4 xl:grid-cols-2">
+              <div className="col-span-2 grid py-2">
+                <h1 className="text-xl font-semibold tracking-tight text-balance">
+                  {title}
+                </h1>
+                <p className="text-sm text-muted-foreground">{description}</p>
+              </div>
               <div
                 ref={referenceFrameRef}
                 className="relative self-start overflow-hidden border bg-muted"

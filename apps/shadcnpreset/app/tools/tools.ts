@@ -38,7 +38,7 @@ export const FIGMA_FILTER_CSS_TOOL = {
 export const FOCALPOINT_CROP_TOOL = {
   slug: "focalpoint-crop-helper",
   href: "/tools/focalpoint-crop-helper",
-  title: "Unsplash focalpoint crop helper",
+  title: "Unsplash focalpoint cropping tool",
   description:
     "Tune focalpoint crop placement and zoom, preview the result, and copy ready-to-use Unsplash URL parameters.",
   cardDescription:
