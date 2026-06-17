@@ -35,16 +35,6 @@ export const FIGMA_FILTER_CSS_TOOL = {
     "Use presets or configure image filters in real-time to generate Tailwind utility or vanilla CSS output.",
 } as const
 
-export const FOCALPOINT_CROP_TOOL = {
-  slug: "focalpoint-crop-helper",
-  href: "/tools/focalpoint-crop-helper",
-  title: "Unsplash focalpoint cropping tool",
-  description:
-    "Tune focalpoint crop placement and zoom, preview the result, and copy ready-to-use Unsplash URL parameters.",
-  cardDescription:
-    "Adjust focal X/Y and fp-z, visualize the crop box on the source image, and copy the generated URL.",
-} as const
-
 export const PRESET_FIGMA_PLUGIN = {
   slug: "shadcn-preset-variables",
   href: "https://www.figma.com/community/plugin/1629785761451501897",
@@ -57,6 +47,5 @@ export const TOOLS = [
   PRESET_THEME_GENERATOR_TOOL,
   PRESET_COLOR_CONTRAST_TOOL,
   FIGMA_FILTER_CSS_TOOL,
-  FOCALPOINT_CROP_TOOL,
   PRESET_FIGMA_PLUGIN,
 ] as const
