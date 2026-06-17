@@ -14,7 +14,16 @@
         "https_proxy",
         "V0_URL",
         "V0_EDIT_SECRET",
-        "DEPLOYMENT_PROTECTION_BYPASS"
+        "DEPLOYMENT_PROTECTION_BYPASS",
+        "BLOB_STORE_ID",
+        "BLOB_WEBHOOK_PUBLIC_KEY",
+        "DATABASE_URL",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "OPENAI_API_KEY",
+        "CRON_SECRET"
       ],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
