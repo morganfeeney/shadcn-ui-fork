@@ -127,8 +127,11 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
         </div>
         <div className="@container grid gap-4 py-10 md:grid-cols-2">
           <p
-            style={{ fontFamily: bodyFontFamily }}
-            className="text-[clamp(1rem,2cqw,1.5rem)] leading-relaxed md:col-start-2"
+            style={{
+              fontFamily: bodyFontFamily,
+              hangingPunctuation: "first last",
+            }}
+            className="indent-[-0.35em] text-[clamp(1rem,2cqw,1.5rem)] leading-relaxed md:col-start-2"
           >
             &#34;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
