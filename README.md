@@ -1,81 +1,132 @@
-# shadcnpreset (shadcn/ui fork)
+# shadcnpreset
 
-**Stop guessing theme combos.** [shadcnpreset.com](https://shadcnpreset.com) is where you **browse real shadcn/ui
-presets**, preview them with the actual v4 customizer, **search in plain English**, and **save the ones you love**—then
-install the code via the shadcn CLI. Open source, free, built on the stack you already use.
+<br>
+<a href="https://vercel.com/open-source-program">
+  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge-2026.svg" />
+</a>
+<br>
+<br>
 
-This repo is a **fork of the [shadcn/ui](https://ui.shadcn.com) monorepo**: upstream CLI, registry, and templates, *
-*plus** the Next.js app and a tight integration with the v4 create experience so preset pages and the embedded
-customizer stay in lockstep.
+Find the perfect shadcn preset in seconds.
 
-## What’s in the monorepo
+shadcnpreset is an open-source platform for discovering, generating, previewing, and working with shadcn/ui themes.
 
-- **`apps/shadcnpreset`** — The product: homepage feed, preset pages, smart search, voting, **My presets**, live iframe
-  preview, share-ready OG cards.
-- **`apps/v4`** — The v4 docs/registry app; this fork adds **`shadcnpreset-fork`** on the create flow so preset codes
-  sync with the parent site via `postMessage` (no copy-paste drift).
-- **`packages/shadcn`** — The `shadcn` CLI and related packages (same lineage as upstream).
+Instead of clicking random until something looks good, describe what you're building and let AI surface relevant
+presets. Compare them visually, preview them on real UI, save your favourites, and use a growing collection of developer
+tools to move from idea to implementation faster.
 
-## Why it’s worth using
+## Why?
 
-| You get                         | What that means                                                                                                                                                                                                                                                            |
-|---------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Real previews**               | Not screenshots—an embedded v4 **create** experience so you see *your* components under *that* theme.                                                                                                                                                                      |
-| **Smart search**                | Type “minimal dark”, “dashboard saas”, “serif green”—facet-aware parsing + **embedding similarity** (when configured) + heuristics + diversity so results feel like a curated gallery.                                                                                      |
-| **Shareable presets**           | Every preset has a link, rich **Open Graph** cards (dynamic 1200×630 art with swatches + code), and metadata that stays correct when the live preset changes.                                                                                                              |
-| **Community signal**            | Vote for presets you’d actually ship; the homepage feed surfaces **what people love** first—see [`VOTE_FEED_ORDERING.md`](./apps/shadcnpreset/VOTE_FEED_ORDERING.md).                                                                                                      |
-| **Your shortlist**              | Signed-in users get **My presets**—one place for every preset you’ve hearted, ready to reopen or share.                                                                                                                                                                    |
-| **Kept up to date with shadcn** | shadcn ships fast—this isn’t a parallel rewrite, it’s the **same monorepo** with shadcnpreset layered on, so the CLI, registry, and customizer stay in the same lineage as upstream. You get new shadcn work as it lands in the fork, not a stale side-channel theme tool. |
+shadcn/ui gives developers an incredible amount of flexibility.
 
-## Features (technical)
+It also creates millions of possible combinations of styles, themes, fonts, icons, chart palettes, and design decisions.
 
-### Search
+Finding a combination that actually feels right can take far longer than building the feature itself.
 
-- **Preset code** — Jump straight in with a code (e.g. `b4aRK5K0fb`).
-- **Smart search** — Structured facets + hand-tuned scoring + MMR diversity; **semantic
-  relevance** uses a **precomputed embedding file** (`pnpm generate:preset-embeddings` in
-  `apps/shadcnpreset`) plus **one query embedding per search** (needs `OPENAI_API_KEY`), so
-  browse stays fast without embedding the whole corpus on every request.
+shadcnpreset helps you:
 
-Details: [`apps/shadcnpreset/SEARCH_PERFORMANCE_NOTES.md`](./apps/shadcnpreset/SEARCH_PERFORMANCE_NOTES.md).
+* Discover themes using AI
+* Preview presets on real interfaces
+* Compare design decisions visually
+* Find accessible colour combinations
+* Generate production-ready theme code
+* Save and share presets with your team
 
-### Voting & My presets
+## Features
 
-- **Votes** — Authenticated users can upvote presets; counts are stored server-side and **toggle** (heart on, heart
-  off). Trying to vote while signed out can trigger sign-in; **session storage** keeps that vote intent across the OAuth
-  round-trip so the vote applies after you land back (it is cleared if you browse away before signing in).
-- **Homepage ordering** — Presets with at least one vote float to the **“loved”** block, sorted by vote count (then
-  code). Zero-vote presets follow in catalog order—so the feed rewards taste, not just recency.
-- **My presets** — **`/my-presets`** lists every preset you’ve voted for—your personal library of themes to reuse and
-  share.
+### AI-powered preset discovery
 
-### Social / Open Graph
+Describe what you're building:
 
-- **Dynamic OG images** — `next/og` `ImageResponse` per preset: dark card, brand mark, **colour swatches** (with
-  contrast-aware rims for muddy colours), Geist Mono code, theme summary—ready for Slack, X, iMessage.
-- **Live metadata** — Client sync keeps `<title>`, canonical, and OG/Twitter tags aligned when the URL updates from the
-  iframe.
+* SaaS dashboard
+* fintech startup
+* educational app
+* developer tool
+* marketing website
 
-## Developing locally
+AI surfaces relevant presets and helps you explore styles that match your intent instead of forcing you to browse
+endless combinations.
 
-Use **pnpm** (version in root `package.json`).
+### Real UI previews
 
-- Run v4 `pnpm v4:dev` (defaults to `http://localhost:4000`, `NEXT_PUBLIC_V4_URL`).
-- Run the app: `pnpm shadcnpreset:dev` from the repo root so the iframe hits your local v4 instance.
+Preview presets on actual interfaces instead of isolated colour swatches.
 
-More: [`UPSTREAM.md`](./UPSTREAM.md), [
-`docs/shadcnpreset-fork-integration.md`](./docs/shadcnpreset-fork-integration.md).
+See how a theme performs across real application layouts before committing to it. Community feedback has driven the
+addition of dashboard, authentication, and other realistic preview experiences.
 
-## Merging upstream
+### Community-driven discovery
 
-If you **bring in changes from upstream** shadcn/ui, there is a check script to confirm the shadcnpreset-only wiring did
-not get lost in the merge—see [`UPSTREAM.md`](./UPSTREAM.md). It is optional documentation for that workflow, not
-something you need for day-to-day dev or for using the site.
+* Vote for presets
+* Save favourites
+* Share preset URLs
+* Discover popular combinations
 
-## Contributing
+Find themes other developers actually want to use.
 
-Please read the [contributing guide](./CONTRIBUTING.md).
+### Accessibility-first exploration
+
+Browse WCAG-compliant presets and validate colour contrast before shipping.
+
+## Developer Tools
+
+shadcnpreset includes a growing collection of free developer tools.
+
+### Preset Theme CSS Generator
+
+Paste a preset code and generate ready-to-use CSS custom properties for your project.
+
+* Decode preset codes
+* Preview themes
+* Export CSS variables
+* Copy directly into your application
+
+### Preset Contrast Checker
+
+Validate theme token combinations and identify accessibility issues before they reach production.
+
+### Figma Variables Generator
+
+Generate light and dark mode variables from a preset code and keep designs aligned with implementation.
+
+### Theme Generator
+
+Generate new themes and design directions for your next project.
+
+### Image Filter Generator
+
+Create Tailwind and CSS image filters with live previews and exportable output.
+
+## Built on shadcn/ui
+
+This repository is based on the shadcn/ui monorepo and stays closely aligned with upstream development.
+
+### Apps
+
+* `apps/shadcnpreset` — Theme discovery platform and developer tools
+* `apps/v4` — Integrated preview and customizer experience
+
+### Packages
+
+* `packages/shadcn` — shadcn CLI and supporting packages
+
+## Open Source
+
+shadcnpreset is free, open source, and built in public.
+
+Contributions, ideas, bug reports, and feature requests are welcome.
+
+## Development
+
+```bash
+pnpm v4:dev
+pnpm shadcnpreset:dev
+```
+
+See:
+
+* `UPSTREAM.md`
+* `docs/shadcnpreset-fork-integration.md`
 
 ## License
 
-Licensed under the [MIT license](./LICENSE.md).
+MIT
