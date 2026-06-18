@@ -121,6 +121,12 @@ export function Footer1({ className }: Footer1Props) {
           <p className="leading-relaxed text-footer-foreground/60">
             {siteConfig.description}
           </p>
+          <a href="https://vercel.com/open-source-program">
+            <img
+              alt="Vercel OSS Program"
+              src="https://vercel.com/oss/program-badge-2026.svg"
+            />
+          </a>
           <IconGroup
             links={ICON_LINKS}
             className="[&_svg]:fill-footer-foreground/60"
