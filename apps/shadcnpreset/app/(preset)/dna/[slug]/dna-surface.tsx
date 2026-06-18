@@ -14,6 +14,7 @@ import { useMounted } from "@/hooks/use-mounted"
 import {
   effectiveHeadingFont,
   getFontDisplayName,
+  getFontFamily,
   getPresetPreviewUrl,
   type ResolvedPreset,
 } from "@/lib/preset"
@@ -59,6 +60,8 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
     const code = generateRandomCompatiblePreset()
     router.push(`/dna/${code}`)
   }
+
+  const bodyFontFamily = getFontFamily(resolved.font)
 
   return (
     <PresetThemeSurface
@@ -112,6 +115,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
                   src={previewSrc}
                   virtualWidth={2150}
                   virtualHeight={1100}
+                  className="pointer-events-none"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
@@ -120,6 +124,20 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
               )}
             </div>
           </div>
+        </div>
+        <div className="@container grid gap-4 py-10 md:grid-cols-2">
+          <p
+            style={{ fontFamily: bodyFontFamily }}
+            className="text-[clamp(1rem,2cqw,1.5rem)] leading-relaxed md:col-start-2"
+          >
+            &#34;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est labor.&#34;
+          </p>
         </div>
         <DnaIconSection iconLibrary={resolved.iconLibrary} />
       </div>
