@@ -27,6 +27,8 @@ import { resolveSwatchRowsForMode } from "./swatch-utils"
 import { DnaTypographySection } from "./typography-section"
 import { DnaIconSection } from "./icon-section"
 
+import ipadMockup from "@/public/dna/ipad-mockup.png"
+
 type DnaSurfaceProps = {
   resolved: ResolvedPreset
   registryTheme: RegistryThemeSurface
@@ -131,18 +133,24 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
               fontFamily: bodyFontFamily,
               hangingPunctuation: "first last",
             }}
-            className="indent-[-0.35em] text-[clamp(1rem,2cqw,1.5rem)] leading-relaxed md:col-start-2"
+            className="indent-[-0.35em] text-[clamp(1rem,2cqw,3rem)] leading-snug md:col-start-2"
           >
-            &#34;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est labor.&#34;
+            &#34;The naive, hasty aegithales who lay eggs at Christmas when it's
+            freezing are sure to be disappointed when they see their funny eggs
+            damaged&#34;
           </p>
         </div>
         <DnaIconSection iconLibrary={resolved.iconLibrary} />
+        <div className="relative w-full">
+          <Image src={ipadMockup} alt="" width={1600} height={1225} />
+          <div className="pointer-events-none absolute top-[24.2%] left-[28.9%] z-10 h-[44%] w-[43%] transform-[rotate(-8deg)_skewX(6.75deg)] overflow-hidden rounded-[3%] border border-lime-400/90 bg-lime-400/10">
+            <div className="relative h-full w-full">
+              <div className="absolute inset-0 border border-lime-400/50" />
+              <div className="absolute top-0 left-1/2 h-full w-px -translate-x-1/2 bg-lime-400/60" />
+              <div className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 bg-lime-400/60" />
+            </div>
+          </div>
+        </div>
       </div>
     </PresetThemeSurface>
   )
