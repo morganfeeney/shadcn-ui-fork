@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import Image from "next/image"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import {
   PresetThemeSurface,
@@ -34,10 +35,112 @@ type DnaSurfaceProps = {
   registryTheme: RegistryThemeSurface
 }
 
+type Point = {
+  x: number
+  y: number
+}
+
+type HomographyResult = {
+  transform: string
+  coeffs: {
+    a: number
+    b: number
+    c: number
+    d: number
+    e: number
+    f: number
+    g: number
+    h: number
+  }
+}
+
+function solveLinearSystem(matrix: number[][], rhs: number[]): number[] | null {
+  const n = rhs.length
+  const augmented = matrix.map((row, i) => [...row, rhs[i]])
+
+  for (let col = 0; col < n; col++) {
+    let pivotRow = col
+    for (let row = col + 1; row < n; row++) {
+      if (Math.abs(augmented[row]![col]!) > Math.abs(augmented[pivotRow]![col]!)) {
+        pivotRow = row
+      }
+    }
+
+    const pivot = augmented[pivotRow]![col]!
+    if (Math.abs(pivot) < 1e-10) return null
+    ;[augmented[col], augmented[pivotRow]] = [augmented[pivotRow]!, augmented[col]!]
+
+    for (let c = col; c <= n; c++) {
+      augmented[col]![c] = augmented[col]![c]! / pivot
+    }
+
+    for (let row = 0; row < n; row++) {
+      if (row === col) continue
+      const factor = augmented[row]![col]!
+      if (Math.abs(factor) < 1e-12) continue
+      for (let c = col; c <= n; c++) {
+        augmented[row]![c] = augmented[row]![c]! - factor * augmented[col]![c]!
+      }
+    }
+  }
+
+  return augmented.map((row) => row[n]!)
+}
+
+function matrix3dFromRectToQuad(
+  width: number,
+  height: number,
+  quad: Point[]
+): HomographyResult | null {
+  if (width <= 0 || height <= 0 || quad.length !== 4) return null
+
+  const src: Point[] = [
+    { x: 0, y: 0 },
+    { x: width, y: 0 },
+    { x: width, y: height },
+    { x: 0, y: height },
+  ]
+
+  const matrix: number[][] = []
+  const rhs: number[] = []
+
+  for (let i = 0; i < 4; i++) {
+    const { x, y } = src[i]!
+    const { x: X, y: Y } = quad[i]!
+    matrix.push([x, y, 1, 0, 0, 0, -X * x, -X * y])
+    rhs.push(X)
+    matrix.push([0, 0, 0, x, y, 1, -Y * x, -Y * y])
+    rhs.push(Y)
+  }
+
+  const solved = solveLinearSystem(matrix, rhs)
+  if (!solved) return null
+
+  const [a, b, c, d, e, f, g, h] = solved
+  const fmt = (value: number) => String(Number(value.toFixed(10)))
+  return {
+    transform: `matrix3d(${fmt(a)},${fmt(d)},0,${fmt(g)},${fmt(b)},${fmt(e)},0,${fmt(h)},0,0,1,0,${fmt(c)},${fmt(f)},0,1)`,
+    coeffs: { a, b, c, d, e, f, g, h },
+  }
+}
+
+function mapPointWithHomography(x: number, y: number, coeffs: HomographyResult["coeffs"]) {
+  const { a, b, c, d, e, f, g, h } = coeffs
+  const denom = g * x + h * y + 1
+  if (Math.abs(denom) < 1e-10) return null
+  return {
+    x: (a * x + b * y + c) / denom,
+    y: (d * x + e * y + f) / denom,
+  }
+}
+
 export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
+  const SHOW_QUAD_OVERLAY = true
   const router = useRouter()
   const { resolvedTheme } = useTheme()
+  const tabletPlaneRef = useRef<HTMLDivElement>(null)
   const mounted = useMounted()
+  const [tabletPlaneSize, setTabletPlaneSize] = useState({ width: 0, height: 0 })
 
   const mode = resolvedTheme === "dark" ? "dark" : "light"
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
@@ -45,6 +148,9 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrc = getPresetPreviewUrl(resolved.code, "login-02")
+  const tabletContentScale = 1.08
+  const tabletContentOffsetX = -2
+  const tabletContentOffsetY = 1.5
 
   function onRandomPreset() {
     const code = generateRandomCompatiblePreset()
@@ -52,6 +158,86 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   }
 
   const bodyFontFamily = getFontFamily(resolved.font)
+  useEffect(() => {
+    const node = tabletPlaneRef.current
+    if (!node) return
+
+    const measure = () => {
+      const rect = node.getBoundingClientRect()
+      if (!rect.width || !rect.height) return
+      setTabletPlaneSize({ width: rect.width, height: rect.height })
+    }
+
+    measure()
+    requestAnimationFrame(measure)
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      setTabletPlaneSize({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      })
+    })
+
+    resizeObserver.observe(node)
+    window.addEventListener("resize", measure)
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("resize", measure)
+    }
+  }, [])
+
+  const tabletQuadRatios: Point[] = [
+    { x: 0, y: 0.1501990775 },
+    { x: 0.8246176702, y: 0 },
+    { x: 1, y: 0.8189884603 },
+    { x: 0.1640728047, y: 1 },
+  ]
+
+  const tabletHomography = useMemo(() => {
+    const { width, height } = tabletPlaneSize
+    if (!width || !height) return null
+
+    // Authored quad from public/dna/screen-quad.svg path, normalized to its bbox.
+    // Order: TL, TR, BR, BL
+    const quad: Point[] = tabletQuadRatios.map((point) => ({
+      x: width * point.x,
+      y: height * point.y,
+    }))
+
+    const homography = matrix3dFromRectToQuad(width, height, quad)
+    if (!homography) return null
+
+    // Validation: source corners should map to authored target corners with minimal error.
+    const sourceCorners: Point[] = [
+      { x: 0, y: 0 },
+      { x: width, y: 0 },
+      { x: width, y: height },
+      { x: 0, y: height },
+    ]
+
+    let maxError = 0
+    for (let i = 0; i < 4; i++) {
+      const projected = mapPointWithHomography(
+        sourceCorners[i]!.x,
+        sourceCorners[i]!.y,
+        homography.coeffs
+      )
+      if (!projected) return null
+      const dx = projected.x - quad[i]!.x
+      const dy = projected.y - quad[i]!.y
+      const error = Math.hypot(dx, dy)
+      maxError = Math.max(maxError, error)
+    }
+
+    // Hard guard: if this fails, do not apply transform.
+    if (maxError > 0.75) {
+      return null
+    }
+
+    return homography
+  }, [tabletPlaneSize, tabletQuadRatios])
 
   if (!mounted) {
     return (
@@ -146,16 +332,69 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
         <div className="relative w-full">
           <Image src={ipadMockup} alt="" width={1600} height={1225} />
           {tabletPreviewSrc ? (
-            <div className="pointer-events-none absolute top-[20.4%] left-[23.1%] z-10 h-[53.7%] w-[54.8%] overflow-hidden rounded-[2.4%] [transform:rotate(-8.6deg)_skewX(7.5deg)] [transform-origin:center]">
-              <PresetV4ScaledFrame
-                key={`${tabletPreviewSrc}-tablet`}
-                title={`shadcn login preview · ${resolved.code}`}
-                src={tabletPreviewSrc}
-                virtualWidth={1320}
-                virtualHeight={900}
-                className="h-full w-full bg-background"
-                frameClassName="border-0"
-              />
+            <div
+              ref={tabletPlaneRef}
+              className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.25%] w-[51.85%]"
+            >
+              {SHOW_QUAD_OVERLAY ? (
+                <svg
+                  aria-hidden
+                  className="absolute inset-0 z-20 h-full w-full"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
+                  <polygon
+                    points={tabletQuadRatios
+                      .map((point) => `${point.x * 100},${point.y * 100}`)
+                      .join(" ")}
+                    fill="none"
+                    stroke="rgb(56 189 248 / 0.95)"
+                    strokeWidth="0.45"
+                  />
+                  {tabletQuadRatios.map((point, index) => {
+                    const label =
+                      index === 0 ? "TL" : index === 1 ? "TR" : index === 2 ? "BR" : "BL"
+                    return (
+                      <g key={`quad-${label}`}>
+                        <circle cx={point.x * 100} cy={point.y * 100} r="1.2" fill="rgb(56 189 248)" />
+                        <text
+                          x={point.x * 100 + 1.2}
+                          y={point.y * 100 - 1}
+                          fill="rgb(56 189 248)"
+                          fontSize="2.4"
+                          fontFamily="monospace"
+                        >
+                          {label}
+                        </text>
+                      </g>
+                    )
+                  })}
+                </svg>
+              ) : null}
+              <div
+                className="relative h-full w-full [transform-origin:0_0]"
+                style={tabletHomography ? { transform: tabletHomography.transform } : undefined}
+              >
+                <div className="h-full w-full overflow-hidden rounded-[2.4%] bg-background">
+                  <div
+                    className="h-full w-full"
+                    style={{
+                      transform: `translate(${tabletContentOffsetX}%, ${tabletContentOffsetY}%) scale(${tabletContentScale})`,
+                      transformOrigin: "center",
+                    }}
+                  >
+                    <PresetV4ScaledFrame
+                      key={`${tabletPreviewSrc}-tablet`}
+                      title={`shadcn login preview · ${resolved.code}`}
+                      src={tabletPreviewSrc}
+                      virtualWidth={1280}
+                      virtualHeight={860}
+                      className="h-full w-full bg-background"
+                      frameClassName="border-0"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           ) : null}
         </div>
