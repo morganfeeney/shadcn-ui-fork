@@ -38,6 +38,21 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const router = useRouter()
   const { resolvedTheme } = useTheme()
   const mounted = useMounted()
+
+  const mode = resolvedTheme === "dark" ? "dark" : "light"
+  const modeVars = registryTheme.cssVars[mode] as Record<string, string>
+  const swatchRows = resolveSwatchRowsForMode(modeVars)
+  const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
+  const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
+  const tabletPreviewSrc = getPresetPreviewUrl(resolved.code, "login-02")
+
+  function onRandomPreset() {
+    const code = generateRandomCompatiblePreset()
+    router.push(`/dna/${code}`)
+  }
+
+  const bodyFontFamily = getFontFamily(resolved.font)
+
   if (!mounted) {
     return (
       <PresetThemeSurface
@@ -51,19 +66,6 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
       </PresetThemeSurface>
     )
   }
-
-  const mode = resolvedTheme === "dark" ? "dark" : "light"
-  const modeVars = registryTheme.cssVars[mode] as Record<string, string>
-  const swatchRows = resolveSwatchRowsForMode(modeVars)
-  const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
-  const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
-
-  function onRandomPreset() {
-    const code = generateRandomCompatiblePreset()
-    router.push(`/dna/${code}`)
-  }
-
-  const bodyFontFamily = getFontFamily(resolved.font)
 
   return (
     <PresetThemeSurface
@@ -143,13 +145,19 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
         <DnaIconSection iconLibrary={resolved.iconLibrary} />
         <div className="relative w-full">
           <Image src={ipadMockup} alt="" width={1600} height={1225} />
-          <div className="pointer-events-none absolute top-[24.2%] left-[28.9%] z-10 h-[44%] w-[43%] transform-[rotate(-8deg)_skewX(6.75deg)] overflow-hidden rounded-[3%] border border-lime-400/90 bg-lime-400/10">
-            <div className="relative h-full w-full">
-              <div className="absolute inset-0 border border-lime-400/50" />
-              <div className="absolute top-0 left-1/2 h-full w-px -translate-x-1/2 bg-lime-400/60" />
-              <div className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 bg-lime-400/60" />
+          {tabletPreviewSrc ? (
+            <div className="pointer-events-none absolute top-[20.4%] left-[23.1%] z-10 h-[53.7%] w-[54.8%] overflow-hidden rounded-[2.4%] [transform:rotate(-8.6deg)_skewX(7.5deg)] [transform-origin:center]">
+              <PresetV4ScaledFrame
+                key={`${tabletPreviewSrc}-tablet`}
+                title={`shadcn login preview · ${resolved.code}`}
+                src={tabletPreviewSrc}
+                virtualWidth={1320}
+                virtualHeight={900}
+                className="h-full w-full bg-background"
+                frameClassName="border-0"
+              />
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </PresetThemeSurface>
