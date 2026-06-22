@@ -347,7 +347,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
           {tabletPreviewSrc ? (
             <div
               ref={tabletPlaneRef}
-              className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.25%] w-[51.85%]"
+              className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.25%] w-[51.75%]"
               style={{
                 WebkitMaskImage: tabletMaskImage,
                 maskImage: tabletMaskImage,
@@ -373,7 +373,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
                   src={tabletPreviewSrc}
                   className="transform-[skew(15deg,-8deg)] border-0 bg-background"
                   virtualWidth={1024}
-                  virtualHeight={750}
+                  virtualHeight={756}
                 />
               </div>
             </div>
