@@ -8,6 +8,7 @@
 @import "../../v4/registry/styles/style-mira.css" layer(base);
 @import "../../v4/registry/styles/style-luma.css" layer(base);
 @import "../../v4/registry/styles/style-sera.css" layer(base);
+@import "../../v4/registry/styles/style-rhea.css" layer(base);
 
 @source "../node_modules/streamdown/dist/*.js";
 
@@ -20,6 +21,7 @@
 @custom-variant style-mira (&:where(.style-mira *));
 @custom-variant style-luma (&:where(.style-luma *));
 @custom-variant style-sera (&:where(.style-sera *));
+@custom-variant style-rhea (&:where(.style-rhea *));
 
 @theme inline {
   --breakpoint-3xl: 1600px;
