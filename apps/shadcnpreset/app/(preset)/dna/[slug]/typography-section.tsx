@@ -73,9 +73,9 @@ function AutoFitSingleLineText({
   }, [text, fontFamily])
 
   return (
-    <div ref={containerRef} className="min-w-0 w-full self-end pr-3">
+    <div ref={containerRef} className="w-full self-end pr-3">
       <span
-        className="inline-block w-max whitespace-nowrap leading-[1.05]"
+        className="inline-block w-max leading-[1.05] whitespace-nowrap"
         style={{ fontFamily, fontSize: `${fontSizePx}px` }}
       >
         {text}
@@ -92,18 +92,20 @@ export function DnaTypographySection({
   const headingFontFamily = getFontFamily(headingFont)
 
   return (
-    <section className="@container grid min-w-0 gap-6 bg-muted p-12">
-      <div className="min-w-0" style={{ fontFamily: bodyFontFamily }}>
-        <p className="text-[clamp(2rem,10cqw,3rem)] leading-snug break-all">
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
-          !?@&£$¥%(){}[]:;,.+-=/\*&quot;&apos;
-        </p>
-      </div>
+    <div className="@container grid bg-muted">
+      <section className="grid gap-6 p-[clamp(1.5rem,5cqw,3rem)]">
+        <div className="min-w-0" style={{ fontFamily: bodyFontFamily }}>
+          <p className="text-[clamp(2rem,10cqw,3rem)] leading-snug break-all">
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
+            !?@&£$¥%(){}[]:;,.+-=/\*&quot;&apos;
+          </p>
+        </div>
 
-      <AutoFitSingleLineText
-        text={getFontDisplayName(headingFont)}
-        fontFamily={headingFontFamily}
-      />
-    </section>
+        <AutoFitSingleLineText
+          text={getFontDisplayName(headingFont)}
+          fontFamily={headingFontFamily}
+        />
+      </section>
+    </div>
   )
 }

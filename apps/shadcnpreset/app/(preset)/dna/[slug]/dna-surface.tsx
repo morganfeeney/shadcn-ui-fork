@@ -160,9 +160,6 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrcBase = getPresetPreviewUrl(resolved.code, "login-02")
-  const tabletPreviewSrc = tabletPreviewSrcBase
-    ? `${tabletPreviewSrcBase}${tabletPreviewSrcBase.includes("?") ? "&" : "?"}forceDesktop=1`
-    : null
 
   function onRandomPreset() {
     const code = generateRandomCompatiblePreset()
@@ -292,7 +289,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
         </p>
       </header>
       <div className="grid gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           <DnaSwatchGrid rows={swatchRows} />
           <DnaTypographySection
             bodyFont={resolved.font}
@@ -334,20 +331,20 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
               fontFamily: bodyFontFamily,
               hangingPunctuation: "first last",
             }}
-            className="indent-[-0.35em] text-[clamp(1rem,2cqw,3rem)] leading-snug md:col-start-2"
+            className="indent-[-0.35em] text-[clamp(1.5rem,4cqw,2.5rem)] leading-snug md:col-start-2"
           >
-            &#34;The naive, hasty aegithales who lay eggs at Christmas when it's
-            freezing are sure to be disappointed when they see their funny eggs
-            damaged&#34;
+            &#34;The naive, hasty aegithales who lay eggs at Christmas when
+            it&#39;s freezing are sure to be disappointed when they see their
+            funny eggs damaged&#34;
           </p>
         </div>
         <DnaIconSection iconLibrary={resolved.iconLibrary} />
         <div className="relative w-full">
           <Image src={ipadMockup} alt="" width={1600} height={1225} />
-          {tabletPreviewSrc ? (
+          {tabletPreviewSrcBase ? (
             <div
               ref={tabletPlaneRef}
-              className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.25%] w-[51.75%]"
+              className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.175%] w-[51.75%]"
               style={{
                 WebkitMaskImage: tabletMaskImage,
                 maskImage: tabletMaskImage,
@@ -359,18 +356,11 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
                 maskSize: "100% 100%",
               }}
             >
-              <div
-                className="relative h-full w-full origin-top-left px-[7%]"
-                style={
-                  tabletHomography
-                    ? { transform: tabletHomography.transform }
-                    : undefined
-                }
-              >
+              <div className="relative h-full w-full origin-top-left px-[7%]">
                 <PresetV4ScaledFrame
-                  key={`${tabletPreviewSrc}-tablet`}
+                  key={`${tabletPreviewSrcBase}-tablet`}
                   title={`shadcn login preview · ${resolved.code}`}
-                  src={tabletPreviewSrc}
+                  src={tabletPreviewSrcBase}
                   className="transform-[skew(15deg,-8deg)] border-0 bg-background"
                   virtualWidth={1024}
                   virtualHeight={756}
