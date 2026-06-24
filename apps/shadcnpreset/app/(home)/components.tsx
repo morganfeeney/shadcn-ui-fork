@@ -15,6 +15,7 @@ import {
   HomePresetRailItem,
   HomePresetRailViewport,
 } from "@/components/ui/home-preset-rail"
+import { usePresetVoteMapsForItems } from "@/hooks/use-preset-votes-batch"
 import { buildPreviewStepOrder } from "@/components/preset-preview/step"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { useHorizontalSnapRailNav } from "@/hooks/use-horizontal-snap-rail-nav"
@@ -86,6 +87,7 @@ export function HomePresetCarousel({
     () => buildPreviewStepOrder(items),
     [items]
   )
+  const { votesByCode, hasVotedByCode } = usePresetVoteMapsForItems(items)
 
   if (items.length === 0) {
     return null
@@ -114,6 +116,8 @@ export function HomePresetCarousel({
                 title={item.title}
                 description={item.description}
                 previewStepOrder={previewStepOrder}
+                initialVoteCount={votesByCode[item.code] ?? 0}
+                initialHasVoted={hasVotedByCode[item.code] ?? false}
               />
             </HomePresetRailItem>
           ))}

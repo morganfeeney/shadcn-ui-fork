@@ -2,6 +2,7 @@
 
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
 import { usePresetFeed } from "@/hooks/use-preset-feed"
+import { usePresetVoteMapsForItems } from "@/hooks/use-preset-votes-batch"
 import { type ListViewItem, toListViewItem } from "@/lib/list-view"
 import { formatPresetCardDescription } from "@/lib/preset-card-description"
 import type { PresetPageItem } from "@/lib/preset-catalog"
@@ -38,6 +39,7 @@ export function ListView({
   const feedItems = useLiveFeed
     ? (feedQuery.data?.items ?? initialFeedItems).map(toListViewItem)
     : items
+  const { votesByCode, hasVotedByCode } = usePresetVoteMapsForItems(feedItems)
 
   return (
     <section>
@@ -48,6 +50,8 @@ export function ListView({
               code={item.code}
               title={item.code}
               description={formatPresetCardDescription(item)}
+              initialVoteCount={votesByCode[item.code] ?? 0}
+              initialHasVoted={hasVotedByCode[item.code] ?? false}
             />
           </li>
         ))}

@@ -8,6 +8,8 @@ import {
   writePendingVote,
 } from "@/lib/pending-vote"
 
+let bootstrapSessionPromise: Promise<void> | null = null
+
 export type SessionUser = {
   id: string
   name?: string | null
@@ -48,19 +50,29 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       return
     }
 
-    try {
-      const result = await authClient.getSession()
-      const payload = result.data
-      set({
-        user:
-          payload?.user && "id" in payload.user
-            ? (payload.user as SessionUser)
-            : null,
-        status: payload?.user && "id" in payload.user ? "authenticated" : "anonymous",
-      })
-    } catch {
-      set({ user: null, status: "anonymous" })
+    if (bootstrapSessionPromise) {
+      return bootstrapSessionPromise
     }
+
+    bootstrapSessionPromise = (async () => {
+      try {
+        const result = await authClient.getSession()
+        const payload = result.data
+        set({
+          user:
+            payload?.user && "id" in payload.user
+              ? (payload.user as SessionUser)
+              : null,
+          status: payload?.user && "id" in payload.user ? "authenticated" : "anonymous",
+        })
+      } catch {
+        set({ user: null, status: "anonymous" })
+      } finally {
+        bootstrapSessionPromise = null
+      }
+    })()
+
+    return bootstrapSessionPromise
   },
 
   beginOAuth: async (provider) => {

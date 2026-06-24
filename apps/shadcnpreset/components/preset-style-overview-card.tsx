@@ -24,6 +24,8 @@ type PresetStyleOverviewCardProps = {
   code: string
   title: string
   description: string
+  initialVoteCount?: number
+  initialHasVoted?: boolean
   /**
    * `inline` — local React preview (default).
    * `v4-iframe` — scaled shadcn v4 create preview URL (same as PresetPreviewDialog /create).
@@ -131,6 +133,8 @@ export function PresetStyleOverviewCard({
   code,
   title,
   description,
+  initialVoteCount,
+  initialHasVoted,
   previewVariant = "inline",
   previewStepOrder,
   virtualWidth = 1400,
@@ -152,6 +156,8 @@ export function PresetStyleOverviewCard({
         code={code}
         title={title}
         description={description}
+        initialVoteCount={initialVoteCount}
+        initialHasVoted={initialHasVoted}
       />
     </PresetStyleOverviewCardRoot>
   )
@@ -358,16 +364,23 @@ export function PresetStyleOverviewCardDefaultFooter({
   code,
   title,
   description,
+  initialVoteCount,
+  initialHasVoted,
 }: {
   code: string
   title: string
   description: string
+  initialVoteCount?: number
+  initialHasVoted?: boolean
 }) {
   /** Bumped only on this card's “add vote” click — not derived from `hasVoted` (reorder/async would replay). */
   const [voteCelebrateGeneration, setVoteCelebrateGeneration] = useState(0)
   const pathname = usePathname()
   const reduceMotion = useReducedMotion()
-  const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(code)
+  const { toggleVote, voteCount, isVoting, hasVoted, authStatus } = useVote(code, {
+    initialVotes: initialVoteCount,
+    initialHasVoted,
+  })
 
   function handleVoteClick() {
     trackEvent("preset_vote_click", {
