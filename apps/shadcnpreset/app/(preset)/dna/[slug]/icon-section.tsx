@@ -14,19 +14,19 @@ const ICON_TILE_COUNT = 40
 export function DnaIconSection({ iconLibrary }: DnaIconSectionProps) {
   return (
     <section className="overflow-hidden">
-      <div className="grid grid-cols-5 gap-1 md:grid-cols-10">
+      <div className="grid grid-cols-4 gap-1 sm:grid-cols-5 lg:grid-cols-10">
         {Array.from({ length: ICON_TILE_COUNT }).map((_, index) => {
           const names = PREVIEW_ICON_NAMES[index % PREVIEW_ICON_NAMES.length]
 
           return (
             <div
               key={`${names.lucide}-${index}`}
-              className="flex aspect-square items-center justify-center bg-muted/40 p-2"
+              className="@container flex aspect-square items-center justify-center bg-muted/40 p-2"
             >
               <IconPlaceholder
                 iconLibrary={iconLibrary}
                 {...names}
-                className="size-8 text-foreground"
+                className="size-[clamp(1.5rem,30cqw,4rem)] text-foreground"
                 aria-hidden
               />
             </div>

@@ -3,13 +3,12 @@
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import Image from "next/image"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
 import {
   PresetThemeSurface,
   type RegistryThemeSurface,
 } from "@/components/preset-theme-surface"
-import { PresetV4Frame } from "@/components/preset-v4-frame"
 import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
 import { Button } from "@/components/ui/button"
 import { useMounted } from "@/hooks/use-mounted"
@@ -36,123 +35,11 @@ type DnaSurfaceProps = {
   registryTheme: RegistryThemeSurface
 }
 
-type Point = {
-  x: number
-  y: number
-}
-
-type HomographyResult = {
-  transform: string
-  coeffs: {
-    a: number
-    b: number
-    c: number
-    d: number
-    e: number
-    f: number
-    g: number
-    h: number
-  }
-}
-
-function solveLinearSystem(matrix: number[][], rhs: number[]): number[] | null {
-  const n = rhs.length
-  const augmented = matrix.map((row, i) => [...row, rhs[i]])
-
-  for (let col = 0; col < n; col++) {
-    let pivotRow = col
-    for (let row = col + 1; row < n; row++) {
-      if (
-        Math.abs(augmented[row]![col]!) > Math.abs(augmented[pivotRow]![col]!)
-      ) {
-        pivotRow = row
-      }
-    }
-
-    const pivot = augmented[pivotRow]![col]!
-    if (Math.abs(pivot) < 1e-10) return null
-    ;[augmented[col], augmented[pivotRow]] = [
-      augmented[pivotRow]!,
-      augmented[col]!,
-    ]
-
-    for (let c = col; c <= n; c++) {
-      augmented[col]![c] = augmented[col]![c]! / pivot
-    }
-
-    for (let row = 0; row < n; row++) {
-      if (row === col) continue
-      const factor = augmented[row]![col]!
-      if (Math.abs(factor) < 1e-12) continue
-      for (let c = col; c <= n; c++) {
-        augmented[row]![c] = augmented[row]![c]! - factor * augmented[col]![c]!
-      }
-    }
-  }
-
-  return augmented.map((row) => row[n]!)
-}
-
-function matrix3dFromRectToQuad(
-  width: number,
-  height: number,
-  quad: Point[]
-): HomographyResult | null {
-  if (width <= 0 || height <= 0 || quad.length !== 4) return null
-
-  const src: Point[] = [
-    { x: 0, y: 0 },
-    { x: width, y: 0 },
-    { x: width, y: height },
-    { x: 0, y: height },
-  ]
-
-  const matrix: number[][] = []
-  const rhs: number[] = []
-
-  for (let i = 0; i < 4; i++) {
-    const { x, y } = src[i]!
-    const { x: X, y: Y } = quad[i]!
-    matrix.push([x, y, 1, 0, 0, 0, -X * x, -X * y])
-    rhs.push(X)
-    matrix.push([0, 0, 0, x, y, 1, -Y * x, -Y * y])
-    rhs.push(Y)
-  }
-
-  const solved = solveLinearSystem(matrix, rhs)
-  if (!solved) return null
-
-  const [a, b, c, d, e, f, g, h] = solved
-  const fmt = (value: number) => String(Number(value.toFixed(10)))
-  return {
-    transform: `matrix3d(${fmt(a)},${fmt(d)},0,${fmt(g)},${fmt(b)},${fmt(e)},0,${fmt(h)},0,0,1,0,${fmt(c)},${fmt(f)},0,1)`,
-    coeffs: { a, b, c, d, e, f, g, h },
-  }
-}
-
-function mapPointWithHomography(
-  x: number,
-  y: number,
-  coeffs: HomographyResult["coeffs"]
-) {
-  const { a, b, c, d, e, f, g, h } = coeffs
-  const denom = g * x + h * y + 1
-  if (Math.abs(denom) < 1e-10) return null
-  return {
-    x: (a * x + b * y + c) / denom,
-    y: (d * x + e * y + f) / denom,
-  }
-}
-
 export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const router = useRouter()
   const { resolvedTheme } = useTheme()
   const tabletPlaneRef = useRef<HTMLDivElement>(null)
   const mounted = useMounted()
-  const [tabletPlaneSize, setTabletPlaneSize] = useState({
-    width: 0,
-    height: 0,
-  })
 
   const mode = resolvedTheme === "dark" ? "dark" : "light"
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
@@ -174,19 +61,13 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
     const measure = () => {
       const rect = node.getBoundingClientRect()
       if (!rect.width || !rect.height) return
-      setTabletPlaneSize({ width: rect.width, height: rect.height })
     }
 
-    measure()
     requestAnimationFrame(measure)
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0]
       if (!entry) return
-      setTabletPlaneSize({
-        width: entry.contentRect.width,
-        height: entry.contentRect.height,
-      })
     })
 
     resizeObserver.observe(node)
@@ -197,57 +78,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
     }
   }, [])
 
-  const tabletQuadRatios: Point[] = [
-    { x: 0, y: 0.1501990775 },
-    { x: 0.8246176702, y: 0 },
-    { x: 1, y: 0.8189884603 },
-    { x: 0.1640728047, y: 1 },
-  ]
   const tabletMaskImage = "url('/dna/mask.svg')"
-
-  const tabletHomography = useMemo(() => {
-    const { width, height } = tabletPlaneSize
-    if (!width || !height) return null
-
-    // Authored quad from public/dna/screen-quad.svg path, normalized to its bbox.
-    // Order: TL, TR, BR, BL
-    const quad: Point[] = tabletQuadRatios.map((point) => ({
-      x: width * point.x,
-      y: height * point.y,
-    }))
-
-    const homography = matrix3dFromRectToQuad(width, height, quad)
-    if (!homography) return null
-
-    // Validation: source corners should map to authored target corners with minimal error.
-    const sourceCorners: Point[] = [
-      { x: 0, y: 0 },
-      { x: width, y: 0 },
-      { x: width, y: height },
-      { x: 0, y: height },
-    ]
-
-    let maxError = 0
-    for (let i = 0; i < 4; i++) {
-      const projected = mapPointWithHomography(
-        sourceCorners[i]!.x,
-        sourceCorners[i]!.y,
-        homography.coeffs
-      )
-      if (!projected) return null
-      const dx = projected.x - quad[i]!.x
-      const dy = projected.y - quad[i]!.y
-      const error = Math.hypot(dx, dy)
-      maxError = Math.max(maxError, error)
-    }
-
-    // Hard guard: if this fails, do not apply transform.
-    if (maxError > 0.75) {
-      return null
-    }
-
-    return homography
-  }, [tabletPlaneSize, tabletQuadRatios])
 
   if (!mounted) {
     return (
@@ -273,7 +104,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
     >
       <header className="grid gap-6 pt-30 pb-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-5xl font-display font-normal">
+          <h1 className="text-4xl font-display font-normal md:text-5xl">
             Preset: {resolved.code}
           </h1>
           <Button variant="outline" onClick={onRandomPreset}>
