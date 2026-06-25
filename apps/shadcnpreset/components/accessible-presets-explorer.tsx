@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { HomePaginationNav } from "@/components/home-pagination-nav"
 import { FilterPicker } from "@/components/preset-filter-bar"
 import { PresetStyleOverviewCard } from "@/components/preset-style-overview-card"
+import { usePresetVoteMapsForItems } from "@/hooks/use-preset-votes-batch"
 import { Button } from "@/components/ui/button"
 import { FieldGroup } from "@/components/ui/field"
 import {
@@ -236,6 +237,7 @@ export function AccessiblePresetsExplorer({
 
   const start = (safePage - 1) * PAGE_SIZE
   const pageItems = filtered.slice(start, start + PAGE_SIZE)
+  const { votesByCode, hasVotedByCode } = usePresetVoteMapsForItems(pageItems)
   const rangeEnd =
     filtered.length === 0
       ? 0
@@ -359,6 +361,8 @@ export function AccessiblePresetsExplorer({
                       code={item.code}
                       title={item.code}
                       description={formatPresetCardDescription(item)}
+                      initialVoteCount={votesByCode[item.code] ?? 0}
+                      initialHasVoted={hasVotedByCode[item.code] ?? false}
                     />
                   </li>
                 ))}

@@ -11,6 +11,8 @@ type VoteStateResponse = {
 
 type UseVoteOptions = {
   enabled?: boolean
+  initialVotes?: number
+  initialHasVoted?: boolean
 }
 
 export default function useVote(code: string, options: UseVoteOptions = {}) {
@@ -20,10 +22,16 @@ export default function useVote(code: string, options: UseVoteOptions = {}) {
   )
   const authStatus = useAuthStore((state) => state.status)
   const queryClient = useQueryClient()
+  const hasSeededVoteState =
+    options.initialVotes !== undefined && options.initialHasVoted !== undefined
+  const shouldFetchVoteState = enabled && !hasSeededVoteState
 
   const { data } = useQuery({
     queryKey: ["presetVote", code],
-    enabled,
+    enabled: shouldFetchVoteState,
+    staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: async (): Promise<VoteStateResponse> => {
       const response = await fetch(`/api/presets/${code}/vote`, {
         method: "GET",
@@ -48,6 +56,30 @@ export default function useVote(code: string, options: UseVoteOptions = {}) {
     },
     onSuccess: (payload) => {
       queryClient.setQueryData<VoteStateResponse>(["presetVote", code], payload)
+      queryClient.setQueriesData<{
+        votesByCode: Record<string, number>
+        hasVotedByCode: Record<string, boolean>
+        authenticated: boolean
+      }>(
+        { queryKey: ["presetVotesBatch"] },
+        (current) => {
+          if (!current || !(code in current.votesByCode) || !(code in current.hasVotedByCode)) {
+            return current
+          }
+
+          return {
+            ...current,
+            votesByCode: {
+              ...current.votesByCode,
+              [code]: payload.votes,
+            },
+            hasVotedByCode: {
+              ...current.hasVotedByCode,
+              [code]: payload.hasVoted,
+            },
+          }
+        }
+      )
       void queryClient.invalidateQueries({ queryKey: ["presetFeed"] })
     },
   })
@@ -65,8 +97,8 @@ export default function useVote(code: string, options: UseVoteOptions = {}) {
     await voteMutation.mutateAsync()
   }
 
-  const voteCount = data?.votes ?? 0
-  const hasVoted = data?.hasVoted ?? false
+  const voteCount = data?.votes ?? options.initialVotes ?? 0
+  const hasVoted = data?.hasVoted ?? options.initialHasVoted ?? false
 
   return {
     toggleVote,
