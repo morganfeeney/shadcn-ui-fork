@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation"
 
-import {
-  effectiveHeadingFont,
-  resolvePresetFromCode,
-} from "@/lib/preset"
+import { effectiveHeadingFont, resolvePresetFromCode } from "@/lib/preset"
 import { getPresetGoogleFontStylesheetHrefs } from "@/lib/preset-google-fonts"
 import { buildRegistryTheme, DEFAULT_CONFIG } from "@/registry/config"
 import { DnaSurface } from "./dna-surface"
+import { ContainerInner } from "@/components/zippystarter/container"
+import { DnaRelatedPresetsSection } from "./related-presets-section"
 
 type DnaPageProps = {
   params: Promise<{ slug: string }>
@@ -47,7 +46,10 @@ export default async function DnaPage({ params }: DnaPageProps) {
       {fontHrefs.map((href) => (
         <link key={href} rel="stylesheet" href={href} />
       ))}
-      <DnaSurface resolved={resolved} registryTheme={registryTheme} />
+      <ContainerInner>
+        <DnaSurface resolved={resolved} registryTheme={registryTheme} />
+      </ContainerInner>
+      <DnaRelatedPresetsSection resolved={resolved} />
     </>
   )
 }
