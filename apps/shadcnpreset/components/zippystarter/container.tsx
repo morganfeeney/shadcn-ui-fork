@@ -7,7 +7,11 @@ export function ContainerInner({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
-    <div className={cn(className)} {...props}>
+    <div
+      data-slot="container-inner"
+      className={cn(className, "container-inner")}
+      {...props}
+    >
       {children}
     </div>
   )
@@ -22,7 +26,7 @@ export function ContainerOuter({
   component?: React.ElementType
 }) {
   return (
-    <Component className={cn(className)} {...props}>
+    <Component data-slot="container-outer" className={cn(className)} {...props}>
       {children}
     </Component>
   )
@@ -41,17 +45,8 @@ export function Container({
   wrapperClassName,
 }: ContainerProps) {
   return (
-    <ContainerOuter
-      data-slot="container-outer"
-      component={component}
-      className={wrapperClassName}
-    >
-      <ContainerInner
-        data-slot="container-inner"
-        className={cn(className, "container-inner")}
-      >
-        {children}
-      </ContainerInner>
+    <ContainerOuter component={component} className={wrapperClassName}>
+      <ContainerInner className={cn(className)}>{children}</ContainerInner>
     </ContainerOuter>
   )
 }
