@@ -6,6 +6,7 @@ import { buildRegistryTheme, DEFAULT_CONFIG } from "@/registry/config"
 import { DnaSurface } from "./dna-surface"
 import { ContainerInner } from "@/components/zippystarter/container"
 import { DnaRelatedPresetsSection } from "./related-presets-section"
+import { DnaAboutSection } from "./about-section"
 
 type DnaPageProps = {
   params: Promise<{ slug: string }>
@@ -46,10 +47,26 @@ export default async function DnaPage({ params }: DnaPageProps) {
       {fontHrefs.map((href) => (
         <link key={href} rel="stylesheet" href={href} />
       ))}
-      <ContainerInner>
-        <DnaSurface resolved={resolved} registryTheme={registryTheme} />
-      </ContainerInner>
-      <DnaRelatedPresetsSection resolved={resolved} />
+      <div className="grid gap-y-20">
+        <ContainerInner>
+          <DnaSurface resolved={resolved} registryTheme={registryTheme} />
+        </ContainerInner>
+        <ContainerInner className="grid gap-6">
+          <h2 className="text-2xl font-display font-normal tracking-tight">
+            About preset: {resolved.code}
+          </h2>
+          <DnaAboutSection resolved={resolved} headingFont={headingFont} />
+        </ContainerInner>
+
+        <div className="grid gap-6">
+          <ContainerInner>
+            <h2 className="text-2xl font-display font-normal tracking-tight">
+              Related presets
+            </h2>
+          </ContainerInner>
+          <DnaRelatedPresetsSection resolved={resolved} />
+        </div>
+      </div>
     </>
   )
 }

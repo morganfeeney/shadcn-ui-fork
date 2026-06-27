@@ -145,6 +145,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --footer-foreground: oklch(0.985 0 0);
+
+  --container-width: 1600px;
+  --excess-width: calc(100vw - var(--container-width));
 }
 
 @layer base {
@@ -216,3 +219,4 @@
     font-family: var(--font-heading);
   }
 }
+

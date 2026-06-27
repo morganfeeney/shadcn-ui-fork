@@ -25,8 +25,8 @@ function HomePresetRailViewport({
       data-slot="home-preset-rail-viewport"
       aria-label={ariaLabel}
       className={cn(
-        "scrollbar-none flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain lg:gap-4",
-        "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex snap-x snap-mandatory scrollbar-none gap-2 overflow-x-auto overscroll-x-contain lg:gap-4",
+        "scrollbar-none [&::-webkit-scrollbar]:hidden",
         className
       )}
       {...props}
