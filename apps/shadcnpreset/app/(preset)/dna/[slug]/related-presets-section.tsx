@@ -35,7 +35,7 @@ export function DnaRelatedPresetsSection({
 
   return (
     <HomePresetCarousel
-      className="w-screen scroll-pr-[calc((var(--excess-width)/2))] scroll-pl-[calc((var(--excess-width)/2))] [&_[role=listitem]:first-child]:box-content [&_[role=listitem]:first-child]:pl-[calc((var(--excess-width)/2))] [&_[role=listitem]:last-child]:box-content [&_[role=listitem]:last-child]:pr-[calc((var(--excess-width)/2))]"
+      className="w-screen rail-edge-safe-padding"
       items={relatedItems.map((item) => ({
         code: item.code,
         title: item.title,

@@ -210,6 +210,21 @@
   margin-right: var(--safe-area-right);
 }
 
+@utility rail-edge-safe-padding {
+  scroll-padding-left: calc((var(--excess-width) / 2) + var(--safe-area-left));
+  scroll-padding-right: calc((var(--excess-width) / 2) + var(--safe-area-right));
+
+  & [role="listitem"]:first-child {
+    box-sizing: content-box;
+    padding-left: calc((var(--excess-width) / 2) + var(--safe-area-left));
+  }
+
+  & [role="listitem"]:last-child {
+    box-sizing: content-box;
+    padding-right: calc((var(--excess-width) / 2) + var(--safe-area-right));
+  }
+}
+
 @utility font-display {
   @apply font-medium tracking-tighter;
 }
