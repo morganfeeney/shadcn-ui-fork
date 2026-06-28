@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes"
 import Image from "next/image"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import {
   PresetThemeSurface,
@@ -34,8 +34,11 @@ type DnaSurfaceProps = {
 
 export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const { resolvedTheme } = useTheme()
-  const tabletPlaneRef = useRef<HTMLDivElement>(null)
+  const tabletSectionRef = useRef<HTMLDivElement>(null)
   const mounted = useMounted()
+  const [visibleTabletPreviewCode, setVisibleTabletPreviewCode] = useState<
+    string | null
+  >(null)
 
   const mode = resolvedTheme === "dark" ? "dark" : "light"
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
@@ -43,31 +46,34 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrcBase = getPresetPreviewUrl(resolved.code, "login-02")
+  const supportsIntersectionObserver =
+    typeof window !== "undefined" && typeof window.IntersectionObserver !== "undefined"
+  const showTabletPreview =
+    !supportsIntersectionObserver || visibleTabletPreviewCode === resolved.code
 
   const bodyFontFamily = getFontFamily(resolved.font)
   useEffect(() => {
-    const node = tabletPlaneRef.current
+    if (!mounted) return
+    const node = tabletSectionRef.current
     if (!node) return
 
-    const measure = () => {
-      const rect = node.getBoundingClientRect()
-      if (!rect.width || !rect.height) return
-    }
+    if (typeof IntersectionObserver === "undefined") return
 
-    requestAnimationFrame(measure)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        setVisibleTabletPreviewCode(resolved.code)
+        observer.disconnect()
+      },
+      {
+        rootMargin: "240px 0px",
+        threshold: 0.01,
+      }
+    )
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries[0]
-      if (!entry) return
-    })
-
-    resizeObserver.observe(node)
-    window.addEventListener("resize", measure)
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener("resize", measure)
-    }
-  }, [])
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [resolved.code, mounted])
 
   const tabletMaskImage = "url('/dna/mask.svg')"
 
@@ -156,11 +162,10 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
           </p>
         </div>
         <DnaIconSection iconLibrary={resolved.iconLibrary} />
-        <div className="relative w-full">
+        <div ref={tabletSectionRef} className="relative w-full">
           <Image src={ipadMockup} alt="" width={1600} height={1225} />
-          {tabletPreviewSrcBase ? (
+          {tabletPreviewSrcBase && showTabletPreview ? (
             <div
-              ref={tabletPlaneRef}
               className="pointer-events-none absolute top-[21.75%] left-[24.65%] z-10 h-[51.175%] w-[51.75%]"
               style={{
                 WebkitMaskImage: tabletMaskImage,
