@@ -146,7 +146,7 @@
   --sidebar-ring: oklch(0.556 0 0);
   --footer-foreground: oklch(0.985 0 0);
 
-  --container-width: 1600px;
+  --container-width: var(--breakpoint-3xl);
   --excess-width: calc(100vw - var(--container-width));
 }
 
@@ -211,17 +211,28 @@
 }
 
 @utility rail-edge-safe-padding {
-  scroll-padding-left: calc((var(--excess-width) / 2) + var(--safe-area-left));
-  scroll-padding-right: calc((var(--excess-width) / 2) + var(--safe-area-right));
+  --rail-edge-left: max(
+    var(--safe-area-left),
+    calc((var(--excess-width) / 2) + var(--safe-area-left))
+  );
+  --rail-edge-right: max(
+    var(--safe-area-right),
+    calc((var(--excess-width) / 2) + var(--safe-area-right))
+  );
+
+  scroll-padding-left: var(--rail-edge-left);
+  scroll-padding-right: var(--rail-edge-right);
+
+  & [role="listitem"]:is(:first-child, :last-child) {
+    box-sizing: content-box;
+  }
 
   & [role="listitem"]:first-child {
-    box-sizing: content-box;
-    padding-left: calc((var(--excess-width) / 2) + var(--safe-area-left));
+    padding-left: var(--rail-edge-left);
   }
 
   & [role="listitem"]:last-child {
-    box-sizing: content-box;
-    padding-right: calc((var(--excess-width) / 2) + var(--safe-area-right));
+    padding-right: var(--rail-edge-right);
   }
 }
 

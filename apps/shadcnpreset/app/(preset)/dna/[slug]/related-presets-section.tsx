@@ -35,7 +35,7 @@ export function DnaRelatedPresetsSection({
 
   return (
     <HomePresetCarousel
-      className="w-screen rail-edge-safe-padding"
+      className="rail-edge-safe-padding w-screen"
       items={relatedItems.map((item) => ({
         code: item.code,
         title: item.title,
