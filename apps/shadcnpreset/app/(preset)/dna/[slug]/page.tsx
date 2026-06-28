@@ -52,15 +52,13 @@ export default async function DnaPage({ params }: DnaPageProps) {
           <DnaSurface resolved={resolved} registryTheme={registryTheme} />
         </ContainerInner>
         <ContainerInner className="grid gap-6">
-          <h2 className="text-2xl font-display font-normal tracking-tight">
-            About preset: {resolved.code}
-          </h2>
+          <h2 className="text-2xl font-display font-normal">Preset config</h2>
           <DnaAboutSection resolved={resolved} headingFont={headingFont} />
         </ContainerInner>
 
         <div className="grid gap-6">
           <ContainerInner>
-            <h2 className="text-2xl font-display font-normal tracking-tight">
+            <h2 className="text-2xl font-display font-normal">
               Related presets
             </h2>
           </ContainerInner>
