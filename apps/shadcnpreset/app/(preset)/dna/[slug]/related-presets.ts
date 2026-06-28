@@ -54,6 +54,57 @@ type MutationPlanStep = {
   alternativeIndex?: number
 }
 
+const MAX_CANDIDATE_MULTIPLIER = 10
+const PRIORITIZE_TYPOGRAPHY_COUNT = 4
+
+const NON_COLOR_PLANS: ReadonlyArray<readonly MutationPlanStep[]> = [
+  [
+    { key: "font", alternativeIndex: 0 },
+    { key: "iconLibrary", alternativeIndex: 0 },
+  ],
+  [
+    { key: "fontHeading", alternativeIndex: 0 },
+    { key: "radius", alternativeIndex: 0 },
+  ],
+  [
+    { key: "menuAccent", alternativeIndex: 0 },
+    { key: "font", alternativeIndex: 1 },
+  ],
+  [
+    { key: "menuColor", alternativeIndex: 0 },
+    { key: "iconLibrary", alternativeIndex: 1 },
+  ],
+]
+
+const MIXED_PLANS: ReadonlyArray<readonly MutationPlanStep[]> = [
+  [
+    { key: "baseColor", alternativeIndex: 0 },
+    { key: "font", alternativeIndex: 0 },
+    { key: "iconLibrary", alternativeIndex: 0 },
+  ],
+  [
+    { key: "style", alternativeIndex: 0 },
+    { key: "fontHeading", alternativeIndex: 1 },
+    { key: "menuAccent", alternativeIndex: 0 },
+  ],
+  [
+    { key: "theme", alternativeIndex: 0 },
+    { key: "menuColor", alternativeIndex: 0 },
+    { key: "radius", alternativeIndex: 1 },
+  ],
+  [
+    { key: "chartColor", alternativeIndex: 1 },
+    { key: "font", alternativeIndex: 1 },
+  ],
+  [
+    { key: "baseColor", alternativeIndex: 1 },
+    { key: "theme", alternativeIndex: 0 },
+    { key: "chartColor", alternativeIndex: 0 },
+  ],
+]
+
+// Higher weights on typography/icon facets bias distance toward "feels different"
+// changes before we drift too far in palette.
 const FACET_DISTANCE_WEIGHTS: Record<FacetKey, number> = {
   style: 2.2,
   baseColor: 1.8,
@@ -101,6 +152,8 @@ function orderedAlternatives<T extends string>(
   const rest = withoutCurrent.filter((value) => !seen.has(value))
   if (rest.length <= 1) return [...near, ...rest]
 
+  // Keep immediate neighbors first, then deterministically rotate the remainder
+  // so each preset code gets stable-but-varied fallback ordering.
   const offset = hashString(seed) % rest.length
   const rotated = rest.slice(offset).concat(rest.slice(0, offset))
   return [...near, ...rotated]
@@ -205,6 +258,88 @@ function distanceBetweenConfigs(
   }, 0)
 }
 
+function typographyNoveltyScore(
+  candidate: Candidate,
+  selected: Candidate[],
+  prioritizeTypographyFor: number
+) {
+  const bodyFontAlreadyUsed = selected.some(
+    (item) => item.config.font === candidate.config.font
+  )
+  const headingFontAlreadyUsed = selected.some(
+    (item) => item.config.fontHeading === candidate.config.fontHeading
+  )
+  const fontPairAlreadyUsed = selected.some(
+    (item) =>
+      item.config.font === candidate.config.font &&
+      item.config.fontHeading === candidate.config.fontHeading
+  )
+
+  if (selected.length < prioritizeTypographyFor) {
+    return (
+      (bodyFontAlreadyUsed ? -2.4 : 2.2) +
+      (headingFontAlreadyUsed ? -1.8 : 1.6) +
+      (fontPairAlreadyUsed ? -2.8 : 1.4)
+    )
+  }
+
+  return (
+    (bodyFontAlreadyUsed ? -0.6 : 0.6) +
+    (headingFontAlreadyUsed ? -0.4 : 0.4)
+  )
+}
+
+function scoreCandidateForSelection(
+  candidate: Candidate,
+  selected: Candidate[],
+  baseConfig: PresetConfig,
+  prioritizeTypographyFor: number
+) {
+  const minDistanceToSelection = Math.min(
+    ...selected.map((item) => distanceBetweenConfigs(candidate.config, item.config))
+  )
+  const nonColorFromBase = distanceBetweenConfigs(
+    candidate.config,
+    baseConfig,
+    NON_COLOR_FACETS
+  )
+  const colorFromBase = distanceBetweenConfigs(
+    candidate.config,
+    baseConfig,
+    COLOR_FACETS
+  )
+  const generationPenalty = candidate.generatedRank * 0.015
+  const typographyNovelty = typographyNoveltyScore(
+    candidate,
+    selected,
+    prioritizeTypographyFor
+  )
+
+  return (
+    minDistanceToSelection * 1.55 +
+    nonColorFromBase * 1.25 +
+    colorFromBase * 0.25 -
+    generationPenalty +
+    typographyNovelty
+  )
+}
+
+function pickInitialCandidate(
+  ordered: Candidate[],
+  baseConfig: PresetConfig
+): Candidate | undefined {
+  return [...ordered].sort((a, b) => {
+    const aNonColor = distanceBetweenConfigs(a.config, baseConfig, NON_COLOR_FACETS)
+    const bNonColor = distanceBetweenConfigs(b.config, baseConfig, NON_COLOR_FACETS)
+    if (aNonColor !== bNonColor) return bNonColor - aNonColor
+    const aColor = distanceBetweenConfigs(a.config, baseConfig, COLOR_FACETS)
+    const bColor = distanceBetweenConfigs(b.config, baseConfig, COLOR_FACETS)
+    if (aColor !== bColor) return aColor - bColor
+    if (a.generatedRank !== b.generatedRank) return a.generatedRank - b.generatedRank
+    return a.hash - b.hash
+  })[0]
+}
+
 function selectDiverseCodes(
   candidates: Candidate[],
   baseConfig: PresetConfig,
@@ -215,6 +350,7 @@ function selectDiverseCodes(
   const byCode = new Map(candidates.map((candidate) => [candidate.code, candidate]))
   const selectedCodes = new Set<string>()
   const selected: Candidate[] = []
+  const prioritizeTypographyFor = Math.min(limit, PRIORITIZE_TYPOGRAPHY_COUNT)
 
   const ordered = [...candidates].sort((a, b) => {
     if (a.generatedRank !== b.generatedRank) return a.generatedRank - b.generatedRank
@@ -222,90 +358,139 @@ function selectDiverseCodes(
     return a.code.localeCompare(b.code)
   })
 
-  const first = [...ordered].sort((a, b) => {
-    const aNonColor = distanceBetweenConfigs(a.config, baseConfig, NON_COLOR_FACETS)
-    const bNonColor = distanceBetweenConfigs(b.config, baseConfig, NON_COLOR_FACETS)
-    if (aNonColor !== bNonColor) return bNonColor - aNonColor
-    const aColor = distanceBetweenConfigs(a.config, baseConfig, COLOR_FACETS)
-    const bColor = distanceBetweenConfigs(b.config, baseConfig, COLOR_FACETS)
-    if (aColor !== bColor) return aColor - bColor
-    if (a.generatedRank !== b.generatedRank) return a.generatedRank - b.generatedRank
-    return a.hash - b.hash
-  })[0]
-
+  const first = pickInitialCandidate(ordered, baseConfig)
   if (!first) return []
   selected.push(first)
   selectedCodes.add(first.code)
 
+  // Greedy farthest-first selection: each next pick maximizes weighted distance
+  // from the already selected set while preserving the base palette direction.
   while (selected.length < limit) {
-    let bestCode: string | null = null
+    let best: Candidate | null = null
     let bestScore = Number.NEGATIVE_INFINITY
-    const prioritizeTypographyFor = Math.min(limit, 4)
 
     for (const candidate of ordered) {
       if (selectedCodes.has(candidate.code)) continue
-      const minDistanceToSelection = Math.min(
-        ...selected.map((item) => distanceBetweenConfigs(candidate.config, item.config))
-      )
-      const nonColorFromBase = distanceBetweenConfigs(
-        candidate.config,
+      const score = scoreCandidateForSelection(
+        candidate,
+        selected,
         baseConfig,
-        NON_COLOR_FACETS
-      )
-      const colorFromBase = distanceBetweenConfigs(
-        candidate.config,
-        baseConfig,
-        COLOR_FACETS
-      )
-      const generationPenalty = candidate.generatedRank * 0.015
-      const bodyFontAlreadyUsed = selected.some(
-        (item) => item.config.font === candidate.config.font
-      )
-      const headingFontAlreadyUsed = selected.some(
-        (item) => item.config.fontHeading === candidate.config.fontHeading
-      )
-      const fontPairAlreadyUsed = selected.some(
-        (item) =>
-          item.config.font === candidate.config.font &&
-          item.config.fontHeading === candidate.config.fontHeading
+        prioritizeTypographyFor
       )
 
-      let typographyNovelty = 0
-      if (selected.length < prioritizeTypographyFor) {
-        typographyNovelty += bodyFontAlreadyUsed ? -2.4 : 2.2
-        typographyNovelty += headingFontAlreadyUsed ? -1.8 : 1.6
-        typographyNovelty += fontPairAlreadyUsed ? -2.8 : 1.4
-      } else {
-        typographyNovelty += bodyFontAlreadyUsed ? -0.6 : 0.6
-        typographyNovelty += headingFontAlreadyUsed ? -0.4 : 0.4
-      }
-
-      const diversityScore =
-        minDistanceToSelection * 1.55 +
-        nonColorFromBase * 1.25 +
-        colorFromBase * 0.25 -
-        generationPenalty +
-        typographyNovelty
-
-      if (diversityScore > bestScore) {
-        bestScore = diversityScore
-        bestCode = candidate.code
-      } else if (diversityScore === bestScore && bestCode) {
-        const current = byCode.get(bestCode)
-        if (!current || candidate.hash < current.hash) {
-          bestCode = candidate.code
-        }
+      if (score > bestScore) {
+        bestScore = score
+        best = candidate
+      } else if (score === bestScore && best && candidate.hash < best.hash) {
+        best = candidate
       }
     }
 
-    if (!bestCode) break
-    const picked = byCode.get(bestCode)
+    if (!best) break
+    const picked = byCode.get(best.code)
     if (!picked) break
-    selectedCodes.add(bestCode)
+    selectedCodes.add(best.code)
     selected.push(picked)
   }
 
   return selected.map((candidate) => candidate.code)
+}
+
+function buildRelatedPresetCandidates(args: {
+  baseConfig: PresetConfig
+  alternatives: Record<FacetKey, string[]>
+  limit: number
+  seedCode: string
+}) {
+  const { baseConfig, alternatives, limit, seedCode } = args
+  const candidates = new Map<string, Candidate>()
+  let generatedRank = 0
+  const maxCandidateCount = Math.max(limit, limit * MAX_CANDIDATE_MULTIPLIER)
+
+  function addMutations(mutations: readonly [FacetKey, string][]) {
+    if (!mutations.length || candidates.size >= maxCandidateCount) return
+    const config = makeMutatedConfig(baseConfig, mutations)
+    const code = encodePreset(config)
+    if (code === seedCode || candidates.has(code)) return
+    candidates.set(code, {
+      code,
+      config,
+      generatedRank,
+      hash: hashString(`${seedCode}:${code}`),
+    })
+    generatedRank += 1
+  }
+
+  function addSingleFacetVariants(key: FacetKey, count: number) {
+    const values = alternatives[key]
+    for (
+      let i = 0;
+      i < Math.min(count, values.length) && candidates.size < maxCandidateCount;
+      i += 1
+    ) {
+      addMutations([[key, values[i]!]])
+    }
+  }
+
+  function addPlanVariants(plan: readonly MutationPlanStep[]) {
+    const mutations: [FacetKey, string][] = []
+    for (const step of plan) {
+      const values = alternatives[step.key]
+      if (!values.length) return
+      const idx = step.alternativeIndex ?? 0
+      mutations.push([step.key, values[idx % values.length]!])
+    }
+    addMutations(mutations)
+  }
+
+  // Tier 1: keep palette + style anchored; vary typography and UI traits first.
+  for (const key of NON_COLOR_FACETS) {
+    addSingleFacetVariants(key, 2)
+  }
+
+  for (const plan of NON_COLOR_PLANS) {
+    addPlanVariants(plan)
+  }
+
+  // Tier 2: mild palette shifts while preserving overall feel.
+  addSingleFacetVariants("chartColor", 2)
+  addSingleFacetVariants("theme", 2)
+  addPlanVariants([
+    { key: "theme", alternativeIndex: 0 },
+    { key: "chartColor", alternativeIndex: 0 },
+  ])
+  addPlanVariants([
+    { key: "theme", alternativeIndex: 1 },
+    { key: "chartColor", alternativeIndex: 1 },
+  ])
+
+  // Tier 3: broader mutations only after we exhausted close alternatives.
+  addSingleFacetVariants("style", 1)
+  addSingleFacetVariants("baseColor", 1)
+
+  for (const plan of MIXED_PLANS) {
+    addPlanVariants(plan)
+  }
+
+  // Fallbacks: still deterministic, but broader sweep when limit is high.
+  for (const key of FACET_KEYS) {
+    addSingleFacetVariants(key, alternatives[key].length)
+  }
+
+  for (let i = 0; i < FACET_KEYS.length; i += 1) {
+    for (let j = i + 1; j < FACET_KEYS.length; j += 1) {
+      addPlanVariants([
+        { key: FACET_KEYS[i]!, alternativeIndex: 0 },
+        { key: FACET_KEYS[j]!, alternativeIndex: 0 },
+      ])
+      addPlanVariants([
+        { key: FACET_KEYS[i]!, alternativeIndex: 1 },
+        { key: FACET_KEYS[j]!, alternativeIndex: 0 },
+      ])
+    }
+  }
+
+  return Array.from(candidates.values())
 }
 
 export function getRelatedPresets(
@@ -314,139 +499,11 @@ export function getRelatedPresets(
 ): string[] {
   const baseConfig = buildBaseConfig(resolved)
   const alternatives = buildAlternatives(baseConfig, resolved.code)
-  const candidates = new Map<string, Candidate>()
-  let generatedRank = 0
-
-  function pushMutations(mutations: readonly [FacetKey, string][]) {
-    if (!mutations.length) return
-    const config = makeMutatedConfig(baseConfig, mutations)
-    const code = encodePreset(config)
-    if (code === resolved.code || candidates.has(code)) return
-    candidates.set(code, {
-      code,
-      config,
-      generatedRank,
-      hash: hashString(`${resolved.code}:${code}`),
-    })
-    generatedRank += 1
-  }
-
-  function pushSingleFacet(key: FacetKey, count: number) {
-    const values = alternatives[key]
-    for (
-      let i = 0;
-      i < Math.min(count, values.length) && candidates.size < limit * 10;
-      i += 1
-    ) {
-      pushMutations([[key, values[i]!]])
-    }
-  }
-
-  function pushPlan(plan: readonly MutationPlanStep[]) {
-    const mutations: [FacetKey, string][] = []
-    for (const step of plan) {
-      const values = alternatives[step.key]
-      if (!values.length) return
-      const idx = step.alternativeIndex ?? 0
-      mutations.push([step.key, values[idx % values.length]!])
-    }
-    pushMutations(mutations)
-  }
-
-  // Tier 1: keep palette + style anchored; vary typography and UI traits.
-  for (const key of NON_COLOR_FACETS) {
-    pushSingleFacet(key, 2)
-  }
-
-  const nonColorPlans: ReadonlyArray<readonly MutationPlanStep[]> = [
-    [
-      { key: "font", alternativeIndex: 0 },
-      { key: "iconLibrary", alternativeIndex: 0 },
-    ],
-    [
-      { key: "fontHeading", alternativeIndex: 0 },
-      { key: "radius", alternativeIndex: 0 },
-    ],
-    [
-      { key: "menuAccent", alternativeIndex: 0 },
-      { key: "font", alternativeIndex: 1 },
-    ],
-    [
-      { key: "menuColor", alternativeIndex: 0 },
-      { key: "iconLibrary", alternativeIndex: 1 },
-    ],
-  ]
-  for (const plan of nonColorPlans) {
-    pushPlan(plan)
-  }
-
-  // Tier 2: mild palette shifts while preserving overall feel.
-  pushSingleFacet("chartColor", 2)
-  pushSingleFacet("theme", 2)
-  pushPlan([
-    { key: "theme", alternativeIndex: 0 },
-    { key: "chartColor", alternativeIndex: 0 },
-  ])
-  pushPlan([
-    { key: "theme", alternativeIndex: 1 },
-    { key: "chartColor", alternativeIndex: 1 },
-  ])
-
-  // Tier 3: broader mutations for variety if caller asks for many cards.
-  pushSingleFacet("style", 1)
-  pushSingleFacet("baseColor", 1)
-
-  const mixedPlans: ReadonlyArray<readonly MutationPlanStep[]> = [
-    [
-      { key: "baseColor", alternativeIndex: 0 },
-      { key: "font", alternativeIndex: 0 },
-      { key: "iconLibrary", alternativeIndex: 0 },
-    ],
-    [
-      { key: "style", alternativeIndex: 0 },
-      { key: "fontHeading", alternativeIndex: 1 },
-      { key: "menuAccent", alternativeIndex: 0 },
-    ],
-    [
-      { key: "theme", alternativeIndex: 0 },
-      { key: "menuColor", alternativeIndex: 0 },
-      { key: "radius", alternativeIndex: 1 },
-    ],
-    [
-      { key: "chartColor", alternativeIndex: 1 },
-      { key: "font", alternativeIndex: 1 },
-    ],
-    [
-      { key: "baseColor", alternativeIndex: 1 },
-      { key: "theme", alternativeIndex: 0 },
-      { key: "chartColor", alternativeIndex: 0 },
-    ],
-  ]
-  for (const plan of mixedPlans) {
-    pushPlan(plan)
-  }
-
-  // Fallbacks: still deterministic, but broader sweep when limit is high.
-  for (const key of FACET_KEYS) {
-    pushSingleFacet(key, alternatives[key].length)
-  }
-
-  for (let i = 0; i < FACET_KEYS.length; i += 1) {
-    for (let j = i + 1; j < FACET_KEYS.length; j += 1) {
-      pushPlan([
-        { key: FACET_KEYS[i]!, alternativeIndex: 0 },
-        { key: FACET_KEYS[j]!, alternativeIndex: 0 },
-      ])
-      pushPlan([
-        { key: FACET_KEYS[i]!, alternativeIndex: 1 },
-        { key: FACET_KEYS[j]!, alternativeIndex: 0 },
-      ])
-    }
-  }
-
-  return selectDiverseCodes(
-    Array.from(candidates.values()),
+  const candidates = buildRelatedPresetCandidates({
     baseConfig,
-    limit
-  )
+    alternatives,
+    limit,
+    seedCode: resolved.code,
+  })
+  return selectDiverseCodes(candidates, baseConfig, limit)
 }
