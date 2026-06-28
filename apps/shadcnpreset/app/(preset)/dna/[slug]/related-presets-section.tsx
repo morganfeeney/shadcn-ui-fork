@@ -11,7 +11,7 @@ type DnaRelatedPresetsSectionProps = {
   resolved: ResolvedPreset
 }
 
-const RELATED_TILE_COUNT = 12
+const RELATED_TILE_COUNT = 6
 
 export function DnaRelatedPresetsSection({
   resolved,
