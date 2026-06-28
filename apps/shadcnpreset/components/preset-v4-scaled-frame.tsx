@@ -24,7 +24,7 @@ export function PresetV4ScaledFrame({
   virtualHeight = 700,
 }: PresetV4ScaledFrameProps) {
   const wrapperRef = React.useRef<HTMLDivElement>(null)
-  const [iframeLoaded, setIframeLoaded] = React.useState(false)
+  const [loadedSrc, setLoadedSrc] = React.useState<string | null>(null)
   const [containerWidth, setContainerWidth] = React.useState(0)
   const [containerHeight, setContainerHeight] = React.useState(0)
 
@@ -43,9 +43,7 @@ export function PresetV4ScaledFrame({
     return () => resizeObserver.disconnect()
   }, [])
 
-  React.useEffect(() => {
-    setIframeLoaded(false)
-  }, [src])
+  const iframeLoaded = loadedSrc === src
 
   const scale = React.useMemo(() => {
     if (!containerWidth || !containerHeight) return 1
@@ -68,7 +66,7 @@ export function PresetV4ScaledFrame({
           src={src}
           className={cn("h-full w-full border-0", frameClassName)}
           sandbox="allow-scripts allow-same-origin"
-          onLoad={() => setIframeLoaded(true)}
+          onLoad={() => setLoadedSrc(src)}
         />
       </div>
       {!iframeLoaded ? (
