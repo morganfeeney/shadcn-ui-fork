@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { useEffect, useRef } from "react"
@@ -10,7 +9,6 @@ import {
   type RegistryThemeSurface,
 } from "@/components/preset-theme-surface"
 import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
-import { Button } from "@/components/ui/button"
 import { useMounted } from "@/hooks/use-mounted"
 import {
   effectiveHeadingFont,
@@ -19,7 +17,6 @@ import {
   getPresetPreviewUrl,
   type ResolvedPreset,
 } from "@/lib/preset"
-import { generateRandomCompatiblePreset } from "@/lib/random-preset"
 import { DEFAULT_CONFIG } from "@/registry/config"
 
 import { DnaSwatchGrid } from "./swatch-grid"
@@ -36,7 +33,6 @@ type DnaSurfaceProps = {
 }
 
 export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
-  const router = useRouter()
   const { resolvedTheme } = useTheme()
   const tabletPlaneRef = useRef<HTMLDivElement>(null)
   const mounted = useMounted()
@@ -47,11 +43,6 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrcBase = getPresetPreviewUrl(resolved.code, "login-02")
-
-  function onRandomPreset() {
-    const code = generateRandomCompatiblePreset()
-    router.push(`/dna/${code}`)
-  }
 
   const bodyFontFamily = getFontFamily(resolved.font)
   useEffect(() => {
@@ -103,14 +94,9 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
       styleName={resolved.style}
     >
       <header className="grid gap-6 pt-20 pb-10 md:pt-30">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-4xl font-display font-normal md:text-5xl">
-            Preset: {resolved.code}
-          </h1>
-          <Button variant="outline" onClick={onRandomPreset}>
-            Random preset
-          </Button>
-        </div>
+        <h1 className="text-4xl font-display font-normal md:text-5xl">
+          Preset: {resolved.code}
+        </h1>
         <p className="max-w-[70ch] text-sm leading-relaxed text-balance text-muted-foreground">
           This shadcn preset comes in a {resolved.style} style, with a{" "}
           {resolved.baseColor} base, {resolved.theme} theme,{" "}

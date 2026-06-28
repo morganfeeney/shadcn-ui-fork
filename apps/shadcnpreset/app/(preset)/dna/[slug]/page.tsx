@@ -7,6 +7,7 @@ import { DnaSurface } from "./dna-surface"
 import { ContainerInner } from "@/components/zippystarter/container"
 import { DnaRelatedPresetsSection } from "./related-presets-section"
 import { DnaAboutSection } from "./about-section"
+import { DnaControls } from "./dna-controls"
 
 type DnaPageProps = {
   params: Promise<{ slug: string }>
@@ -48,7 +49,7 @@ export default async function DnaPage({ params }: DnaPageProps) {
         <link key={href} rel="stylesheet" href={href} />
       ))}
       <div className="grid gap-y-20">
-        <ContainerInner>
+        <ContainerInner className="grid gap-4">
           <DnaSurface resolved={resolved} registryTheme={registryTheme} />
         </ContainerInner>
         <ContainerInner className="grid gap-6">
@@ -64,6 +65,12 @@ export default async function DnaPage({ params }: DnaPageProps) {
           </ContainerInner>
           <DnaRelatedPresetsSection resolved={resolved} />
         </div>
+      </div>
+      <div className="pb-safe sticky bottom-6 z-40 my-10 grid justify-center">
+        <DnaControls
+          resolved={resolved}
+          className="rounded-xl border bg-background/95 shadow-lg backdrop-blur-sm"
+        />
       </div>
     </>
   )
