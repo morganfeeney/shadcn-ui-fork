@@ -12,11 +12,11 @@ import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
 import { useMounted } from "@/hooks/use-mounted"
 import {
   effectiveHeadingFont,
-  getFontDisplayName,
   getFontFamily,
   getPresetPreviewUrl,
   type ResolvedPreset,
 } from "@/lib/preset"
+import { presetDnaMetaDescription } from "@/lib/data/metadata/preset-meta"
 import { DEFAULT_CONFIG } from "@/registry/config"
 
 import { DnaSwatchGrid } from "./swatch-grid"
@@ -44,10 +44,12 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
   const swatchRows = resolveSwatchRowsForMode(modeVars)
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
+  const dnaDescription = presetDnaMetaDescription(resolved)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrcBase = getPresetPreviewUrl(resolved.code, "login-02")
   const supportsIntersectionObserver =
-    typeof window !== "undefined" && typeof window.IntersectionObserver !== "undefined"
+    typeof window !== "undefined" &&
+    typeof window.IntersectionObserver !== "undefined"
   const showTabletPreview =
     !supportsIntersectionObserver || visibleTabletPreviewCode === resolved.code
 
@@ -104,11 +106,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
           Preset: {resolved.code}
         </h1>
         <p className="max-w-[70ch] text-sm leading-relaxed text-balance text-muted-foreground">
-          This shadcn preset comes in a {resolved.style} style, with a{" "}
-          {resolved.baseColor} base, {resolved.theme} theme,{" "}
-          {resolved.effectiveChartColor} charts, and{" "}
-          {getFontDisplayName(resolved.font)} body font paired with{" "}
-          {getFontDisplayName(headingFont)} headings.
+          {dnaDescription}
         </p>
       </header>
       <div className="grid gap-4">

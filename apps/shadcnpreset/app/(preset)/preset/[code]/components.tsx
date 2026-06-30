@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import * as React from "react"
-import { Check, Copy, Share2 } from "lucide-react"
 
 import { PresetVoteButton } from "@/components/preset-vote-button"
 import { copyToClipboardWithMeta } from "@/components/copy-button"
 import { Button, buttonVariants } from "@/components/ui/button"
 
 import { usePresetPageLiveOptional } from "@/components/preset-page-live-context"
+import { InfoIcon, CopyIcon, CheckIcon, ShareIcon } from "@phosphor-icons/react"
 
 export function PresetCodeTitle({ presetCode }: { presetCode: string }) {
   const live = usePresetPageLiveOptional()
@@ -42,9 +42,9 @@ export function PresetCodeTitle({ presetCode }: { presetCode: string }) {
         aria-label={hasCopied ? "Copied" : "Copy preset code"}
       >
         {hasCopied ? (
-          <Check aria-hidden className="size-4" />
+          <CheckIcon aria-hidden className="size-4" />
         ) : (
-          <Copy aria-hidden className="size-4" />
+          <CopyIcon aria-hidden className="size-4" />
         )}
       </Button>
     </h1>
@@ -76,17 +76,17 @@ export function PresetButtons({ preset }: { preset: string }) {
     <>
       <PresetVoteButton code={effectivePreset} />
       <Link
-        href={`/dna/${effectivePreset}`}
+        href={`/pdp/${effectivePreset}`}
         className={buttonVariants({ variant: "outline" })}
       >
-        DNA
+        Details <InfoIcon />
       </Link>
       <Button variant="outline" onClick={handleShare}>
         {hasCopied ? "Copied" : "Share"}
         {hasCopied ? (
-          <Check aria-hidden className="size-4" />
+          <CheckIcon aria-hidden className="size-4" />
         ) : (
-          <Share2 aria-hidden className="size-4" />
+          <ShareIcon aria-hidden className="size-4" />
         )}
       </Button>
     </>

@@ -43,23 +43,24 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
 
   function onRandomPreset() {
     const code = generateRandomCompatiblePreset()
-    router.push(`/dna/${code}`)
+    router.push(`/pdp/${code}`)
   }
 
   function onPreviousPreset() {
     if (!prevCode) return
-    router.push(`/dna/${prevCode}`)
+    router.push(`/pdp/${prevCode}`)
   }
 
   function onNextPreset() {
     if (!nextCode) return
-    router.push(`/dna/${nextCode}`)
+    router.push(`/pdp/${nextCode}`)
   }
 
   return (
     <div
       className={cn(
         "flex flex-wrap items-center justify-end gap-2 bg-background p-1.5",
+        "rounded-xl border bg-background/95 shadow-lg backdrop-blur-sm",
         className
       )}
     >

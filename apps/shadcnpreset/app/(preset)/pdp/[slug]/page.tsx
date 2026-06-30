@@ -1,19 +1,39 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { ContainerInner } from "@/components/zippystarter/container"
+import { presetDnaMetaDescription } from "@/lib/data/metadata/preset-meta"
 import { effectiveHeadingFont, resolvePresetFromCode } from "@/lib/preset"
 import { getPresetGoogleFontStylesheetHrefs } from "@/lib/preset-google-fonts"
 import { buildRegistryTheme, DEFAULT_CONFIG } from "@/registry/config"
-import { DnaSurface } from "./dna-surface"
-import { ContainerInner } from "@/components/zippystarter/container"
-import { DnaRelatedPresetsSection } from "./related-presets-section"
-import { DnaAboutSection } from "./about-section"
-import { DnaControls } from "./dna-controls"
 
-type DnaPageProps = {
+import { DnaAboutSection } from "../../pdp/[slug]/about-section"
+import { DnaControls } from "../../pdp/[slug]/dna-controls"
+import { DnaRelatedPresetsSection } from "../../pdp/[slug]/related-presets-section"
+import { DnaSurface } from "../../pdp/[slug]/dna-surface"
+
+type PdpPageProps = {
   params: Promise<{ slug: string }>
 }
 
-export default async function DnaPage({ params }: DnaPageProps) {
+export async function generateMetadata({
+  params,
+}: PdpPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const code = slug.trim()
+  const resolved = resolvePresetFromCode(code)
+
+  if (!resolved) {
+    notFound()
+  }
+
+  return {
+    title: `Preset details for ${resolved.code}`,
+    description: presetDnaMetaDescription(resolved),
+  }
+}
+
+export default async function PdpPage({ params }: PdpPageProps) {
   const { slug } = await params
   const code = slug.trim()
   const resolved = resolvePresetFromCode(code)
@@ -67,10 +87,7 @@ export default async function DnaPage({ params }: DnaPageProps) {
         </div>
       </div>
       <div className="pb-safe sticky bottom-6 z-40 my-10 grid justify-center">
-        <DnaControls
-          resolved={resolved}
-          className="rounded-xl border bg-background/95 shadow-lg backdrop-blur-sm"
-        />
+        <DnaControls resolved={resolved} />
       </div>
     </>
   )

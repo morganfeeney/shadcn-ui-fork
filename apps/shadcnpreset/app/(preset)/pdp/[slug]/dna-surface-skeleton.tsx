@@ -6,7 +6,6 @@ export function DnaSurfaceSkeleton() {
       <header className="grid gap-6 pt-30 pb-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Skeleton className="h-14 w-[360px]" />
-          <Skeleton className="h-8 w-32" />
         </div>
         <div className="grid max-w-[70ch] gap-2">
           <Skeleton className="h-4 w-full" />

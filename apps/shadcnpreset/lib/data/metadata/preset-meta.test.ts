@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { presetMetaDescription } from "@/lib/preset-meta"
+import { presetMetaDescription } from "@/lib/data/metadata/preset-meta"
 import { resolvePresetFromCode } from "@/lib/preset"
 
 describe("presetMetaDescription", () => {
