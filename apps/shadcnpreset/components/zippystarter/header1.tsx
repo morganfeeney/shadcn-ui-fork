@@ -41,7 +41,7 @@ import {
   PRESET_THEME_GENERATOR_TOOL,
   TOOLS_PAGE,
 } from "@/app/tools/tools"
-import { Announcement, AnnouncementTitle } from "@/components/announcement"
+
 import { Link } from "@/components/zippystarter/link"
 import { Container } from "@/components/zippystarter/container"
 import { Separator } from "@/components/ui/separator"
@@ -229,10 +229,6 @@ function DesktopNav({
 }: DesktopNavProps) {
   const [openMenuHref, setOpenMenuHref] = React.useState<string | null>(null)
 
-  React.useLayoutEffect(() => {
-    setOpenMenuHref(null)
-  }, [pathname])
-
   return (
     <div
       className={cn(
@@ -352,12 +348,12 @@ function MegaMenuPresetRow({
       <button
         type="button"
         className={cn(
-          "grid w-full grid-cols-[auto_1fr] items-start gap-2.5 rounded-[0.55rem] p-2 text-left transition-colors",
+          "grid w-full grid-cols-[auto_1fr] items-start gap-2.5 rounded-3xl p-2 text-left transition-colors",
           "hover:bg-accent hover:text-accent-foreground"
         )}
         onClick={onOpen}
       >
-        <div className="grid size-9 place-items-center rounded-[0.35rem] bg-accent/60 p-1">
+        <div className="grid size-9 place-items-center rounded-xl bg-accent/60 p-1">
           <Icon className="size-4" aria-hidden />
         </div>
         <div className="mt-0.5 grid gap-1">
@@ -468,7 +464,7 @@ function ListItem({
         render={
           <Link
             href={href}
-            className="grid grid-cols-[auto_1fr] items-start gap-2.5 rounded-[0.55rem] p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="grid grid-cols-[auto_1fr] items-start gap-2.5 rounded-3xl p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
             onClick={onClick}
             {...(openInNewTab && {
               target: "_blank",
@@ -477,7 +473,7 @@ function ListItem({
           />
         }
       >
-        <div className="grid size-9 place-items-center rounded-[0.35rem] bg-accent/60 p-1">
+        <div className="grid size-9 place-items-center rounded-xl bg-accent/60 p-1">
           <Icon className="size-4" aria-hidden />
         </div>
         <div className="mt-0.5 grid gap-1">
@@ -554,7 +550,7 @@ export function Header1({
         <Container
           component="header"
           className={cn(
-            "grid !max-w-[unset] items-center gap-6 py-2 text-header-foreground",
+            "grid max-w-[unset]! items-center gap-6 py-2 text-header-foreground",
             className
           )}
           wrapperClassName="bg-transparent"
@@ -564,6 +560,8 @@ export function Header1({
 
             <div className="col-start-2 row-start-1 flex min-w-0 justify-end lg:justify-between">
               <DesktopNav
+                // Force remount on navigation to avoid transient popover state flicker on history back/forward.
+                key={pathname}
                 links={links}
                 actions={actions}
                 pathname={pathname}
