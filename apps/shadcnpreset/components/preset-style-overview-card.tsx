@@ -15,6 +15,7 @@ import {
 } from "@/components/preset-preview/dialog"
 import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
 import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
+import { RouteScoped } from "@/components/route-scoped"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { getPresetPreviewUrl } from "@/lib/preset"
 import { cn } from "@/lib/utils"
@@ -119,6 +120,30 @@ export function PresetStyleOverviewCardRoot({
 }
 
 export function PresetStyleOverviewCardPreview({
+  code,
+  title,
+  description,
+  previewVariant = "inline",
+  previewStepOrder,
+  virtualWidth = 1400,
+  virtualHeight = 700,
+}: PresetStyleOverviewCardPreviewProps) {
+  return (
+    <RouteScoped scope={code}>
+      <PresetStyleOverviewCardPreviewInner
+        code={code}
+        title={title}
+        description={description}
+        previewVariant={previewVariant}
+        previewStepOrder={previewStepOrder}
+        virtualWidth={virtualWidth}
+        virtualHeight={virtualHeight}
+      />
+    </RouteScoped>
+  )
+}
+
+function PresetStyleOverviewCardPreviewInner({
   code,
   title,
   description,
