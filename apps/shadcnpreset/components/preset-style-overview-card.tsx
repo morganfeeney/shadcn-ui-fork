@@ -13,7 +13,7 @@ import {
   PresetPreviewDialog,
   type PresetPreviewStepItem,
 } from "@/components/preset-preview/dialog"
-import { PresetV4Frame } from "@/components/preset-v4-frame"
+import { PresetV4ScaledFrame } from "@/components/preset-v4-scaled-frame"
 import { PresetCard1StyleOverview } from "@/components/preset-swatch/components/preset-card-1-style-overview"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { getPresetPreviewUrl } from "@/lib/preset"
@@ -67,66 +67,6 @@ const heartMotionCelebrate = {
     duration: 0.55,
     ease: voteHeartEase,
   },
-}
-
-type StyleOverviewV4ScaledPreviewProps = {
-  code: string
-  src: string
-  virtualWidth: number
-  virtualHeight: number
-  scale: number
-}
-
-/** Iframe load state is internal; remount via `key={src}` when the preview URL changes. */
-function StyleOverviewV4ScaledPreview({
-  code,
-  src,
-  virtualWidth,
-  virtualHeight,
-  scale,
-}: StyleOverviewV4ScaledPreviewProps) {
-  const [loaded, setLoaded] = useState(false)
-
-  return (
-    <>
-      <CardContent
-        className="pointer-events-none absolute inset-0 p-0"
-        style={{
-          width: virtualWidth,
-          height: virtualHeight,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-      >
-        <PresetV4Frame
-          title={`v4 create preview · ${code}`}
-          src={src}
-          className="h-full w-full border-0"
-          sandbox="allow-scripts allow-same-origin"
-          onLoad={() => setLoaded(true)}
-        />
-      </CardContent>
-      {!loaded ? (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background">
-          <Spinner />
-        </div>
-      ) : null}
-      <div
-        aria-hidden
-        className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
-      >
-        <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
-        <span
-          className={cn(
-            "pointer-events-none relative z-10",
-            !loaded ? "invisible" : "invisible group-hover/card:visible"
-          )}
-        >
-          <span className={cn(buttonVariants())}>Preview</span>
-        </span>
-      </div>
-    </>
-  )
 }
 
 export function PresetStyleOverviewCard({
@@ -292,14 +232,25 @@ export function PresetStyleOverviewCardPreview({
           </div>
         ) : canRenderPreview ? (
           isV4Iframe ? (
-            <StyleOverviewV4ScaledPreview
-              key={previewSrc}
-              code={code}
-              scale={scale}
-              src={previewSrc!}
-              virtualHeight={virtualHeight}
-              virtualWidth={virtualWidth}
-            />
+            <>
+              <PresetV4ScaledFrame
+                key={previewSrc}
+                title={`v4 create preview · ${code}`}
+                src={previewSrc!}
+                virtualHeight={virtualHeight}
+                virtualWidth={virtualWidth}
+                className="absolute inset-0"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-t-xl rounded-b-none"
+              >
+                <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-foreground/20 to-background/20 opacity-0 transition-opacity duration-200 group-hover/card:opacity-100" />
+                <span className="pointer-events-none invisible relative z-10 group-hover/card:visible">
+                  <span className={cn(buttonVariants())}>Preview</span>
+                </span>
+              </div>
+            </>
           ) : (
             <>
               <CardContent

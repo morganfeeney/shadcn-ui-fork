@@ -73,7 +73,7 @@ export default async function HomePage() {
                 Find your perfect preset using AI
               </SplitMediaHeading>
               <SplitMediaSubHeading>
-                Go beyond clicking random
+                Go beyond clicking shuffle
               </SplitMediaSubHeading>
             </SplitMediaHeader>
             <SplitMediaDescription>

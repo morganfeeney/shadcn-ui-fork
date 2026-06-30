@@ -1,9 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react"
 import { usePathname } from "next/navigation"
-import { CheckIcon, ChevronDownIcon, Settings2, X } from "lucide-react"
+
+import {
+  CheckIcon,
+  CaretDownIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  SlidersHorizontalIcon,
+  XIcon,
+  InfoIcon,
+} from "@phosphor-icons/react"
 import { useCallback, useMemo, useState } from "react"
 
 import {
@@ -154,6 +162,14 @@ export function PresetPreviewDialog({
             <div className="flex shrink-0 flex-wrap justify-end gap-2">
               <PresetVoteButton code={viewCode} enabled={open} />
               <Link
+                href={`/pdp/${viewCode}`}
+                className={buttonVariants({
+                  variant: "outline",
+                })}
+              >
+                Details <InfoIcon />
+              </Link>
+              <Link
                 href={`/preset/${viewCode}`}
                 className={cn(
                   buttonVariants({
@@ -163,12 +179,12 @@ export function PresetPreviewDialog({
                 )}
               >
                 Edit
-                <Settings2 aria-hidden />
+                <SlidersHorizontalIcon aria-hidden />
               </Link>
               <DialogTrigger
                 render={
                   <Button variant="outline">
-                    <X />
+                    <XIcon />
                   </Button>
                 }
               />
@@ -232,7 +248,7 @@ export function PresetPreviewDialog({
               }
             >
               <span className="truncate">{currentPreviewLabel}</span>
-              <ChevronDownIcon className="size-3.5 shrink-0 opacity-50" />
+              <CaretDownIcon className="size-3.5 shrink-0 opacity-50" />
             </PopoverTrigger>
             <PopoverContent
               className="w-72 p-0"

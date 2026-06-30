@@ -152,6 +152,17 @@ export function PresetPreviewSurface({
             <div className="flex shrink-0 flex-wrap justify-end gap-2">
               <PresetVoteButton code={viewCode} enabled={open} />
               <Link
+                href={`/pdp/${viewCode}`}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                  }),
+                  "gap-2"
+                )}
+              >
+                PDP
+              </Link>
+              <Link
                 href={`/preset/${viewCode}`}
                 className={cn(
                   buttonVariants({
@@ -180,6 +191,18 @@ export function PresetPreviewSurface({
             </div>
             <div className="flex shrink-0 flex-wrap justify-end gap-2">
               <PresetVoteButton code={viewCode} enabled={open} />
+              <Link
+                href={`/pdp/${viewCode}`}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                  }),
+                  "gap-2"
+                )}
+              >
+                PDP
+              </Link>
               <Link
                 href={`/preset/${viewCode}`}
                 className={cn(

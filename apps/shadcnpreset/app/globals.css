@@ -8,6 +8,7 @@
 @import "../../v4/registry/styles/style-mira.css" layer(base);
 @import "../../v4/registry/styles/style-luma.css" layer(base);
 @import "../../v4/registry/styles/style-sera.css" layer(base);
+@import "../../v4/registry/styles/style-rhea.css" layer(base);
 
 @source "../node_modules/streamdown/dist/*.js";
 
@@ -20,6 +21,7 @@
 @custom-variant style-mira (&:where(.style-mira *));
 @custom-variant style-luma (&:where(.style-luma *));
 @custom-variant style-sera (&:where(.style-sera *));
+@custom-variant style-rhea (&:where(.style-rhea *));
 
 @theme inline {
   --breakpoint-3xl: 1600px;
@@ -143,6 +145,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --footer-foreground: oklch(0.985 0 0);
+
+  --container-width: var(--breakpoint-3xl);
+  --excess-width: calc(100vw - var(--container-width));
 }
 
 @layer base {
@@ -159,12 +164,19 @@
   }
 }
 
+/* shadcn container utils start */
 @utility container-wrapper {
   @apply 3xl:fixed:max-w-[calc(var(--breakpoint-2xl)+2rem)] mx-auto w-full;
 }
 
 @utility container {
   @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
+}
+
+/* shadcn container utils end */
+
+@utility container-inner {
+  @apply relative z-10 mx-auto w-full max-w-400 px-safe;
 }
 
 @keyframes preset-marquee {
@@ -198,6 +210,32 @@
   margin-right: var(--safe-area-right);
 }
 
+@utility rail-edge-safe-padding {
+  --rail-edge-left: max(
+    var(--safe-area-left),
+    calc((var(--excess-width) / 2) + var(--safe-area-left))
+  );
+  --rail-edge-right: max(
+    var(--safe-area-right),
+    calc((var(--excess-width) / 2) + var(--safe-area-right))
+  );
+
+  scroll-padding-left: var(--rail-edge-left);
+  scroll-padding-right: var(--rail-edge-right);
+
+  & [role="listitem"]:is(:first-child, :last-child) {
+    box-sizing: content-box;
+  }
+
+  & [role="listitem"]:first-child {
+    padding-left: var(--rail-edge-left);
+  }
+
+  & [role="listitem"]:last-child {
+    padding-right: var(--rail-edge-right);
+  }
+}
+
 @utility font-display {
   @apply font-medium tracking-tighter;
 }
@@ -207,3 +245,4 @@
     font-family: var(--font-heading);
   }
 }
+

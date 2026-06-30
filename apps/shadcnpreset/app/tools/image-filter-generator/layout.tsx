@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react"
 
 import { siteConfig } from "@/lib/config"
 import { FIGMA_FILTER_CSS_TOOL } from "@/app/tools/tools"
+import { DefaultLayout } from "@/components/default-layout"
 
 export const metadata: Metadata = {
   title: FIGMA_FILTER_CSS_TOOL.title,
@@ -26,5 +27,5 @@ export const metadata: Metadata = {
 export default function FigmaImageFilterToCssLayout({
   children,
 }: PropsWithChildren) {
-  return children
+  return <DefaultLayout>{children}</DefaultLayout>
 }

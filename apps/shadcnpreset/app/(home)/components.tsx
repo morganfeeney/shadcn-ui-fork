@@ -83,10 +83,7 @@ export function HomePresetCarousel({
     [scrollPrev, scrollNext]
   )
 
-  const previewStepOrder = useMemo(
-    () => buildPreviewStepOrder(items),
-    [items]
-  )
+  const previewStepOrder = useMemo(() => buildPreviewStepOrder(items), [items])
   const { votesByCode, hasVotedByCode } = usePresetVoteMapsForItems(items)
 
   if (items.length === 0) {
@@ -105,7 +102,7 @@ export function HomePresetCarousel({
           onKeyDown={multi ? onViewportKeyDown : undefined}
           className={
             multi
-              ? "rounded-lg outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              ? "outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
               : undefined
           }
         >

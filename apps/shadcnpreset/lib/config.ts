@@ -11,7 +11,7 @@ export const siteConfig = {
   ogImage: `${siteUrl}/og-card.png`,
   title: "Find the perfect shadcn preset in seconds",
   description:
-    "Don’t click random. Describe what you’re building or the vibe you want. AI surfaces matching presets, shows real components, and helps you choose fast. Open source and free.",
+    "Don’t click shuffle. Describe what you’re building or the vibe you want. AI surfaces matching presets, shows real components, and helps you choose fast. Open source and free.",
   links: {
     twitter: "https://twitter.com/morganfeeney",
     github: "https://github.com/morganfeeney/shadcnpreset",

@@ -112,7 +112,7 @@ export function Footer1({ className }: Footer1Props) {
   return (
     <Container
       component="footer"
-      className="mx-auto max-w-7xl gap-4 gap-y-8 pt-10 pb-8 text-sm md:pt-25"
+      className="mx-auto gap-4 gap-y-8 pt-10 pb-8 text-sm md:pt-25"
       wrapperClassName={cn("bg-footer", className)}
     >
       <div className="grid grid-cols-12 gap-4 gap-y-16">

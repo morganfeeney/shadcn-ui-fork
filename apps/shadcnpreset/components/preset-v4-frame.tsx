@@ -94,6 +94,11 @@ export function PresetV4Frame({
   React.useEffect(() => {
     return () => {
       clearRetryTimers()
+      const frame = iframeRef.current
+      if (frame) {
+        // Encourage quicker memory reclamation on route changes/unmount.
+        frame.src = "about:blank"
+      }
     }
   }, [clearRetryTimers])
 

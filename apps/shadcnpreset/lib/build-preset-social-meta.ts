@@ -1,5 +1,5 @@
 import type { ResolvedPreset } from "@/lib/preset"
-import { presetMetaDescription } from "@/lib/preset-meta"
+import { presetMetaDescription } from "@/lib/data/metadata/preset-meta"
 
 export type PresetSocialMetaPayload = {
   documentTitle: string
