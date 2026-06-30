@@ -227,6 +227,12 @@ function DesktopNav({
   className,
   onOpenPreset,
 }: DesktopNavProps) {
+  const [openMenuHref, setOpenMenuHref] = React.useState<string | null>(null)
+
+  React.useLayoutEffect(() => {
+    setOpenMenuHref(null)
+  }, [pathname])
+
   return (
     <div
       className={cn(
@@ -241,7 +247,12 @@ function DesktopNav({
               const active = submenuParentActive(pathname, children)
               return (
                 <NavigationMenuItem key={href}>
-                  <Popover>
+                  <Popover
+                    open={openMenuHref === href}
+                    onOpenChange={(nextOpen) => {
+                      setOpenMenuHref(nextOpen ? href : null)
+                    }}
+                  >
                     <PopoverTrigger
                       className={cn(
                         navigationMenuTriggerStyle(),
@@ -269,7 +280,10 @@ function DesktopNav({
                               label={component.label}
                               description={component.description}
                               icon={component.icon}
-                              onOpen={onOpenPreset}
+                              onOpen={() => {
+                                setOpenMenuHref(null)
+                                onOpenPreset()
+                              }}
                             />
                           ) : (
                             <ListItem
@@ -278,6 +292,7 @@ function DesktopNav({
                               href={component.href}
                               icon={component.icon}
                               openInNewTab={component.openInNewTab}
+                              onClick={() => setOpenMenuHref(null)}
                             >
                               {component.description}
                             </ListItem>
@@ -438,11 +453,13 @@ function ListItem({
   href,
   icon,
   openInNewTab,
+  onClick,
   ...props
 }: React.ComponentPropsWithoutRef<"li"> & {
   href: string
   icon: React.ElementType
   openInNewTab?: boolean
+  onClick?: () => void
 }) {
   const Icon = icon
   return (
@@ -452,6 +469,7 @@ function ListItem({
           <Link
             href={href}
             className="grid grid-cols-[auto_1fr] items-start gap-2.5 rounded-[0.55rem] p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+            onClick={onClick}
             {...(openInNewTab && {
               target: "_blank",
               rel: "noopener noreferrer",
