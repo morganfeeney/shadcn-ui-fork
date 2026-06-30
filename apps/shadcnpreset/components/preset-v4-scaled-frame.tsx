@@ -11,6 +11,8 @@ type PresetV4ScaledFrameProps = {
   title: string
   className?: string
   frameClassName?: string
+  loadingOverlayClassName?: string
+  hideFrameUntilLoaded?: boolean
   virtualWidth?: number
   virtualHeight?: number
 }
@@ -20,6 +22,8 @@ export function PresetV4ScaledFrame({
   title,
   className,
   frameClassName,
+  loadingOverlayClassName,
+  hideFrameUntilLoaded = false,
   virtualWidth = 1400,
   virtualHeight = 700,
 }: PresetV4ScaledFrameProps) {
@@ -53,7 +57,10 @@ export function PresetV4ScaledFrame({
   return (
     <div ref={wrapperRef} className={cn("relative h-full w-full overflow-hidden", className)}>
       <div
-        className="absolute top-1/2 left-1/2"
+        className={cn(
+          "absolute top-1/2 left-1/2 transition-opacity duration-150",
+          hideFrameUntilLoaded && !iframeLoaded && "opacity-0"
+        )}
         style={{
           width: virtualWidth,
           height: virtualHeight,
@@ -70,7 +77,12 @@ export function PresetV4ScaledFrame({
         />
       </div>
       {!iframeLoaded ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center bg-background/80",
+            loadingOverlayClassName
+          )}
+        >
           <Spinner />
         </div>
       ) : null}
