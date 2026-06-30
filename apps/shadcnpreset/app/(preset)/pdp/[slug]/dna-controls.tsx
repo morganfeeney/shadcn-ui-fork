@@ -41,19 +41,28 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
   const prevCode = canCyclePresets ? navCodes[navCodes.length - 1]! : null
   const nextCode = canCyclePresets ? navCodes[1]! : null
 
+  function navigateToPreset(code: string) {
+    // Avoid browser restoring focus to sticky footer controls after nav,
+    // which can scroll the new PDP down to this section.
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+    router.push(`/pdp/${code}`)
+  }
+
   function onRandomPreset() {
     const code = generateRandomCompatiblePreset()
-    router.push(`/pdp/${code}`)
+    navigateToPreset(code)
   }
 
   function onPreviousPreset() {
     if (!prevCode) return
-    router.push(`/pdp/${prevCode}`)
+    navigateToPreset(prevCode)
   }
 
   function onNextPreset() {
     if (!nextCode) return
-    router.push(`/pdp/${nextCode}`)
+    navigateToPreset(nextCode)
   }
 
   return (
