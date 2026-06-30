@@ -75,7 +75,7 @@ function AutoFitSingleLineText({
   return (
     <div ref={containerRef} className="line-clamp-1 w-full self-end pr-3">
       <span
-        className="inline-block w-max leading-[1.12] whitespace-nowrap"
+        className="inline-block w-max leading-tight whitespace-nowrap"
         style={{ fontFamily, fontSize: `${fontSizePx}px` }}
       >
         {text}
