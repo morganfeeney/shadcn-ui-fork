@@ -57,6 +57,8 @@ export default async function PdpPage({ params }: PdpPageProps) {
     radius: resolved.effectiveRadius,
   })
 
+  const dnaDescription = presetDnaMetaDescription(resolved)
+
   return (
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -70,6 +72,14 @@ export default async function PdpPage({ params }: PdpPageProps) {
       ))}
       <div className="grid gap-y-20">
         <ContainerInner className="grid gap-4">
+          <header className="grid gap-6 pt-20 pb-10 md:pt-30">
+            <h1 className="text-4xl font-display font-normal md:text-5xl">
+              Preset: {resolved.code}
+            </h1>
+            <p className="max-w-[70ch] text-sm leading-relaxed text-balance text-muted-foreground">
+              {dnaDescription}
+            </p>
+          </header>
           <DnaSurface resolved={resolved} registryTheme={registryTheme} />
         </ContainerInner>
         <ContainerInner className="grid gap-6">

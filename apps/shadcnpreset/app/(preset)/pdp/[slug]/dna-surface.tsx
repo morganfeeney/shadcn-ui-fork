@@ -44,7 +44,6 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
   const modeVars = registryTheme.cssVars[mode] as Record<string, string>
   const swatchRows = resolveSwatchRowsForMode(modeVars)
   const headingFont = effectiveHeadingFont(resolved.font, resolved.fontHeading)
-  const dnaDescription = presetDnaMetaDescription(resolved)
   const previewSrc = getPresetPreviewUrl(resolved.code, "preview")
   const tabletPreviewSrcBase = getPresetPreviewUrl(resolved.code, "login-02")
   const supportsIntersectionObserver =
@@ -101,14 +100,6 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
       headingFont={DEFAULT_CONFIG.fontHeading}
       styleName={resolved.style}
     >
-      <header className="grid gap-6 pt-20 pb-10 md:pt-30">
-        <h1 className="text-4xl font-display font-normal md:text-5xl">
-          Preset: {resolved.code}
-        </h1>
-        <p className="max-w-[70ch] text-sm leading-relaxed text-balance text-muted-foreground">
-          {dnaDescription}
-        </p>
-      </header>
       <div className="grid gap-4">
         <div className="grid gap-4 lg:grid-cols-2">
           <DnaSwatchGrid rows={swatchRows} />
