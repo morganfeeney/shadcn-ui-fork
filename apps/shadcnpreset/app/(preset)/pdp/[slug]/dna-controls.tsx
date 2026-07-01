@@ -8,7 +8,7 @@ import {
   ShuffleIcon,
   SlidersHorizontalIcon,
 } from "@phosphor-icons/react"
-import { useMemo } from "react"
+import { useMemo, type MouseEvent } from "react"
 
 import { PresetVoteButton } from "@/components/preset-vote-button"
 import { buttonVariants } from "@/components/ui/button"
@@ -47,7 +47,13 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
-    router.push(`/pdp/${code}`)
+    // Keep current scroll position across PDP-to-PDP navigation.
+    // This avoids browser-specific focus/anchor jumps (notably Safari).
+    router.push(`/pdp/${code}`, { scroll: false })
+  }
+
+  function preventPointerFocus(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
   }
 
   function onRandomPreset() {
@@ -77,6 +83,7 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
         <InputGroupAddon align="inline-start" className="gap-0 px-0">
           <InputGroupButton
             size="icon-sm"
+            onMouseDown={preventPointerFocus}
             onClick={onPreviousPreset}
             disabled={!canCyclePresets}
             aria-label="Previous related preset"
@@ -85,6 +92,7 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
           </InputGroupButton>
           <InputGroupButton
             size="icon-sm"
+            onMouseDown={preventPointerFocus}
             onClick={onRandomPreset}
             aria-label="Random preset"
           >
@@ -92,6 +100,7 @@ export function DnaControls({ resolved, className }: DnaControlsProps) {
           </InputGroupButton>
           <InputGroupButton
             size="icon-sm"
+            onMouseDown={preventPointerFocus}
             onClick={onNextPreset}
             disabled={!canCyclePresets}
             aria-label="Next related preset"

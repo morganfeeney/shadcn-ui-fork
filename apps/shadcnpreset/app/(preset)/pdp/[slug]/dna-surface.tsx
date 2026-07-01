@@ -130,16 +130,19 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
           <div className="absolute inset-0 p-4 md:p-20">
             <div className="relative h-full w-full overflow-hidden rounded-xs bg-muted dark:bg-background">
               {previewSrc ? (
-                <PresetV4ScaledFrame
-                  key={previewSrc}
-                  title={`shadcn v4 preview · ${resolved.code}`}
-                  src={previewSrc}
-                  virtualWidth={2150}
-                  virtualHeight={1100}
-                  className="pointer-events-none"
-                  loadingOverlayClassName="bg-transparent"
-                  hideFrameUntilLoaded
-                />
+                <>
+                  <PresetV4ScaledFrame
+                    key={previewSrc}
+                    title={`shadcn v4 preview · ${resolved.code}`}
+                    src={previewSrc}
+                    virtualWidth={2150}
+                    virtualHeight={1100}
+                    loadingOverlayClassName="bg-transparent"
+                    hideFrameUntilLoaded
+                  />
+                  {/* Prevent the iframe from scrolling */}
+                  <div className="absolute inset-0 bg-transparent" />
+                </>
               ) : (
                 <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
                   Could not build preview URL for this preset.
@@ -154,7 +157,7 @@ export function DnaSurface({ resolved, registryTheme }: DnaSurfaceProps) {
               fontFamily: bodyFontFamily,
               hangingPunctuation: "first last",
             }}
-            className="indent-[-0.35em] text-[clamp(1.5rem,4cqw,2.5rem)] leading-snug md:col-start-2"
+            className="indent-[-0.35em] text-[clamp(1.5rem,4cqw,2.5rem)] leading-snug supports-[hanging-punctuation:first]:indent-0 md:col-start-2"
           >
             &#34;The naive, hasty aegithales who lay eggs at Christmas when
             it&#39;s freezing are sure to be disappointed when they see their
