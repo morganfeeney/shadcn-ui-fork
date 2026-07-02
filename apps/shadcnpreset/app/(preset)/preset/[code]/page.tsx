@@ -7,6 +7,7 @@ import { Container } from "@/components/zippystarter/container"
 import { siteConfig } from "@/lib/config"
 import { isCommunityPresetCode } from "@/lib/community-presets"
 import { presetMetaDescription } from "@/lib/data/metadata/preset-meta"
+import { buildPageMetadata, getPresetOgImageUrl } from "@/lib/page-metadata"
 import { resolvePresetFromCode } from "@/lib/preset"
 import { PresetButtons, PresetCodeTitle } from "./components"
 import { PresetPageLiveProvider } from "@/components/preset-page-live-context"
@@ -33,38 +34,21 @@ export async function generateMetadata({
   const description = presetMetaDescription(preset)
   const pagePath = `/preset/${preset.code}`
   const useDynamicOg = await isCommunityPresetCode(preset.code, code)
-  const ogImageUrl = useDynamicOg
-    ? `${siteConfig.url}${pagePath}/opengraph-image?v=${encodeURIComponent(preset.code)}`
-    : siteConfig.ogImage
-  const ogImageAlt = useDynamicOg ? "shadcn preset preview" : siteConfig.title
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    openGraph: {
-      title: `${title} | ${siteConfig.name}`,
-      description,
-      url: pagePath,
-      siteName: siteConfig.name,
-      type: "website",
-      images: useDynamicOg
-        ? [
-            {
-              url: ogImageUrl,
-              width: 1200,
-              height: 630,
-              alt: ogImageAlt,
-            },
-          ]
-        : [{ url: ogImageUrl, alt: ogImageAlt }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | ${siteConfig.name}`,
-      description,
-      images: [ogImageUrl],
-    },
-  }
+    path: pagePath,
+    socialTitle: `${title} | ${siteConfig.name}`,
+    image: useDynamicOg
+      ? {
+          url: getPresetOgImageUrl(preset.code),
+          alt: "shadcn preset preview",
+          width: 1200,
+          height: 630,
+        }
+      : undefined,
+  })
 }
 
 export default async function PresetCodePage({ params }: PresetPageProps) {

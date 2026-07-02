@@ -7,6 +7,14 @@ const nextConfig = {
   experimental: {
     externalDir: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/preset/:code/opengraph-image",
+        destination: "/api/presets/:code/opengraph-image",
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {

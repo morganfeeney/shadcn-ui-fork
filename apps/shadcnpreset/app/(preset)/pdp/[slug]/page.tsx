@@ -2,7 +2,9 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { ContainerInner } from "@/components/zippystarter/container"
+import { isCommunityPresetCode } from "@/lib/community-presets"
 import { presetDnaMetaDescription } from "@/lib/data/metadata/preset-meta"
+import { buildPageMetadata, getPresetOgImageUrl } from "@/lib/page-metadata"
 import { effectiveHeadingFont, resolvePresetFromCode } from "@/lib/preset"
 import { getPresetGoogleFontStylesheetHrefs } from "@/lib/preset-google-fonts"
 import { buildRegistryTheme, DEFAULT_CONFIG } from "@/registry/config"
@@ -27,10 +29,24 @@ export async function generateMetadata({
     notFound()
   }
 
-  return {
-    title: `Preset details for ${resolved.code}`,
-    description: presetDnaMetaDescription(resolved),
-  }
+  const title = `Preset details for ${resolved.code}`
+  const description = presetDnaMetaDescription(resolved)
+  const pagePath = `/pdp/${resolved.code}`
+  const useDynamicOg = await isCommunityPresetCode(resolved.code, code)
+
+  return buildPageMetadata({
+    title,
+    description,
+    path: pagePath,
+    image: useDynamicOg
+      ? {
+          url: getPresetOgImageUrl(resolved.code),
+          alt: "shadcn preset preview",
+          width: 1200,
+          height: 630,
+        }
+      : undefined,
+  })
 }
 
 export default async function PdpPage({ params }: PdpPageProps) {
