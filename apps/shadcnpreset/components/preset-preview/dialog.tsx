@@ -163,9 +163,11 @@ export function PresetPreviewDialog({
               <PresetVoteButton code={viewCode} enabled={open} />
               <Link
                 href={`/pdp/${viewCode}`}
-                className={buttonVariants({
-                  variant: "outline",
-                })}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                  })
+                )}
               >
                 Details <InfoIcon />
               </Link>
