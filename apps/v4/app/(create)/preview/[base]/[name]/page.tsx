@@ -17,6 +17,7 @@ import { ThemeModeListener } from "@/app/(create)/components/theme-mode-listener
 import { getBaseComponent, getBaseItem } from "@/app/(app)/create/lib/api"
 
 import "@/app/style-registry.css"
+import "streamdown/styles.css"
 
 export const revalidate = false
 export const dynamic = "force-static"

@@ -46,7 +46,14 @@ tsconfig.tsbuildinfo
 .playwright-mcp
 .playwright-cli
 shadcn-workspace
+
+# vitest browser mode writes these only on test failure.
+__screenshots__
 .codex-artifacts
+.tmp*
+
+CONTEXT.md
+docs/adr
 
 # figma plugin build output
 apps/figma-preset-plugin/dist/
