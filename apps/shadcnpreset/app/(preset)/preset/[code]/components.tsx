@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 
 import { usePresetPageLiveOptional } from "@/components/preset-page-live-context"
 import { InfoIcon, CopyIcon, CheckIcon, ShareIcon } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
 
 export function PresetCodeTitle({ presetCode }: { presetCode: string }) {
   const live = usePresetPageLiveOptional()
@@ -77,7 +78,7 @@ export function PresetButtons({ preset }: { preset: string }) {
       <PresetVoteButton code={effectivePreset} />
       <Link
         href={`/pdp/${effectivePreset}`}
-        className={buttonVariants({ variant: "outline" })}
+        className={cn(buttonVariants({ variant: "outline" }))}
       >
         Details <InfoIcon />
       </Link>
