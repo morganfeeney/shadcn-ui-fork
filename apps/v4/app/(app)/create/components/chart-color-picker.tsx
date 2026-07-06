@@ -18,6 +18,7 @@ import {
   PickerSeparator,
   PickerTrigger,
 } from "@/app/(app)/create/components/picker"
+import { ColorPickerStickyItem } from "@/app/(app)/create/components/color-picker-sticky-item"
 import { useDesignSystemSearchParams } from "@/app/(app)/create/lib/search-params"
 
 export function ChartColorPicker({
@@ -82,7 +83,7 @@ export function ChartColorPicker({
           anchor={isMobile ? anchorRef : undefined}
           side={isMobile ? "top" : "right"}
           align={isMobile ? "center" : "start"}
-          className="max-h-92"
+          className="max-h-92 pb-0"
         >
           <PickerRadioGroup
             value={currentChartColor?.name}
@@ -125,6 +126,7 @@ export function ChartColorPicker({
                 ))}
             </PickerGroup>
           </PickerRadioGroup>
+          <ColorPickerStickyItem />
         </PickerContent>
       </Picker>
       <LockButton
