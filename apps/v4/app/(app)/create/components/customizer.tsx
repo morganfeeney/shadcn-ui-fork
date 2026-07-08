@@ -20,6 +20,7 @@ import { BaseColorPicker } from "@/app/(app)/create/components/base-color-picker
 import { BasePicker } from "@/app/(app)/create/components/base-picker"
 import { ChartColorPicker } from "@/app/(app)/create/components/chart-color-picker"
 import { CopyPreset } from "@/app/(app)/create/components/copy-preset"
+import { CopyUrl } from "@/app/(app)/create/components/copy-url"
 import { FontPicker } from "@/app/(app)/create/components/font-picker"
 import { IconLibraryPicker } from "@/app/(app)/create/components/icon-library-picker"
 import { MainMenu } from "@/app/(app)/create/components/main-menu"
@@ -31,6 +32,7 @@ import { ResetDialog } from "@/app/(app)/create/components/reset-button"
 import { StylePicker } from "@/app/(app)/create/components/style-picker"
 import { ThemePicker } from "@/app/(app)/create/components/theme-picker"
 import { FONT_HEADING_OPTIONS, FONTS } from "@/app/(app)/create/lib/fonts"
+import { hasCustomColorParams } from "@/app/(app)/create/lib/custom-color-params"
 import { useDesignSystemSearchParams } from "@/app/(app)/create/lib/search-params"
 
 // Only visible when user clicks "Create Project". Rendered client-only to
@@ -114,7 +116,11 @@ export function Customizer({
         </FieldGroup>
       </CardContent>
       <CardFooter className="flex min-w-0 gap-2 md:flex-col md:rounded-b-none md:**:[button,a]:w-full">
-        <CopyPreset className="min-w-0 flex-1 md:flex-none" />
+        {hasCustomColorParams(params) ? (
+          <CopyUrl className="min-w-0 flex-1 md:flex-none" />
+        ) : (
+          <CopyPreset className="min-w-0 flex-1 md:flex-none" />
+        )}
         <OpenPreset
           className="max-w-20 min-w-0 flex-1 sm:max-w-none md:flex-none"
           label={isMobile ? "Open" : "Open Preset"}

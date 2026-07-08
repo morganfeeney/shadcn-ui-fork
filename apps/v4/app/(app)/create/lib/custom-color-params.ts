@@ -112,3 +112,53 @@ export function applyCustomColorParamDefaults(
 
   return normalized
 }
+
+export const CUSTOM_COLOR_PARAM_KEYS = [
+  "baseCustomColor",
+  "themeCustomColor",
+  "chartCustomColor",
+] as const satisfies ReadonlyArray<keyof DesignSystemSearchParams>
+
+type CustomColorParams = Pick<
+  DesignSystemSearchParams,
+  (typeof CUSTOM_COLOR_PARAM_KEYS)[number]
+>
+
+export function hasCustomColorParams(params: CustomColorParams) {
+  return CUSTOM_COLOR_PARAM_KEYS.some((key) => Boolean(params[key]))
+}
+
+export function appendCustomColorSearchParams(
+  searchParams: URLSearchParams,
+  params: CustomColorParams
+) {
+  for (const key of CUSTOM_COLOR_PARAM_KEYS) {
+    const value = params[key]
+    if (value) {
+      searchParams.set(key, value)
+    }
+  }
+}
+
+export function buildCreateShareUrl({
+  origin,
+  presetCode,
+  params,
+}: {
+  origin: string
+  presetCode: string
+  params: Pick<DesignSystemSearchParams, "item" | "pointer"> & CustomColorParams
+}) {
+  const searchParams = new URLSearchParams({
+    preset: presetCode,
+    item: params.item,
+  })
+
+  if (params.pointer) {
+    searchParams.set("pointer", "true")
+  }
+
+  appendCustomColorSearchParams(searchParams, params)
+
+  return `${origin}/create?${searchParams.toString()}`
+}
