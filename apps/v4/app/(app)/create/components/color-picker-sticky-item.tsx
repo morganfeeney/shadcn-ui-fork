@@ -43,7 +43,9 @@ function parseOklch(value?: string | null) {
 
   const match = value
     .trim()
-    .match(/^oklch\(\s*([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s*\)$/i)
+    .match(
+      /^oklch\(\s*([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s*\)$/i
+    )
 
   if (!match) {
     return null
@@ -142,7 +144,7 @@ export function ColorPickerStickyItem({
   }, [])
 
   return (
-    <div className="sticky bottom-0 -mx-1.5 bg-neutral-950/95 px-1.5 pb-1 backdrop-blur-xl dark:bg-neutral-800/95">
+    <div className="sticky bottom-0 -mx-1.5 bg-neutral-800/80 px-1.5 pb-1 dark:bg-neutral-800/90">
       <PickerSeparator />
       <button
         type="button"
