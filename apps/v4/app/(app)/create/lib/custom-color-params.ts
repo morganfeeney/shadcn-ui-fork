@@ -20,6 +20,37 @@ function isChartLinkedToBase(previous: DesignSystemSearchParams) {
   return previous.chartColor === previous.baseColor
 }
 
+export const CUSTOM_COLOR_PARAM_KEYS = [
+  "baseCustomColor",
+  "themeCustomColor",
+  "chartCustomColor",
+] as const satisfies ReadonlyArray<keyof DesignSystemSearchParams>
+
+type CustomColorParams = Pick<
+  DesignSystemSearchParams,
+  (typeof CUSTOM_COLOR_PARAM_KEYS)[number]
+>
+
+export function hasCustomColorParams(params: CustomColorParams) {
+  return CUSTOM_COLOR_PARAM_KEYS.some((key) => Boolean(params[key]))
+}
+
+export function clearCustomColorUpdates(): Partial<DesignSystemSearchParams> {
+  return {
+    baseCustomColor: "",
+    themeCustomColor: "",
+    chartCustomColor: "",
+    custom: false,
+  }
+}
+
+function resolveCustomFlag(
+  previous: DesignSystemSearchParams,
+  updates: Partial<DesignSystemSearchParams>
+) {
+  return hasCustomColorParams({ ...previous, ...updates })
+}
+
 export function buildBaseCustomColorUpdate(
   color: string,
   previous: DesignSystemSearchParams
@@ -54,7 +85,7 @@ export function buildNamedBaseColorUpdate(
   value: BaseColorName,
   previous: DesignSystemSearchParams
 ): Partial<DesignSystemSearchParams> {
-  return {
+  const update = {
     baseColor: value,
     baseCustomColor: "",
     ...(isThemeLinkedToBase(previous)
@@ -69,27 +100,41 @@ export function buildNamedBaseColorUpdate(
           chartCustomColor: "",
         }
       : {}),
-    custom: true,
+  }
+
+  return {
+    ...update,
+    custom: resolveCustomFlag(previous, update),
   }
 }
 
 export function buildNamedThemeUpdate(
-  value: ThemeName
+  value: ThemeName,
+  previous: DesignSystemSearchParams
 ): Partial<DesignSystemSearchParams> {
-  return {
+  const update = {
     theme: value,
     themeCustomColor: "",
-    custom: true,
+  }
+
+  return {
+    ...update,
+    custom: resolveCustomFlag(previous, update),
   }
 }
 
 export function buildNamedChartColorUpdate(
-  value: ChartColorName
+  value: ChartColorName,
+  previous: DesignSystemSearchParams
 ): Partial<DesignSystemSearchParams> {
-  return {
+  const update = {
     chartColor: value,
     chartCustomColor: "",
-    custom: true,
+  }
+
+  return {
+    ...update,
+    custom: resolveCustomFlag(previous, update),
   }
 }
 
@@ -111,21 +156,6 @@ export function applyCustomColorParamDefaults(
   }
 
   return normalized
-}
-
-export const CUSTOM_COLOR_PARAM_KEYS = [
-  "baseCustomColor",
-  "themeCustomColor",
-  "chartCustomColor",
-] as const satisfies ReadonlyArray<keyof DesignSystemSearchParams>
-
-type CustomColorParams = Pick<
-  DesignSystemSearchParams,
-  (typeof CUSTOM_COLOR_PARAM_KEYS)[number]
->
-
-export function hasCustomColorParams(params: CustomColorParams) {
-  return CUSTOM_COLOR_PARAM_KEYS.some((key) => Boolean(params[key]))
 }
 
 export function appendCustomColorSearchParams(

@@ -104,7 +104,9 @@ export function ThemePicker({
               if (value === CUSTOM_THEME_VALUE) {
                 return
               }
-              setParams(buildNamedThemeUpdate(value as ThemeName))
+              setParams((previous) =>
+                buildNamedThemeUpdate(value as ThemeName, previous)
+              )
             }}
           >
             <PickerGroup>

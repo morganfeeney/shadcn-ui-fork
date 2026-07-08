@@ -4,6 +4,7 @@ import * as React from "react"
 import useSWR from "swr"
 
 import { DEFAULT_CONFIG, PRESETS } from "@/registry/config"
+import { clearCustomColorUpdates } from "@/app/(app)/create/lib/custom-color-params"
 import { useDesignSystemSearchParams } from "@/app/(app)/create/lib/search-params"
 
 const RESET_DIALOG_KEY = "create:reset-dialog-open"
@@ -39,6 +40,7 @@ export function useReset() {
       radius: preset.radius,
       template: DEFAULT_CONFIG.template,
       item: params.item,
+      ...clearCustomColorUpdates(),
     })
   }, [setParams, params.base, params.style, params.item])
 

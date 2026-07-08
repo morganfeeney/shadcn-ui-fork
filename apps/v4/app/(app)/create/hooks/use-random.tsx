@@ -14,6 +14,7 @@ import {
 } from "@/registry/config"
 import { useLocks } from "@/app/(app)/create/hooks/use-locks"
 import { FONTS } from "@/app/(app)/create/lib/fonts"
+import { clearCustomColorUpdates } from "@/app/(app)/create/lib/custom-color-params"
 import {
   applyBias,
   RANDOMIZE_BIASES,
@@ -146,7 +147,10 @@ export function useRandom() {
       ...nextParams,
     }
 
-    setParams(nextParams)
+    setParams({
+      ...nextParams,
+      ...clearCustomColorUpdates(),
+    })
   }, [setParams, locks])
 
   const randomizeRef = React.useRef(randomize)

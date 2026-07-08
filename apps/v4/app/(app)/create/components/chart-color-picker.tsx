@@ -111,7 +111,9 @@ export function ChartColorPicker({
               if (value === CUSTOM_CHART_VALUE) {
                 return
               }
-              setParams(buildNamedChartColorUpdate(value as ChartColorName))
+              setParams((previous) =>
+                buildNamedChartColorUpdate(value as ChartColorName, previous)
+              )
             }}
           >
             <PickerGroup>
