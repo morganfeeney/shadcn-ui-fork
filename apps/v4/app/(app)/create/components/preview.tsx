@@ -15,6 +15,7 @@ import { sendToIframe } from "@/app/(app)/create/hooks/use-iframe-sync"
 import { OPEN_PRESET_FORWARD_TYPE } from "@/app/(app)/create/hooks/use-open-preset"
 import { RESET_FORWARD_TYPE } from "@/app/(app)/create/hooks/use-reset"
 import {
+  mergeCustomColorsFromLocation,
   serializeDesignSystemSearchParams,
   useDesignSystemSearchParams,
 } from "@/app/(app)/create/lib/search-params"
@@ -136,16 +137,16 @@ export function Preview() {
     }
   }, [])
 
-  const iframeSrc = React.useMemo(() => {
-    // The iframe src needs to include the serialized design system params
-    // for the initial load, but not be reactive to them as it would cause
-    // full-iframe reloads on every param change (flashes & loss of state).
-    // Further updates of the search params will be sent to the iframe
-    // via a postMessage channel, for it to sync its own history onto the host's.
-    return serializeDesignSystemSearchParams(
-      `/preview/${params.base}/${params.item}`,
-      params
+  const [iframeSrc, setIframeSrc] = React.useState<string | null>(null)
+
+  React.useLayoutEffect(() => {
+    setIframeSrc(
+      serializeDesignSystemSearchParams(
+        `/preview/${params.base}/${params.item}`,
+        mergeCustomColorsFromLocation(params)
+      )
     )
+    // Custom color changes after load are synced via postMessage, not iframe reload.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.base, params.item])
 
@@ -153,13 +154,15 @@ export function Preview() {
     <div className="relative flex flex-1 flex-col justify-center overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
       <div className="relative z-0 mx-auto flex w-full flex-1 flex-col overflow-hidden">
         <div className="absolute inset-0 bg-muted dark:bg-muted/30" />
-        <iframe
-          key={params.base + params.item}
-          ref={iframeRef}
-          src={iframeSrc}
-          className="z-10 size-full flex-1"
-          title="Preview"
-        />
+        {iframeSrc ? (
+          <iframe
+            key={params.base + params.item}
+            ref={iframeRef}
+            src={iframeSrc}
+            className="z-10 size-full flex-1"
+            title="Preview"
+          />
+        ) : null}
       </div>
       <CreateDevtools />
       <PreviewSwitcher />

@@ -1,3 +1,9 @@
+import {
+  formatOklch,
+  parseOklch,
+  type ParsedOklch,
+} from "@/app/(app)/create/lib/oklch"
+
 type ThemeCssVarsInput = {
   theme?: Record<string, string> | undefined
   light?: Record<string, string>
@@ -10,46 +16,8 @@ type ThemeCssVars = {
   dark: Record<string, string>
 }
 
-type ParsedOklch = {
-  l: number
-  c: number
-  h: number
-}
-
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
-}
-
-function parseOklch(value?: string | null): ParsedOklch | null {
-  if (!value) {
-    return null
-  }
-
-  const match = value
-    .trim()
-    .match(/^oklch\(\s*([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s*\)$/i)
-
-  if (!match) {
-    return null
-  }
-
-  const l = Number(match[1])
-  const c = Number(match[2])
-  const h = Number(match[3])
-
-  if (Number.isNaN(l) || Number.isNaN(c) || Number.isNaN(h)) {
-    return null
-  }
-
-  return {
-    l: clamp(l, 0, 1),
-    c: clamp(c, 0, 0.4),
-    h: ((h % 360) + 360) % 360,
-  }
-}
-
-function formatOklch(color: ParsedOklch) {
-  return `oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(2)})`
 }
 
 function createTone(base: ParsedOklch, lightness: number, chromaScale = 1) {

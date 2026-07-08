@@ -11,6 +11,7 @@ import {
 import { useIframeMessageListener } from "@/app/(app)/create/hooks/use-iframe-sync"
 import { FONTS } from "@/app/(app)/create/lib/fonts"
 import {
+  pickIframeSyncParams,
   useDesignSystemSearchParams,
   type DesignSystemSearchParams,
 } from "@/app/(app)/create/lib/search-params"
@@ -76,6 +77,11 @@ export function DesignSystemProvider({
     history: "replace", // …or push updates into the iframe history.
   })
   const [isReady, setIsReady] = React.useState(false)
+  const [syncedCustomColors, setSyncedCustomColors] = React.useState({
+    baseCustomColor: "",
+    themeCustomColor: "",
+    chartCustomColor: "",
+  })
   const {
     style,
     theme,
@@ -91,6 +97,12 @@ export function DesignSystemProvider({
     pointer,
     radius,
   } = searchParams
+  const effectiveBaseCustomColor =
+    syncedCustomColors.baseCustomColor || baseCustomColor
+  const effectiveThemeCustomColor =
+    syncedCustomColors.themeCustomColor || themeCustomColor
+  const effectiveChartCustomColor =
+    syncedCustomColors.chartCustomColor || chartCustomColor
   const effectiveRadius = style === "lyra" ? "none" : radius
   const selectedFont = React.useMemo(
     () => FONTS.find((fontOption) => fontOption.value === font),
@@ -138,7 +150,12 @@ export function DesignSystemProvider({
 
   const handleDesignSystemMessage = React.useCallback(
     (nextParams: DesignSystemSearchParams) => {
-      setSearchParams(nextParams)
+      setSyncedCustomColors({
+        baseCustomColor: nextParams.baseCustomColor,
+        themeCustomColor: nextParams.themeCustomColor,
+        chartCustomColor: nextParams.chartCustomColor,
+      })
+      setSearchParams(pickIframeSyncParams(nextParams))
     },
     [setSearchParams]
   )
@@ -218,11 +235,13 @@ export function DesignSystemProvider({
     return {
       ...themeResult,
       cssVars: applyCustomColorOverrides(themeResult.cssVars, {
-        baseCustomColor,
-        themeCustomColor,
-        chartCustomColor,
-        includePrimaryFromBase: !themeCustomColor && theme === baseColor,
-        includeChartFromBase: !chartCustomColor && chartColor === baseColor,
+        baseCustomColor: effectiveBaseCustomColor,
+        themeCustomColor: effectiveThemeCustomColor,
+        chartCustomColor: effectiveChartCustomColor,
+        includePrimaryFromBase:
+          !effectiveThemeCustomColor && theme === baseColor,
+        includeChartFromBase:
+          !effectiveChartCustomColor && chartColor === baseColor,
       }),
     }
   }, [
@@ -231,9 +250,9 @@ export function DesignSystemProvider({
     chartColor,
     menuAccent,
     effectiveRadius,
-    baseCustomColor,
-    themeCustomColor,
-    chartCustomColor,
+    effectiveBaseCustomColor,
+    effectiveThemeCustomColor,
+    effectiveChartCustomColor,
   ])
 
   // Use useLayoutEffect for synchronous CSS var updates.

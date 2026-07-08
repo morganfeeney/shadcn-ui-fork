@@ -5,6 +5,7 @@ import Oklume from "oklume"
 
 import { cn } from "@/registry/bases/base/lib/utils"
 import { PickerSeparator } from "@/app/(app)/create/components/picker"
+import { parseOklch } from "@/app/(app)/create/lib/oklch"
 
 export function shouldKeepPickerOpenForOklume(eventDetails: {
   reason: string
@@ -34,32 +35,6 @@ export function isOklumeCompactPopupOpen() {
   }
 
   return Boolean(document.querySelector(".oklume--compact.oklume--open"))
-}
-
-function parseOklch(value?: string | null) {
-  if (!value) {
-    return null
-  }
-
-  const match = value
-    .trim()
-    .match(
-      /^oklch\(\s*([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s*\)$/i
-    )
-
-  if (!match) {
-    return null
-  }
-
-  const l = Number(match[1])
-  const c = Number(match[2])
-  const h = Number(match[3])
-
-  if (Number.isNaN(l) || Number.isNaN(c) || Number.isNaN(h)) {
-    return null
-  }
-
-  return { l, c, h }
 }
 
 export function ColorPickerStickyItem({
@@ -108,6 +83,21 @@ export function ColorPickerStickyItem({
     onColorChangeRef.current = onColorChange
   }, [onColorChange])
 
+  const syncPickerColor = React.useCallback(() => {
+    const picker = pickerRef.current
+    const parsed = parseOklch(
+      latestValueRef.current ?? latestDefaultColorRef.current
+    )
+
+    if (!picker || !parsed) {
+      return
+    }
+
+    isInitializingRef.current = true
+    picker.setColor(parsed.l, parsed.c, parsed.h)
+    isInitializingRef.current = false
+  }, [])
+
   React.useEffect(() => {
     if (!compactPickerContainerRef.current || !hiddenTriggerRef.current) {
       return
@@ -121,6 +111,7 @@ export function ColorPickerStickyItem({
         if (isInitializingRef.current) {
           return
         }
+
         setSelectedColor(color.oklch)
         onColorChangeRef.current?.(color.oklch)
       },
@@ -151,6 +142,7 @@ export function ColorPickerStickyItem({
         onClick={(event) => {
           event.preventDefault()
           event.stopPropagation()
+          syncPickerColor()
           pickerRef.current?.togglePicker()
         }}
         onPointerDown={(event) => {

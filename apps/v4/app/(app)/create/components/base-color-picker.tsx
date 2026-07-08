@@ -44,6 +44,10 @@ export function BaseColorPicker({
     () => BASE_COLORS.find((baseColor) => baseColor.name === params.baseColor),
     [params.baseColor]
   )
+  const currentBaseSwatchColor = React.useMemo(
+    () => currentBaseColor?.cssVars?.dark?.["muted-foreground"],
+    [currentBaseColor]
+  )
 
   return (
     <div className="group/picker relative">
@@ -104,6 +108,7 @@ export function BaseColorPicker({
           </PickerRadioGroup>
           <ColorPickerStickyItem
             value={customBaseColor}
+            defaultColor={currentBaseSwatchColor}
             onColorChange={(color) => {
               setParams(
                 (previous) => buildBaseCustomColorUpdate(color, previous),

@@ -154,6 +154,45 @@ export type DesignSystemSearchParams = inferParserType<
   typeof designSystemSearchParams
 >
 
+export function pickIframeSyncParams(
+  params: DesignSystemSearchParams
+): Partial<DesignSystemSearchParams> {
+  return {
+    preset: params.preset,
+    base: params.base,
+    item: params.item,
+    baseCustomColor: params.baseCustomColor,
+    themeCustomColor: params.themeCustomColor,
+    chartCustomColor: params.chartCustomColor,
+    template: params.template,
+    rtl: params.rtl,
+    pointer: params.pointer,
+    size: params.size,
+    custom: params.custom,
+    embed: params.embed,
+  }
+}
+
+export function mergeCustomColorsFromLocation(
+  params: DesignSystemSearchParams
+): DesignSystemSearchParams {
+  if (typeof window === "undefined") {
+    return params
+  }
+
+  const fromLocation = loadDesignSystemSearchParams(
+    new URLSearchParams(window.location.search)
+  )
+
+  return {
+    ...params,
+    baseCustomColor: params.baseCustomColor || fromLocation.baseCustomColor,
+    themeCustomColor: params.themeCustomColor || fromLocation.themeCustomColor,
+    chartCustomColor: params.chartCustomColor || fromLocation.chartCustomColor,
+    custom: params.custom || fromLocation.custom,
+  }
+}
+
 export function isTranslucentMenuColor(
   menuColor?: MenuColorValue | null
 ): menuColor is "default-translucent" | "inverted-translucent" {

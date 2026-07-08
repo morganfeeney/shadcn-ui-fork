@@ -57,6 +57,13 @@ export function ChartColorPicker({
     () => BASE_COLORS.find((baseColor) => baseColor.name === params.chartColor),
     [params.chartColor]
   )
+  const currentChartSwatchColor = React.useMemo(
+    () =>
+      currentChartColor?.cssVars?.dark?.[
+        currentChartColorIsBaseColor ? "muted-foreground" : "primary"
+      ],
+    [currentChartColor, currentChartColorIsBaseColor]
+  )
 
   React.useEffect(() => {
     if (!currentChartColor && availableChartColors.length > 0) {
@@ -153,6 +160,7 @@ export function ChartColorPicker({
           </PickerRadioGroup>
           <ColorPickerStickyItem
             value={customChartColor}
+            defaultColor={currentChartSwatchColor}
             onColorChange={(color) => {
               setParams(
                 buildChartCustomColorUpdate(color),
