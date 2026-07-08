@@ -55,6 +55,7 @@ import {
   useDesignSystemSearchParams,
   type DesignSystemSearchParams,
 } from "@/app/(app)/create/lib/search-params"
+import { applyCustomColorOverrides } from "@/app/(app)/create/lib/custom-color-overrides"
 import {
   getFramework,
   getTemplateValue,
@@ -249,8 +250,21 @@ export function ProjectForm({
       return ""
     }
 
-    return formatThemeCss(theme.cssVars)
-  }, [themeConfig])
+    return formatThemeCss(
+      applyCustomColorOverrides(theme.cssVars, {
+        baseCustomColor: params.baseCustomColor,
+        themeCustomColor: params.themeCustomColor,
+        chartCustomColor: params.chartCustomColor,
+        includePrimaryFromBase: !params.themeCustomColor,
+        includeChartFromBase: !params.chartCustomColor,
+      })
+    )
+  }, [
+    params.baseCustomColor,
+    params.chartCustomColor,
+    params.themeCustomColor,
+    themeConfig,
+  ])
 
   React.useEffect(() => {
     if (copiedTarget) {

@@ -37,6 +37,7 @@ import {
   type ThemeName,
 } from "@/registry/config"
 import { FONTS } from "@/app/(app)/create/lib/fonts"
+import { applyCustomColorParamDefaults } from "@/app/(app)/create/lib/custom-color-params"
 import { getPresetCode } from "@/app/(app)/create/lib/preset-code"
 import { resolvePresetOverrides } from "@/app/(app)/create/lib/preset-query"
 
@@ -58,6 +59,9 @@ const designSystemSearchParams = {
   chartColor: parseAsStringLiteral<ChartColorName>(
     THEMES.map((t) => t.name)
   ).withDefault(DEFAULT_CONFIG.chartColor ?? "neutral"),
+  baseCustomColor: parseAsString.withDefault(""),
+  themeCustomColor: parseAsString.withDefault(""),
+  chartCustomColor: parseAsString.withDefault(""),
   font: parseAsStringLiteral<FontValue>(FONTS.map((f) => f.value)).withDefault(
     DEFAULT_CONFIG.font
   ),
@@ -127,6 +131,9 @@ const NON_DESIGN_SYSTEM_KEYS = [
   "base",
   "item",
   "preset",
+  "baseCustomColor",
+  "themeCustomColor",
+  "chartCustomColor",
   "template",
   "rtl",
   "pointer",
@@ -158,17 +165,18 @@ export function isTranslucentMenuColor(
 function normalizePartialDesignSystemParams(
   params: Partial<DesignSystemSearchParams>
 ): Partial<DesignSystemSearchParams> {
+  let normalized = applyCustomColorParamDefaults(params)
   if (
-    params.menuAccent === "bold" &&
-    isTranslucentMenuColor(params.menuColor ?? undefined)
+    normalized.menuAccent === "bold" &&
+    isTranslucentMenuColor(normalized.menuColor ?? undefined)
   ) {
-    return {
-      ...params,
+    normalized = {
+      ...normalized,
       menuAccent: "subtle",
     }
   }
 
-  return params
+  return normalized
 }
 
 function normalizeDesignSystemParams(
@@ -232,6 +240,9 @@ function resolvePresetParams(
         pointer: rawParams.pointer,
         size: rawParams.size,
         custom: rawParams.custom,
+        baseCustomColor: rawParams.baseCustomColor,
+        themeCustomColor: rawParams.themeCustomColor,
+        chartCustomColor: rawParams.chartCustomColor,
         embed: rawParams.embed,
       })
     }

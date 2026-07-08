@@ -18,8 +18,18 @@ import {
   PickerSeparator,
   PickerTrigger,
 } from "@/app/(app)/create/components/picker"
-import { ColorPickerStickyItem } from "@/app/(app)/create/components/color-picker-sticky-item"
+import {
+  ColorPickerStickyItem,
+  shouldKeepPickerOpenForOklume,
+} from "@/app/(app)/create/components/color-picker-sticky-item"
+import {
+  buildChartCustomColorUpdate,
+  buildNamedChartColorUpdate,
+  CUSTOM_COLOR_SET_OPTIONS,
+} from "@/app/(app)/create/lib/custom-color-params"
 import { useDesignSystemSearchParams } from "@/app/(app)/create/lib/search-params"
+
+const CUSTOM_CHART_VALUE = "__custom_chart__"
 
 export function ChartColorPicker({
   isMobile,
@@ -30,6 +40,7 @@ export function ChartColorPicker({
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
+  const customChartColor = params.chartCustomColor || null
 
   const availableChartColors = React.useMemo(
     () => getThemesForBaseColor(params.baseColor),
@@ -55,12 +66,18 @@ export function ChartColorPicker({
 
   return (
     <div className="group/picker relative">
-      <Picker>
+      <Picker
+        onOpenChange={(_open, eventDetails) => {
+          if (shouldKeepPickerOpenForOklume(eventDetails)) {
+            eventDetails.cancel()
+          }
+        }}
+      >
         <PickerTrigger>
           <div className="flex flex-col justify-start text-left">
             <div className="text-xs text-muted-foreground">Chart Color</div>
             <div className="text-sm font-medium text-foreground">
-              {currentChartColor?.title}
+              {customChartColor ? "Custom" : currentChartColor?.title}
             </div>
           </div>
           {mounted && (
@@ -68,6 +85,7 @@ export function ChartColorPicker({
               style={
                 {
                   "--color":
+                    customChartColor ??
                     currentChartColor?.cssVars?.dark?.[
                       currentChartColorIsBaseColor
                         ? "muted-foreground"
@@ -86,9 +104,14 @@ export function ChartColorPicker({
           className="max-h-92 pb-0"
         >
           <PickerRadioGroup
-            value={currentChartColor?.name}
+            value={
+              customChartColor ? CUSTOM_CHART_VALUE : (currentChartColor?.name ?? "")
+            }
             onValueChange={(value) => {
-              setParams({ chartColor: value as ChartColorName })
+              if (value === CUSTOM_CHART_VALUE) {
+                return
+              }
+              setParams(buildNamedChartColorUpdate(value as ChartColorName))
             }}
           >
             <PickerGroup>
@@ -126,7 +149,15 @@ export function ChartColorPicker({
                 ))}
             </PickerGroup>
           </PickerRadioGroup>
-          <ColorPickerStickyItem />
+          <ColorPickerStickyItem
+            value={customChartColor}
+            onColorChange={(color) => {
+              setParams(
+                buildChartCustomColorUpdate(color),
+                CUSTOM_COLOR_SET_OPTIONS
+              )
+            }}
+          />
         </PickerContent>
       </Picker>
       <LockButton

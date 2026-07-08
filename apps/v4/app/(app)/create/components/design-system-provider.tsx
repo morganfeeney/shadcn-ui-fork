@@ -14,6 +14,7 @@ import {
   useDesignSystemSearchParams,
   type DesignSystemSearchParams,
 } from "@/app/(app)/create/lib/search-params"
+import { applyCustomColorOverrides } from "@/app/(app)/create/lib/custom-color-overrides"
 
 const THEME_STYLE_ELEMENT_ID = "design-system-theme-vars"
 
@@ -82,6 +83,9 @@ export function DesignSystemProvider({
     fontHeading,
     baseColor,
     chartColor,
+    baseCustomColor,
+    themeCustomColor,
+    chartCustomColor,
     menuAccent,
     menuColor,
     pointer,
@@ -206,8 +210,31 @@ export function DesignSystemProvider({
       radius: effectiveRadius,
     }
 
-    return buildRegistryTheme(config)
-  }, [baseColor, theme, chartColor, menuAccent, effectiveRadius])
+    const themeResult = buildRegistryTheme(config)
+    if (!themeResult.cssVars) {
+      return themeResult
+    }
+
+    return {
+      ...themeResult,
+      cssVars: applyCustomColorOverrides(themeResult.cssVars, {
+        baseCustomColor,
+        themeCustomColor,
+        chartCustomColor,
+        includePrimaryFromBase: !themeCustomColor && theme === baseColor,
+        includeChartFromBase: !chartCustomColor && chartColor === baseColor,
+      }),
+    }
+  }, [
+    baseColor,
+    theme,
+    chartColor,
+    menuAccent,
+    effectiveRadius,
+    baseCustomColor,
+    themeCustomColor,
+    chartCustomColor,
+  ])
 
   // Use useLayoutEffect for synchronous CSS var updates.
   React.useLayoutEffect(() => {

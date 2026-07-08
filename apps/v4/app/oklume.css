@@ -1,0 +1,26 @@
+@import "oklume/style.css";
+
+.oklume--compact {
+  --oklume-bg: oklch(0.22 0.01 285);
+  --oklume-border: oklch(0.34 0.01 286);
+  --oklume-text: oklch(0.96 0 0);
+  --oklume-text-muted: oklch(0.76 0 0);
+  --oklume-accent: oklch(0.92 0 0);
+  --oklume-max-width: min(540px, 100vw - 1.5rem);
+  --oklume-preview-height: 11rem;
+  --oklume-padding: 0.75rem;
+  --oklume-gap-section: 0.75rem;
+  --oklume-value-padding-block: 0.5rem;
+  --oklume-value-padding-inline: 0.625rem;
+}
+
+.oklume--compact .oklume-popup {
+  border-radius: 1rem;
+  border-color: color-mix(in oklab, var(--oklume-border), transparent 20%);
+  background: color-mix(in oklab, var(--oklume-bg), transparent 8%);
+  backdrop-filter: blur(16px);
+}
+
+.oklume--compact .oklume-palette {
+  display: none;
+}

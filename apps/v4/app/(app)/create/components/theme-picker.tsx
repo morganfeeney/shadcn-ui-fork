@@ -14,8 +14,18 @@ import {
   PickerSeparator,
   PickerTrigger,
 } from "@/app/(app)/create/components/picker"
-import { ColorPickerStickyItem } from "@/app/(app)/create/components/color-picker-sticky-item"
+import {
+  ColorPickerStickyItem,
+  shouldKeepPickerOpenForOklume,
+} from "@/app/(app)/create/components/color-picker-sticky-item"
+import {
+  buildNamedThemeUpdate,
+  buildThemeCustomColorUpdate,
+  CUSTOM_COLOR_SET_OPTIONS,
+} from "@/app/(app)/create/lib/custom-color-params"
 import { useDesignSystemSearchParams } from "@/app/(app)/create/lib/search-params"
+
+const CUSTOM_THEME_VALUE = "__custom_theme__"
 
 export function ThemePicker({
   themes,
@@ -28,6 +38,7 @@ export function ThemePicker({
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
+  const customThemeColor = params.themeCustomColor || null
 
   const currentTheme = React.useMemo(
     () => themes.find((theme) => theme.name === params.theme),
@@ -38,6 +49,13 @@ export function ThemePicker({
     () => BASE_COLORS.find((baseColor) => baseColor.name === params.theme),
     [params.theme]
   )
+  const currentThemeSwatchColor = React.useMemo(
+    () =>
+      currentTheme?.cssVars?.dark?.[
+        currentThemeIsBaseColor ? "muted-foreground" : "primary"
+      ],
+    [currentTheme, currentThemeIsBaseColor]
+  )
 
   React.useEffect(() => {
     if (!currentTheme && themes.length > 0) {
@@ -47,12 +65,18 @@ export function ThemePicker({
 
   return (
     <div className="group/picker relative">
-      <Picker>
+      <Picker
+        onOpenChange={(_open, eventDetails) => {
+          if (shouldKeepPickerOpenForOklume(eventDetails)) {
+            eventDetails.cancel()
+          }
+        }}
+      >
         <PickerTrigger>
           <div className="flex flex-col justify-start text-left">
             <div className="text-xs text-muted-foreground">Theme</div>
             <div className="text-sm font-medium text-foreground">
-              {currentTheme?.title}
+              {customThemeColor ? "Custom" : currentTheme?.title}
             </div>
           </div>
           {mounted && (
@@ -60,9 +84,8 @@ export function ThemePicker({
               style={
                 {
                   "--color":
-                    currentTheme?.cssVars?.dark?.[
-                      currentThemeIsBaseColor ? "muted-foreground" : "primary"
-                    ],
+                    customThemeColor ??
+                    currentThemeSwatchColor,
                 } as React.CSSProperties
               }
               className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 rounded-full bg-(--color) select-none md:right-2.5"
@@ -76,9 +99,12 @@ export function ThemePicker({
           className="max-h-92 pb-0"
         >
           <PickerRadioGroup
-            value={currentTheme?.name}
+            value={customThemeColor ? CUSTOM_THEME_VALUE : (currentTheme?.name ?? "")}
             onValueChange={(value) => {
-              setParams({ theme: value as ThemeName })
+              if (value === CUSTOM_THEME_VALUE) {
+                return
+              }
+              setParams(buildNamedThemeUpdate(value as ThemeName))
             }}
           >
             <PickerGroup>
@@ -120,7 +146,16 @@ export function ThemePicker({
                 })}
             </PickerGroup>
           </PickerRadioGroup>
-          <ColorPickerStickyItem />
+          <ColorPickerStickyItem
+            value={customThemeColor}
+            defaultColor={currentThemeSwatchColor}
+            onColorChange={(color) => {
+              setParams(
+                buildThemeCustomColorUpdate(color),
+                CUSTOM_COLOR_SET_OPTIONS
+              )
+            }}
+          />
         </PickerContent>
       </Picker>
       <LockButton
