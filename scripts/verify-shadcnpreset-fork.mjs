@@ -22,10 +22,6 @@ const paths = {
     root,
     "apps/v4/app/(app)/create/components/shadcnpreset-fork/shadcnpreset-create-page-integration.tsx"
   ),
-  v4ForkIndex: join(
-    root,
-    "apps/v4/app/(app)/create/components/shadcnpreset-fork/index.ts"
-  ),
   v4CreatePage: join(root, "apps/v4/app/(app)/create/page.tsx"),
   shPostmessage: join(root, "apps/shadcnpreset/lib/shadcnpreset-postmessage.ts"),
   shHook: join(root, "apps/shadcnpreset/hooks/use-preset-parent-url-sync.ts"),
@@ -71,10 +67,12 @@ mustInclude(
   paths.v4Integration,
   "PRESET_CODE_SYNC_MESSAGE_TYPE"
 )
-mustInclude("v4 fork index", paths.v4ForkIndex, "ShadcnpresetCreatePageIntegration")
-
 mustInclude("v4 create page", paths.v4CreatePage, "ShadcnpresetCreatePageIntegration")
-mustInclude("v4 create page", paths.v4CreatePage, "shadcnpreset-fork")
+mustInclude(
+  "v4 create page",
+  paths.v4CreatePage,
+  "shadcnpreset-create-page-integration"
+)
 
 mustInclude(
   "shadcnpreset hook",

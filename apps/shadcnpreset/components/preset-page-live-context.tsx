@@ -36,7 +36,7 @@ export function PresetPageLiveProvider({
 
   const onPresetFromIframe = React.useCallback((preset: string) => {
     setLivePresetCode(preset)
-    const path = `/preset/${encodeURIComponent(preset)}`
+    const path = `/preset/${encodeURIComponent(preset)}${window.location.search}`
     window.history.replaceState(window.history.state, "", path)
   }, [])
 

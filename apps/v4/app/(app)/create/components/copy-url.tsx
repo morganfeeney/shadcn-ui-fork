@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { copyToClipboardWithMeta } from "@/components/copy-button"
 import { Button } from "@/styles/base-nova/ui/button"
-import { useCreateShareUrl } from "@/app/(app)/create/hooks/use-design-system"
+import { useCreateShareUrl } from "@/app/(app)/create/components/shadcnpreset-fork/preset-share-url"
 
 export function CopyUrl({ className }: React.ComponentProps<typeof Button>) {
   const shareUrl = useCreateShareUrl()

@@ -331,7 +331,6 @@ export function useDesignSystemSearchParams(options: Options = {}) {
       )
 
       if (!hasDesignSystemUpdate) {
-        // No design system change, pass through directly.
         return rawSetParams(resolvedUpdates as RawSetParamsInput, setOptions)
       }
 
@@ -340,17 +339,12 @@ export function useDesignSystemSearchParams(options: Options = {}) {
         ...paramsRef.current,
         ...resolvedUpdates,
       })
-      // Encode design system fields into a preset code.
-      // Cast needed: merged values may include null from nuqs resets,
-      // but encodePreset handles missing values by falling back to defaults.
       const code = getPresetCode(merged)
-      // Build update: set preset, clear individual DS params from URL.
       const rawUpdate: Record<string, unknown> = { preset: code }
       for (const key of DESIGN_SYSTEM_KEYS) {
         rawUpdate[key] = null
       }
 
-      // Pass through non-DS params that were explicitly in the update.
       for (const key of NON_DESIGN_SYSTEM_KEYS) {
         if (key in resolvedUpdates) {
           rawUpdate[key] = (resolvedUpdates as Record<string, unknown>)[key]

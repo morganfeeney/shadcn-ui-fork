@@ -18,8 +18,19 @@ type PresetPageProps = {
   }>
   searchParams: Promise<{
     embed?: string
+    pointer?: string
+    baseCustomColor?: string
+    themeCustomColor?: string
+    chartCustomColor?: string
   }>
 }
+
+const CREATE_PASS_THROUGH_PARAMS = [
+  "pointer",
+  "baseCustomColor",
+  "themeCustomColor",
+  "chartCustomColor",
+] as const
 
 export async function generateMetadata({
   params,
@@ -51,8 +62,11 @@ export async function generateMetadata({
   })
 }
 
-export default async function PresetCodePage({ params }: PresetPageProps) {
-  const { code } = await params
+export default async function PresetCodePage({
+  params,
+  searchParams,
+}: PresetPageProps) {
+  const [{ code }, query] = await Promise.all([params, searchParams])
   const preset = resolvePresetFromCode(code)
 
   if (!preset) {
@@ -61,12 +75,16 @@ export default async function PresetCodePage({ params }: PresetPageProps) {
 
   const canonicalCode = encodePreset(preset)
   const v4BaseUrl = process.env.NEXT_PUBLIC_V4_URL ?? "http://localhost:4000"
-  const createDirectUrl = new URL("/create", v4BaseUrl)
-  createDirectUrl.searchParams.set("preset", canonicalCode)
-  const createIframeUrl = new URL(createDirectUrl.toString())
+  const createIframeUrl = new URL("/create", v4BaseUrl)
+  createIframeUrl.searchParams.set("preset", canonicalCode)
   createIframeUrl.searchParams.set("embed", "1")
-  const previewUrl = new URL("/preview/radix/preview", v4BaseUrl)
-  previewUrl.searchParams.set("preset", canonicalCode)
+
+  for (const key of CREATE_PASS_THROUGH_PARAMS) {
+    const value = query[key]
+    if (value) {
+      createIframeUrl.searchParams.set(key, value)
+    }
+  }
 
   return (
     <PresetPageLiveProvider initialPresetCode={code}>

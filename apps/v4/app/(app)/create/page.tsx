@@ -8,7 +8,7 @@ import { Skeleton } from "@/styles/base-nova/ui/skeleton"
 import { Customizer } from "@/app/(app)/create/components/customizer"
 import { PresetHandler } from "@/app/(app)/create/components/preset-handler"
 import { Preview } from "@/app/(app)/create/components/preview"
-import { ShadcnpresetCreatePageIntegration } from "@/app/(app)/create/components/shadcnpreset-fork"
+import { ShadcnpresetCreatePageIntegration } from "@/app/(app)/create/components/shadcnpreset-fork/shadcnpreset-create-page-integration"
 import { getAllItems } from "@/app/(app)/create/lib/api"
 import { ThemeModeListener } from "@/app/(create)/components/theme-mode-listener"
 
