@@ -1,4 +1,6 @@
 {
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter=shadcn build && pnpm --filter=shadcnpreset exec next build",
   "crons": [
     {
       "path": "/api/internal/community-snapshot/refresh",
