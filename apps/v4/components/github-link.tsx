@@ -19,16 +19,37 @@ export function GitHubLink() {
   )
 }
 
-export async function StarsCount() {
-  const data = await fetch("https://api.github.com/repos/shadcn-ui/ui", {
-    next: { revalidate: 86400 },
-  })
-  const json = await data.json()
+async function getFormattedStarCount() {
+  try {
+    const data = await fetch("https://api.github.com/repos/shadcn-ui/ui", {
+      next: { revalidate: 86400 },
+    })
 
-  const formattedCount =
-    json.stargazers_count >= 1000
-      ? `${Math.round(json.stargazers_count / 1000)}k`
-      : json.stargazers_count?.toLocaleString()
+    if (!data.ok) {
+      return null
+    }
+
+    const json = await data.json()
+    const count = json.stargazers_count
+
+    if (typeof count !== "number") {
+      return null
+    }
+
+    return count >= 1000
+      ? `${Math.round(count / 1000)}k`
+      : count.toLocaleString()
+  } catch {
+    return null
+  }
+}
+
+export async function StarsCount() {
+  const formattedCount = await getFormattedStarCount()
+
+  if (!formattedCount) {
+    return null
+  }
 
   return (
     <span className="w-fit text-xs text-muted-foreground tabular-nums">
