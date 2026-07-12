@@ -1,0 +1,16 @@
+---
+date: "2026-07-12"
+title: "Custom color pickers and shareable preset URLs"
+description: "Pick any OKLCH color for base, theme, and chart tokens in the customizer, then share a preset page URL that restores your exact colors."
+---
+
+You can now go beyond the built-in color presets and dial in your own OKLCH values directly from the customizer.
+
+What's included:
+
+- **Custom color pickers** on Base Color, Theme, and Chart Color — each dropdown has a sticky color picker at the bottom so you can choose any color without leaving the menu
+- **Live preview updates** as you adjust colors, with theme and chart colors following base when they're linked
+- **Shareable preset URLs** — copy a link like `/preset/b0?baseCustomColor=...&themeCustomColor=...` instead of a long `/create?preset=...` URL
+- **Custom colors preserved on preset pages** — when someone opens your shared link, the preset page loads your exact custom colors in the embedded customizer
+
+Custom colors live in the URL as query params, so they travel with the link without changing the preset code itself. When no custom colors are set, sharing works the same as before.

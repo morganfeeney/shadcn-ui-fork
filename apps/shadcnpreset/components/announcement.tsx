@@ -30,7 +30,7 @@ export function Announcement({
       <Badge
         render={
           <Link href="/changelog">
-            New Preset Details Pages
+            New Custom Color Pickers
             <ArrowRightIcon
               weight="bold"
               className="size-3.5 shrink-0"
