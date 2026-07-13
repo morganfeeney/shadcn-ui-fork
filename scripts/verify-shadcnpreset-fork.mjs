@@ -16,13 +16,14 @@ const PRESET_MSG = "shadcnpreset:preset-code"
 const paths = {
   v4Constants: join(
     root,
-    "apps/v4/app/(app)/create/components/shadcnpreset-fork/constants.ts"
+    "apps/v4/app/(app)/(create)/components/shadcnpreset-fork/constants.ts"
   ),
   v4Integration: join(
     root,
-    "apps/v4/app/(app)/create/components/shadcnpreset-fork/shadcnpreset-create-page-integration.tsx"
+    "apps/v4/app/(app)/(create)/components/shadcnpreset-fork/shadcnpreset-create-page-integration.tsx"
   ),
-  v4CreatePage: join(root, "apps/v4/app/(app)/create/page.tsx"),
+  v4CreatePage: join(root, "apps/v4/app/(app)/(create)/create/page.tsx"),
+  v4VercelBuild: join(root, "scripts/shadcnpreset-v4-vercel-build.mjs"),
   shPostmessage: join(root, "apps/shadcnpreset/lib/shadcnpreset-postmessage.ts"),
   shHook: join(root, "apps/shadcnpreset/hooks/use-preset-parent-url-sync.ts"),
   presetFrame: join(root, "apps/shadcnpreset/components/preset-v4-frame.tsx"),
@@ -83,6 +84,8 @@ mustInclude("shadcnpreset hook", paths.shHook, "usePresetParentUrlSync")
 
 mustInclude("preset iframe host", paths.presetFrame, "usePresetParentUrlSync")
 mustInclude("preset iframe host", paths.presetFrame, "use-preset-parent-url-sync")
+
+mustExist("v4 vercel build script", paths.v4VercelBuild)
 
 const constantsText = readFileSync(paths.v4Constants, "utf8")
 const postMsgText = readFileSync(paths.shPostmessage, "utf8")
