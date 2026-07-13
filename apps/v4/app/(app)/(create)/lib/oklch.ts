@@ -13,8 +13,8 @@ export function parseOklch(value?: string | null): ParsedOklch | null {
     return null
   }
 
-  // Query strings encode spaces as "+".
-  const sanitized = value.trim().replace(/\+/g, " ")
+  // Query strings encode spaces as "+". Commas are common in pasted CSS.
+  const sanitized = value.trim().replace(/\+/g, " ").replace(/,\s*/g, " ")
 
   const match = sanitized.match(
     /^oklch\(\s*([0-9]*\.?[0-9]+)[\s+]+([0-9]*\.?[0-9]+)[\s+]+([0-9]*\.?[0-9]+)\s*\)$/i

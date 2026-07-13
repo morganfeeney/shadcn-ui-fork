@@ -37,6 +37,76 @@ export function isOklumeCompactPopupOpen() {
   return Boolean(document.querySelector(".oklume--compact.oklume--open"))
 }
 
+function isOklumeValueFocused() {
+  if (typeof document === "undefined") {
+    return false
+  }
+
+  const active = document.activeElement
+  return (
+    active instanceof Element &&
+    Boolean(active.closest(".oklume--compact .oklume-value"))
+  )
+}
+
+function normalizePastedColorValue(value: string) {
+  return value.trim().replace(/\+/g, " ").replace(/,\s*/g, " ")
+}
+
+function getOklumeModalForPicker() {
+  const modals = document.querySelectorAll(".oklume--compact")
+  return modals.item(modals.length - 1)
+}
+
+function attachOklumeEditableGuards(modal: Element) {
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (!(event.target instanceof Element)) {
+      return
+    }
+
+    if (!modal.contains(event.target) || !event.target.closest(".oklume-value")) {
+      return
+    }
+
+    event.stopPropagation()
+  }
+
+  const pasteHandlers: Array<{
+    element: Element
+    handler: EventListener
+  }> = []
+
+  modal.querySelectorAll(".oklume-value").forEach((element) => {
+    const handler: EventListener = (event) => {
+      const clipboardEvent = event as ClipboardEvent
+      clipboardEvent.stopPropagation()
+
+      const text = normalizePastedColorValue(
+        clipboardEvent.clipboardData?.getData("text/plain") ?? ""
+      )
+      if (!text) {
+        return
+      }
+
+      clipboardEvent.preventDefault()
+      element.textContent = text
+      ;(element as HTMLElement).blur()
+    }
+
+    element.addEventListener("paste", handler, true)
+    pasteHandlers.push({ element, handler })
+  })
+
+  document.addEventListener("keydown", handleKeydown, true)
+
+  return () => {
+    document.removeEventListener("keydown", handleKeydown, true)
+    pasteHandlers.forEach(({ element, handler }) => {
+      element.removeEventListener("paste", handler, true)
+    })
+  }
+}
+
 export function ColorPickerStickyItem({
   value,
   defaultColor,
@@ -66,6 +136,10 @@ export function ColorPickerStickyItem({
   }, [defaultColor])
 
   React.useEffect(() => {
+    if (isOklumeCompactPopupOpen() || isOklumeValueFocused()) {
+      return
+    }
+
     setSelectedColor(value ?? null)
 
     const picker = pickerRef.current
@@ -127,7 +201,13 @@ export function ColorPickerStickyItem({
     pickerRef.current = picker
     isInitializingRef.current = false
 
+    const modal = getOklumeModalForPicker()
+    const detachEditableGuards = modal
+      ? attachOklumeEditableGuards(modal)
+      : undefined
+
     return () => {
+      detachEditableGuards?.()
       isInitializingRef.current = true
       picker.destroy()
       pickerRef.current = null
