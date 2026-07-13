@@ -19,19 +19,27 @@ export function CopyUrl({ className }: React.ComponentProps<typeof Button>) {
     }
   }, [hasCopied])
 
-  const handleCopy = React.useCallback(() => {
-    copyToClipboardWithMeta(shareUrl, {
+  const handleCopy = React.useCallback(async () => {
+    const copied = await copyToClipboardWithMeta(shareUrl, {
       name: "copy_create_share_url",
       properties: {
         url: shareUrl,
       },
     })
-    setHasCopied(true)
+
+    if (copied) {
+      setHasCopied(true)
+    }
   }, [shareUrl])
 
   return (
     <Button
       variant="outline"
+      type="button"
+      onMouseDown={(event) => {
+        // Keep focus out of the scrollable customizer footer in production/embed.
+        event.preventDefault()
+      }}
       onClick={handleCopy}
       title={label}
       className={cn(

@@ -16,7 +16,7 @@ function legacyCopyToClipboard(value: string) {
   textArea.style.pointerEvents = "none"
 
   document.body.appendChild(textArea)
-  textArea.focus()
+  textArea.focus({ preventScroll: true })
   textArea.select()
   textArea.setSelectionRange(0, value.length)
 
