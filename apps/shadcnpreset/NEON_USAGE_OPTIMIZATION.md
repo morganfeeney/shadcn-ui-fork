@@ -50,6 +50,16 @@ Updated `stores/auth-store.ts`:
 - Added a shared in-flight promise for `bootstrapSession`.
 - Prevents multiple simultaneous session checks from different mounted components.
 
+### 4) Add DB connection fingerprinting
+
+Updated `lib/db.ts`:
+
+- Sets `application_name` for every DB connection.
+- Supports explicit override via `DB_APPLICATION_NAME` (or `PGAPPNAME`).
+- Falls back to a derived fingerprint including app prefix, runtime source, environment, and branch/project metadata.
+
+This makes `pg_stat_activity` useful for identifying which service/environment keeps compute active.
+
 ## Files Changed
 
 - `hooks/use-preset-votes-batch.ts` (new)
@@ -58,6 +68,7 @@ Updated `stores/auth-store.ts`:
 - `app/(home)/components.tsx`
 - `components/preset-style-overview-card.tsx`
 - `stores/auth-store.ts`
+- `lib/db.ts`
 
 ## Expected Impact
 

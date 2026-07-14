@@ -3,6 +3,50 @@ import { Pool, type QueryResultRow } from "pg"
 let poolSingleton: Pool | null = null
 let initPromise: Promise<void> | null = null
 
+const PG_APPLICATION_NAME_MAX_LENGTH = 63
+const DEFAULT_APP_NAME_PREFIX = "shadcnpreset"
+
+function sanitizeApplicationNameToken(value: string | undefined | null) {
+  if (!value) {
+    return null
+  }
+
+  const sanitized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_.-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+
+  return sanitized.length > 0 ? sanitized : null
+}
+
+function truncateApplicationName(value: string) {
+  return value.slice(0, PG_APPLICATION_NAME_MAX_LENGTH)
+}
+
+function buildDbApplicationName() {
+  const explicitName =
+    sanitizeApplicationNameToken(process.env.DB_APPLICATION_NAME) ??
+    sanitizeApplicationNameToken(process.env.PGAPPNAME)
+  if (explicitName) {
+    return truncateApplicationName(explicitName)
+  }
+
+  const source = process.env.VERCEL === "1" ? "vercel" : process.env.CI ? "ci" : "local"
+  const runtime = sanitizeApplicationNameToken(process.env.NODE_ENV) ?? "dev"
+  const project =
+    sanitizeApplicationNameToken(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
+    sanitizeApplicationNameToken(process.env.VERCEL_PROJECT_ID) ??
+    sanitizeApplicationNameToken(process.env.npm_package_name)
+  const branch = sanitizeApplicationNameToken(process.env.VERCEL_GIT_COMMIT_REF)
+
+  const tokens = [DEFAULT_APP_NAME_PREFIX, source, runtime, project, branch].filter(
+    (token): token is string => Boolean(token)
+  )
+
+  return truncateApplicationName(tokens.join(":"))
+}
+
 function getPool() {
   if (poolSingleton) {
     return poolSingleton
@@ -15,6 +59,7 @@ function getPool() {
 
   poolSingleton = new Pool({
     connectionString,
+    application_name: buildDbApplicationName(),
     ssl:
       process.env.NODE_ENV === "production"
         ? { rejectUnauthorized: false }
