@@ -36,8 +36,8 @@ import {
   type StyleName,
   type ThemeName,
 } from "@/registry/config"
-import { FONTS } from "@/app/(app)/(create)/lib/fonts"
 import { applyCustomColorParamDefaults } from "@/app/(app)/(create)/lib/custom-color-params"
+import { FONTS } from "@/app/(app)/(create)/lib/fonts"
 import { getPresetCode } from "@/app/(app)/(create)/lib/preset-code"
 import { resolvePresetOverrides } from "@/app/(app)/(create)/lib/preset-query"
 

@@ -20,6 +20,7 @@ import { BaseColorPicker } from "@/app/(app)/(create)/components/base-color-pick
 import { BasePicker } from "@/app/(app)/(create)/components/base-picker"
 import { ChartColorPicker } from "@/app/(app)/(create)/components/chart-color-picker"
 import { CopyPreset } from "@/app/(app)/(create)/components/copy-preset"
+import { CopyUrl } from "@/app/(app)/(create)/components/copy-url"
 import { FontPicker } from "@/app/(app)/(create)/components/font-picker"
 import { IconLibraryPicker } from "@/app/(app)/(create)/components/icon-library-picker"
 import { MainMenu } from "@/app/(app)/(create)/components/main-menu"
@@ -30,11 +31,9 @@ import { RandomButton } from "@/app/(app)/(create)/components/random-button"
 import { ResetDialog } from "@/app/(app)/(create)/components/reset-button"
 import { StylePicker } from "@/app/(app)/(create)/components/style-picker"
 import { ThemePicker } from "@/app/(app)/(create)/components/theme-picker"
+import { hasCustomColorParams } from "@/app/(app)/(create)/lib/custom-color-params"
 import { FONT_HEADING_OPTIONS, FONTS } from "@/app/(app)/(create)/lib/fonts"
 import { useDesignSystemSearchParams } from "@/app/(app)/(create)/lib/search-params"
-import { CopyUrl } from "@/app/(app)/(create)/components/copy-url"
-import { hasCustomColorParams } from "@/app/(app)/(create)/lib/custom-color-params"
-
 
 // Only visible when user clicks "Create Project". Rendered client-only to
 // avoid a useId hydration mismatch on the Base UI dialog trigger. The loading
