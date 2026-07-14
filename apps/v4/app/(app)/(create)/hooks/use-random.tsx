@@ -23,9 +23,9 @@ import {
   type ThemeName,
 } from "@/registry/config"
 import { useLocks } from "@/app/(app)/(create)/hooks/use-locks"
+import { clearCustomColorUpdates } from "@/app/(app)/(create)/lib/custom-color-params"
 import { FONTS } from "@/app/(app)/(create)/lib/fonts"
 import { getPresetCode } from "@/app/(app)/(create)/lib/preset-code"
-import { clearCustomColorUpdates } from "@/app/(app)/(create)/lib/custom-color-params"
 import {
   applyBias,
   RANDOMIZE_BIASES,

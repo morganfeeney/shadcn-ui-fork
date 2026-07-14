@@ -1,4 +1,4 @@
 {
   "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter=@shadcn/react build && pnpm --filter=shadcn build && pnpm --filter=v4 exec next build"
+  "buildCommand": "cd ../.. && node scripts/shadcnpreset-v4-vercel-build.mjs"
 }

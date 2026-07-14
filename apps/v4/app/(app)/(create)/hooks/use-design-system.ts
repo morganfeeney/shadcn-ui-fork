@@ -6,8 +6,7 @@ import { buildCreateShareUrl } from "@/app/(app)/(create)/lib/custom-color-param
 import { getPresetCode } from "@/app/(app)/(create)/lib/preset-code"
 import { useDesignSystemSearchParams } from "@/app/(app)/(create)/lib/search-params"
 
-const CREATE_ORIGIN =
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+const CREATE_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
 // Returns the canonical preset code derived from the current search params.
 export function usePresetCode() {

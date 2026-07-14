@@ -33,6 +33,18 @@ Upstream often edits imports or layout. When you resolve the conflict, **keep**:
 - `import { ShadcnpresetCreatePageIntegration } from "@/app/(app)/create/components/shadcnpreset-fork"`
 - `<ShadcnpresetCreatePageIntegration />` near `PresetHandler`
 
+## Vercel (create-only v4 deploy)
+
+Production v4 only needs `/create`, `/preview/*`, and `/init/*` for the shadcnpreset iframe. The full upstream site (docs, `/view/*`, blocks, etc.) OOMs on Vercel Hobby.
+
+**Do not delete those routes from git.** Deploy uses a fork-only script:
+
+```bash
+node scripts/shadcnpreset-v4-vercel-build.mjs
+```
+
+Configured in `apps/v4/vercel.json`. It temporarily moves heavy `app/` segments to `apps/v4/.vercel-stash/` during `next build`, then restores them. Upstream files stay intact for merges.
+
 ## Local dev reminder
 
 - v4 on the port in `NEXT_PUBLIC_V4_URL` (default `http://localhost:4000`)
