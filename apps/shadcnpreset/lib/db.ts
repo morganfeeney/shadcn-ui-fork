@@ -5,6 +5,9 @@ let initPromise: Promise<void> | null = null
 
 const PG_APPLICATION_NAME_MAX_LENGTH = 63
 const DEFAULT_APP_NAME_PREFIX = "shadcnpreset"
+const DEFAULT_POOL_MAX = 2
+const DEFAULT_POOL_IDLE_TIMEOUT_MS = 5_000
+const DEFAULT_POOL_CONNECTION_TIMEOUT_MS = 5_000
 
 function sanitizeApplicationNameToken(value: string | undefined | null) {
   if (!value) {
@@ -22,6 +25,20 @@ function sanitizeApplicationNameToken(value: string | undefined | null) {
 
 function truncateApplicationName(value: string) {
   return value.slice(0, PG_APPLICATION_NAME_MAX_LENGTH)
+}
+
+function parsePositiveIntEnv(name: string, fallback: number) {
+  const raw = process.env[name]
+  if (!raw) {
+    return fallback
+  }
+
+  const parsed = Number.parseInt(raw, 10)
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback
+  }
+
+  return parsed
 }
 
 function buildDbApplicationName() {
@@ -60,6 +77,18 @@ function getPool() {
   poolSingleton = new Pool({
     connectionString,
     application_name: buildDbApplicationName(),
+    // Keep pool footprint small in serverless so idle workers do not hold many
+    // open sessions and keep Neon compute active longer than necessary.
+    max: parsePositiveIntEnv("PG_POOL_MAX", DEFAULT_POOL_MAX),
+    idleTimeoutMillis: parsePositiveIntEnv(
+      "PG_IDLE_TIMEOUT_MS",
+      DEFAULT_POOL_IDLE_TIMEOUT_MS
+    ),
+    connectionTimeoutMillis: parsePositiveIntEnv(
+      "PG_CONNECTION_TIMEOUT_MS",
+      DEFAULT_POOL_CONNECTION_TIMEOUT_MS
+    ),
+    allowExitOnIdle: true,
     ssl:
       process.env.NODE_ENV === "production"
         ? { rejectUnauthorized: false }
