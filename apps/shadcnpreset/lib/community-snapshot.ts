@@ -11,6 +11,7 @@ const DEFAULT_SNAPSHOT_LIMIT = 2000
 const FALLBACK_PAGE_SIZE = 100
 const SNAPSHOT_DATA_FILENAME = "community-presets-snapshot.json"
 const SNAPSHOT_ROW_ID = "default"
+const SNAPSHOT_MEMORY_CACHE_TTL_MS = 60_000
 
 const snapshotSchema = z.object({
   generatedAt: z.string(),
@@ -19,6 +20,13 @@ const snapshotSchema = z.object({
 })
 
 type CommunitySnapshot = z.infer<typeof snapshotSchema>
+
+let inMemorySnapshotCache:
+  | {
+      value: CommunitySnapshot
+      expiresAt: number
+    }
+  | null = null
 
 function getSafeLimit(limit: number, max = DEFAULT_SNAPSHOT_LIMIT) {
   return Math.min(max, Math.max(1, limit))
@@ -47,6 +55,26 @@ function normalizePresetCodes(codes: string[], limit: number) {
   }
 
   return normalized
+}
+
+function readInMemorySnapshotCache() {
+  if (!inMemorySnapshotCache) {
+    return null
+  }
+
+  if (inMemorySnapshotCache.expiresAt < Date.now()) {
+    inMemorySnapshotCache = null
+    return null
+  }
+
+  return inMemorySnapshotCache.value
+}
+
+function writeInMemorySnapshotCache(snapshot: CommunitySnapshot) {
+  inMemorySnapshotCache = {
+    value: snapshot,
+    expiresAt: Date.now() + SNAPSHOT_MEMORY_CACHE_TTL_MS,
+  }
 }
 
 export function getDeterministicCommunityFallbackCodes(limit: number) {
@@ -151,12 +179,23 @@ async function readSnapshotPayload(): Promise<CommunitySnapshot | null> {
     return loadSnapshotFromDataFile()
   }
 
+  const fromMemory = readInMemorySnapshotCache()
+  if (fromMemory?.codes.length) {
+    return fromMemory
+  }
+
   const fromDb = await getCachedDbSnapshot()
   if (fromDb?.codes.length) {
+    writeInMemorySnapshotCache(fromDb)
     return fromDb
   }
 
-  return loadSnapshotFromDataFile()
+  const fromDataFile = loadSnapshotFromDataFile()
+  if (fromDataFile?.codes.length) {
+    writeInMemorySnapshotCache(fromDataFile)
+  }
+
+  return fromDataFile
 }
 
 export async function getCommunitySnapshotCodes(limit = DEFAULT_SNAPSHOT_LIMIT) {
@@ -202,6 +241,8 @@ export async function writeCommunitySnapshot(
     `,
     [SNAPSHOT_ROW_ID, JSON.stringify(snapshot)]
   )
+
+  writeInMemorySnapshotCache(snapshot)
 
   return snapshot
 }
