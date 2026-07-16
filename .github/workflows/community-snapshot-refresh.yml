@@ -25,11 +25,11 @@ jobs:
         with:
           node-version: 24
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10.33.4
-          run_install: false
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.4 --activate
+          pnpm --version
 
       - name: Validate DATABASE_URL secret
         env:
