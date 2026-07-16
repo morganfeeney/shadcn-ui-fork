@@ -22,8 +22,7 @@
         "BETTER_AUTH_SECRET",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
-        "OPENAI_API_KEY",
-        "CRON_SECRET"
+        "OPENAI_API_KEY"
       ],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },

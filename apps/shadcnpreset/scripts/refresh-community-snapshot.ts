@@ -1,21 +1,26 @@
 import {
-  writeCommunitySnapshot,
+  createCommunitySnapshot,
   writeCommunitySnapshotToDataFile,
 } from "@/lib/community-snapshot"
 import { getCommunityPresetCodes } from "@/lib/community-presets"
 
 async function main() {
   const requestedLimit = Number.parseInt(process.argv[2] ?? "2000", 10)
+  const requestedSource = process.argv[3]
   const limit = Number.isFinite(requestedLimit)
     ? Math.min(5000, Math.max(1, requestedLimit))
     : 2000
+  const source =
+    requestedSource === "github-cron" || requestedSource === "manual-refresh"
+      ? requestedSource
+      : "manual-refresh"
 
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is required")
   }
 
   const codes = await getCommunityPresetCodes(limit)
-  const snapshot = await writeCommunitySnapshot(codes, "manual-refresh", limit)
+  const snapshot = createCommunitySnapshot(codes, source, limit)
   writeCommunitySnapshotToDataFile(snapshot)
 
   console.log(
