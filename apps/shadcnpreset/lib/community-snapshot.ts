@@ -10,7 +10,6 @@ import { getPresetPage, type PresetPageItem } from "@/lib/preset-catalog"
 const DEFAULT_SNAPSHOT_LIMIT = 2000
 const FALLBACK_PAGE_SIZE = 100
 const SNAPSHOT_DATA_FILENAME = "community-presets-snapshot.json"
-const SNAPSHOT_ROW_ID = "default"
 const SNAPSHOT_MEMORY_CACHE_TTL_MS = 60_000
 
 const snapshotSchema = z.object({
@@ -20,6 +19,7 @@ const snapshotSchema = z.object({
 })
 
 type CommunitySnapshot = z.infer<typeof snapshotSchema>
+type CommunitySnapshotSource = "github-cron" | "manual-refresh" | "neon-cron"
 
 let inMemorySnapshotCache:
   | {
@@ -30,10 +30,6 @@ let inMemorySnapshotCache:
 
 function getSafeLimit(limit: number, max = DEFAULT_SNAPSHOT_LIMIT) {
   return Math.min(max, Math.max(1, limit))
-}
-
-function shouldSkipDbSnapshotRead() {
-  return process.env.NEXT_PHASE === "phase-production-build"
 }
 
 function normalizePresetCodes(codes: string[], limit: number) {
@@ -129,68 +125,20 @@ function loadSnapshotFromDataFile(): CommunitySnapshot | null {
   }
 }
 
-async function ensureSnapshotTable() {
-  const { query } = await import("@/lib/db")
-  await query(`
-    CREATE TABLE IF NOT EXISTS community_snapshot (
-      id TEXT PRIMARY KEY,
-      payload JSONB NOT NULL,
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `)
-}
-
-async function readSnapshotFromDb(): Promise<CommunitySnapshot | null> {
-  if (!process.env.DATABASE_URL) {
-    return null
-  }
-
-  try {
-    const { query } = await import("@/lib/db")
-    const result = await query<{ payload: CommunitySnapshot }>(
-      `
-      SELECT payload
-      FROM community_snapshot
-      WHERE id = $1
-      LIMIT 1
-      `,
-      [SNAPSHOT_ROW_ID]
-    )
-    const row = result.rows[0]
-    if (!row) return null
-
-    const parsed = snapshotSchema.safeParse(row.payload)
-    if (!parsed.success) return null
-    return parsed.data
-  } catch {
-    return null
-  }
-}
-
-async function getCachedDbSnapshot() {
+async function getCachedDataFileSnapshot() {
   "use cache"
   cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 })
 
-  return readSnapshotFromDb()
+  return loadSnapshotFromDataFile()
 }
 
 async function readSnapshotPayload(): Promise<CommunitySnapshot | null> {
-  if (shouldSkipDbSnapshotRead()) {
-    return loadSnapshotFromDataFile()
-  }
-
   const fromMemory = readInMemorySnapshotCache()
   if (fromMemory?.codes.length) {
     return fromMemory
   }
 
-  const fromDb = await getCachedDbSnapshot()
-  if (fromDb?.codes.length) {
-    writeInMemorySnapshotCache(fromDb)
-    return fromDb
-  }
-
-  const fromDataFile = loadSnapshotFromDataFile()
+  const fromDataFile = await getCachedDataFileSnapshot()
   if (fromDataFile?.codes.length) {
     writeInMemorySnapshotCache(fromDataFile)
   }
@@ -218,9 +166,9 @@ export async function getCommunityCodesSnapshotFirst(
   return getDeterministicCommunityFallbackCodes(safeLimit)
 }
 
-export async function writeCommunitySnapshot(
+export function createCommunitySnapshot(
   codes: string[],
-  source: "neon-cron" | "manual-refresh" = "neon-cron",
+  source: CommunitySnapshotSource = "manual-refresh",
   limit = DEFAULT_SNAPSHOT_LIMIT
 ) {
   const normalized = normalizePresetCodes(codes, limit)
@@ -229,18 +177,6 @@ export async function writeCommunitySnapshot(
     source,
     codes: normalized,
   }
-
-  await ensureSnapshotTable()
-  const { query } = await import("@/lib/db")
-  await query(
-    `
-    INSERT INTO community_snapshot (id, payload, updated_at)
-    VALUES ($1, $2::jsonb, NOW())
-    ON CONFLICT (id) DO UPDATE
-    SET payload = EXCLUDED.payload, updated_at = NOW()
-    `,
-    [SNAPSHOT_ROW_ID, JSON.stringify(snapshot)]
-  )
 
   writeInMemorySnapshotCache(snapshot)
 

@@ -1,8 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/internal/community-snapshot/refresh",
-      "schedule": "0 3 * * *"
-    }
-  ]
-}
+{}

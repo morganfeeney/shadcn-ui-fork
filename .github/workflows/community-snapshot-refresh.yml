@@ -1,0 +1,65 @@
+name: Community Snapshot Refresh
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Maximum preset codes to include in snapshot"
+        required: false
+        default: "2000"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10.33.4
+          run_install: false
+
+      - name: Validate DATABASE_URL secret
+        env:
+          DATABASE_URL: ${{ secrets.SHADCNPRESET_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Missing SHADCNPRESET_DATABASE_URL repository secret."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Refresh snapshot JSON
+        env:
+          DATABASE_URL: ${{ secrets.SHADCNPRESET_DATABASE_URL }}
+          SNAPSHOT_LIMIT: ${{ github.event.inputs.limit || '2000' }}
+        run: pnpm --filter shadcnpreset refresh:community-snapshot -- "$SNAPSHOT_LIMIT" github-cron
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(shadcnpreset): refresh community snapshot data"
+          title: "chore(shadcnpreset): refresh community snapshot data"
+          body: |
+            Automated community snapshot refresh.
+
+            - Regenerated `apps/shadcnpreset/data/community-presets-snapshot.json`
+            - Source: scheduled GitHub Action
+          branch: automation/community-snapshot-refresh
+          delete-branch: true
+          add-paths: |
+            apps/shadcnpreset/data/community-presets-snapshot.json
