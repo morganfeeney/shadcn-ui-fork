@@ -4,9 +4,14 @@ import {
 } from "@/lib/community-snapshot"
 import { getCommunityPresetCodes } from "@/lib/community-presets"
 
+function getCliArgs() {
+  return process.argv.slice(2).filter((value) => value !== "--")
+}
+
 async function main() {
-  const requestedLimit = Number.parseInt(process.argv[2] ?? "2000", 10)
-  const requestedSource = process.argv[3]
+  const [limitArg, sourceArg] = getCliArgs()
+  const requestedLimit = Number.parseInt(limitArg ?? "2000", 10)
+  const requestedSource = sourceArg
   const limit = Number.isFinite(requestedLimit)
     ? Math.min(5000, Math.max(1, requestedLimit))
     : 2000

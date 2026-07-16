@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build packages
+        run: pnpm build:packages
+
       - name: Refresh snapshot JSON
         env:
           DATABASE_URL: ${{ secrets.SHADCNPRESET_DATABASE_URL }}
