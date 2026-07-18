@@ -18,6 +18,7 @@ import {
   PickerSeparator,
   PickerTrigger,
 } from "@/app/(app)/(create)/components/picker"
+import { usePreviewOverride } from "@/app/(app)/(create)/components/preview-override"
 import { useDesignSystemSearchParams } from "@/app/(app)/(create)/lib/search-params"
 import {
   ColorPickerStickyItem,
@@ -40,6 +41,7 @@ export function ChartColorPicker({
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
+  const { setOverride, clearOverride } = usePreviewOverride()
   const customChartColor = params.chartCustomColor || null
 
   const availableChartColors = React.useMemo(
@@ -72,6 +74,9 @@ export function ChartColorPicker({
           if (shouldKeepPickerOpenForOklume(eventDetails)) {
             eventDetails.cancel()
           }
+          if (!_open) {
+            clearOverride()
+          }
         }}
       >
         <PickerTrigger>
@@ -103,6 +108,8 @@ export function ChartColorPicker({
           side={isMobile ? "top" : "right"}
           align={isMobile ? "center" : "start"}
           className="max-h-92 pb-0"
+          className="max-h-92"
+          onMouseLeave={clearOverride}
         >
           <PickerRadioGroup
             value={
@@ -118,6 +125,12 @@ export function ChartColorPicker({
                 buildNamedChartColorUpdate(value as ChartColorName, previous)
               )
             }}
+            onItemPreview={
+              isMobile
+                ? undefined
+                : (value) =>
+                    setOverride({ chartColor: value as ChartColorName })
+            }
           >
             <PickerGroup>
               {availableChartColors

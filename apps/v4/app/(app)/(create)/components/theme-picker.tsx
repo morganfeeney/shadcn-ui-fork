@@ -14,6 +14,7 @@ import {
   PickerSeparator,
   PickerTrigger,
 } from "@/app/(app)/(create)/components/picker"
+import { usePreviewOverride } from "@/app/(app)/(create)/components/preview-override"
 import { useDesignSystemSearchParams } from "@/app/(app)/(create)/lib/search-params"
 import {
   ColorPickerStickyItem,
@@ -38,6 +39,7 @@ export function ThemePicker({
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
+  const { setOverride, clearOverride } = usePreviewOverride()
   const customThemeColor = params.themeCustomColor || null
 
   const currentTheme = React.useMemo(
@@ -59,10 +61,14 @@ export function ThemePicker({
 
   return (
     <div className="group/picker relative">
+
       <Picker
         onOpenChange={(_open, eventDetails) => {
           if (shouldKeepPickerOpenForOklume(eventDetails)) {
             eventDetails.cancel()
+          }
+          if (!_open) {
+            clearOverride()
           }
         }}
       >
@@ -89,6 +95,7 @@ export function ThemePicker({
           side={isMobile ? "top" : "right"}
           align={isMobile ? "center" : "start"}
           className="max-h-92 pb-0"
+          onMouseLeave={clearOverride}
         >
           <PickerRadioGroup
             value={
@@ -102,6 +109,11 @@ export function ThemePicker({
                 buildNamedThemeUpdate(value as ThemeName, previous)
               )
             }}
+            onItemPreview={
+              isMobile
+                ? undefined
+                : (value) => setOverride({ theme: value as ThemeName })
+            }
           >
             <PickerGroup>
               {themes

@@ -24,7 +24,13 @@
         "GOOGLE_CLIENT_SECRET",
         "OPENAI_API_KEY"
       ],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "public/r/styles/**",
+        "styles/**"
+      ]
     },
     "preview": {
       "env": ["NEXT_PUBLIC_APP_URL"],

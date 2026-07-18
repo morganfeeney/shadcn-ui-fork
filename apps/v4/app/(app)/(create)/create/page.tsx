@@ -8,6 +8,7 @@ import { Skeleton } from "@/styles/base-nova/ui/skeleton"
 import { Customizer } from "@/app/(app)/(create)/components/customizer"
 import { PresetHandler } from "@/app/(app)/(create)/components/preset-handler"
 import { Preview } from "@/app/(app)/(create)/components/preview"
+import { PreviewOverrideProvider } from "@/app/(app)/(create)/components/preview-override"
 import { ShadcnpresetCreatePageIntegration } from "@/app/(app)/(create)/components/shadcnpreset-fork/shadcnpreset-create-page-integration"
 import { getAllItems } from "@/app/(app)/(create)/lib/api"
 import { ThemeModeListener } from "@/app/(create)/components/theme-mode-listener"
@@ -55,6 +56,7 @@ export default function CreatePage() {
         data-slot="designer"
         className="flex min-h-0 flex-1 flex-col gap-(--gap) p-(--gap) pt-[calc(var(--gap)*0.25)] md:flex-row-reverse"
       >
+        <PreviewOverrideProvider>
         <ThemeModeListener relayToChildFrames />
         <Preview />
         <Suspense
@@ -64,6 +66,7 @@ export default function CreatePage() {
         >
           <CustomizerLoader />
         </Suspense>
+        </PreviewOverrideProvider>
       </div>
       <ShadcnpresetCreatePageIntegration />
       <PresetHandler />

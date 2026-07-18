@@ -13,6 +13,7 @@ import {
   PickerRadioItem,
   PickerTrigger,
 } from "@/app/(app)/(create)/components/picker"
+import { usePreviewOverride } from "@/app/(app)/(create)/components/preview-override"
 import { useDesignSystemSearchParams } from "@/app/(app)/(create)/lib/search-params"
 import {
   ColorPickerStickyItem,
@@ -35,6 +36,7 @@ export function BaseColorPicker({
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
+  const { setOverride, clearOverride } = usePreviewOverride()
   const customBaseColor = params.baseCustomColor || null
 
   const currentBaseColor = React.useMemo(
@@ -52,6 +54,9 @@ export function BaseColorPicker({
         onOpenChange={(_open, eventDetails) => {
           if (shouldKeepPickerOpenForOklume(eventDetails)) {
             eventDetails.cancel()
+          }
+          if (!_open) {
+            clearOverride()
           }
         }}
       >
@@ -79,6 +84,7 @@ export function BaseColorPicker({
           anchor={isMobile ? anchorRef : undefined}
           side={isMobile ? "top" : "right"}
           align={isMobile ? "center" : "start"}
+          onMouseLeave={clearOverride}
           className="pb-0"
         >
           <PickerRadioGroup
@@ -96,6 +102,11 @@ export function BaseColorPicker({
                 buildNamedBaseColorUpdate(value as BaseColorName, previous)
               )
             }}
+            onItemPreview={
+              isMobile
+                ? undefined
+                : (value) => setOverride({ baseColor: value as BaseColorName })
+            }
           >
             <PickerGroup>
               {BASE_COLORS.map((baseColor) => (
