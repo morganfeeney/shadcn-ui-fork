@@ -38,21 +38,16 @@ pnpm shadcnpreset:dev
 pnpm v4:dev
 ```
 
-See [UPSTREAM.md](./UPSTREAM.md) for notes on staying in sync with shadcn/ui.
-
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions are welcome! Please see the [Contributing Guide](./CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE.md)
+Licensed under the [MIT License](./LICENSE.md).
+
+Copyright (c) 2026 Morgan Feeney
+Copyright (c) 2023 shadcn
 
 ## Contributors
 

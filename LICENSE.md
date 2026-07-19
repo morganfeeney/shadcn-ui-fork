@@ -1,5 +1,6 @@
 MIT License
 
+Copyright (c) 2026 Morgan Feeney
 Copyright (c) 2023 shadcn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
