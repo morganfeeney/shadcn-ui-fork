@@ -46,6 +46,20 @@ function run(command, args, options = {}) {
   }
 }
 
+function ensureBun() {
+  const bunBin = join(process.env.HOME || "/root", ".bun", "bin")
+  process.env.PATH = `${bunBin}:${process.env.PATH || ""}`
+
+  const check = spawnSync("bun", ["--version"], { encoding: "utf8" })
+  if (check.status === 0) {
+    return
+  }
+
+  // registry:build shells out to `bun run ./scripts/build-registry.mts`
+  // (same requirement as GitHub Actions code-check).
+  run("bash", ["-c", "curl -fsSL https://bun.sh/install | bash"])
+}
+
 function stashRoutes() {
   mkdirSync(stashRoot, { recursive: true })
 
@@ -79,9 +93,12 @@ function restoreRoutes() {
 }
 
 function main() {
-  run("pnpm", ["--filter=@shadcn/react", "build"], { cwd: root })
-  run("pnpm", ["--filter=@shadcn/helpers", "build"], { cwd: root })
-  run("pnpm", ["--filter=shadcn", "build"], { cwd: root })
+  ensureBun()
+
+  // Builds workspace packages + gitignored apps/v4/styles/* (see styles/README.md).
+  run("pnpm", ["--filter=v4", "registry:build", "--style", "all"], {
+    cwd: root,
+  })
 
   stashRoutes()
 
