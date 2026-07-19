@@ -80,6 +80,7 @@ function restoreRoutes() {
 
 function main() {
   run("pnpm", ["--filter=@shadcn/react", "build"], { cwd: root })
+  run("pnpm", ["--filter=@shadcn/helpers", "build"], { cwd: root })
   run("pnpm", ["--filter=shadcn", "build"], { cwd: root })
 
   stashRoutes()
