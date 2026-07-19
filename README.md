@@ -1,29 +1,19 @@
-# shadcnpreset
+![shadcnpreset](apps/shadcnpreset/public/og-card.png)
 
-<br>
-<a href="https://vercel.com/open-source-program">
-  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge-2026.svg" />
-</a>
-<br>
-<br>
+<p align="center">
+  <a href="https://vercel.com/open-source-program">
+    <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge-2026.svg" />
+  </a>
+</p>
 
-Find the perfect shadcn preset in seconds.
+<h1 align="center">shadcnpreset</h1>
 
-shadcnpreset is an open-source platform for discovering, generating, previewing, and working with shadcn/ui themes.
+<p align="center">
+Find the perfect shadcn preset in seconds.<br/>
+Free & open-source platform for discovering, generating, previewing, and working with shadcn/ui presets & themes.
+</p>
 
-Instead of clicking random until something looks good, describe what you're building and let AI surface relevant
-presets. Compare them visually, preview them on real UI, save your favourites, and use a growing collection of developer
-tools to move from idea to implementation faster.
-
-## Why?
-
-shadcn/ui gives developers an incredible amount of flexibility.
-
-It also creates millions of possible combinations of styles, themes, fonts, icons, chart palettes, and design decisions.
-
-Finding a combination that actually feels right can take far longer than building the feature itself.
-
-shadcnpreset helps you:
+### Features
 
 * Discover themes using AI
 * Preview presets on real interfaces
