@@ -11,6 +11,7 @@ const baseParams = (
   overrides: Partial<DesignSystemSearchParams> = {}
 ): DesignSystemSearchParams => ({
   ...DEFAULT_CONFIG,
+  template: DEFAULT_CONFIG.template ?? "next",
   preset: "b0",
   item: "preview-02",
   size: 100,
