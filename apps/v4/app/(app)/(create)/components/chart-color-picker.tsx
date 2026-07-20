@@ -108,7 +108,6 @@ export function ChartColorPicker({
           side={isMobile ? "top" : "right"}
           align={isMobile ? "center" : "start"}
           className="max-h-92 pb-0"
-          className="max-h-92"
           onMouseLeave={clearOverride}
         >
           <PickerRadioGroup
