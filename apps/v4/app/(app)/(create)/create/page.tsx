@@ -57,15 +57,15 @@ export default function CreatePage() {
         className="flex min-h-0 flex-1 flex-col gap-(--gap) p-(--gap) pt-[calc(var(--gap)*0.25)] md:flex-row-reverse"
       >
         <PreviewOverrideProvider>
-        <ThemeModeListener relayToChildFrames />
-        <Preview />
-        <Suspense
-          fallback={
-            <Skeleton className="isolate min-h-[151px] w-full self-start rounded-2xl md:h-full md:max-h-full md:min-h-0 md:w-(--customizer-width)" />
-          }
-        >
-          <CustomizerLoader />
-        </Suspense>
+          <ThemeModeListener relayToChildFrames />
+          <Preview />
+          <Suspense
+            fallback={
+              <Skeleton className="isolate min-h-[151px] w-full self-start rounded-2xl md:h-full md:max-h-full md:min-h-0 md:w-(--customizer-width)" />
+            }
+          >
+            <CustomizerLoader />
+          </Suspense>
         </PreviewOverrideProvider>
       </div>
       <ShadcnpresetCreatePageIntegration />

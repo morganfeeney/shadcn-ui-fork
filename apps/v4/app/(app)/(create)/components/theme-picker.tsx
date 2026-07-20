@@ -61,7 +61,6 @@ export function ThemePicker({
 
   return (
     <div className="group/picker relative">
-
       <Picker
         onOpenChange={(_open, eventDetails) => {
           if (shouldKeepPickerOpenForOklume(eventDetails)) {
