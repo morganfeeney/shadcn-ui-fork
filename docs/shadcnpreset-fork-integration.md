@@ -51,12 +51,15 @@ The verify script asserts both sides still contain the same literal token.
 
 | Location | Role |
 |----------|------|
-| `apps/v4/.../shadcnpreset-fork/` | Sends `postMessage` from `/create` when embedded |
-| `apps/shadcnpreset/hooks/use-preset-parent-url-sync.ts` | Listens on `window`; calls `onPresetFromIframe` or falls back to `router.replace` |
-| `apps/shadcnpreset/components/preset-v4-frame.tsx` | Passes iframe ref + live callback into the hook; theme sync to iframe unchanged |
-| `apps/shadcnpreset/components/preset-page-live-context.tsx` | Live preset state + `replaceState` |
-| `apps/shadcnpreset/lib/sync-preset-social-meta.ts` | Updates document meta / OG / Twitter after URL changes |
-| `apps/shadcnpreset/app/preset/[code]/opengraph-image.tsx` | Dynamic OG image; URL referenced from synced `og:image` |
+| `apps/v4/.../shadcnpreset-fork/` (this fork) | Sends `postMessage` from `/create` when embedded |
+| Product repo `hooks/use-preset-parent-url-sync.ts` | Listens on `window`; calls `onPresetFromIframe` or falls back to `router.replace` |
+| Product repo `components/preset-v4-frame.tsx` | Passes iframe ref + live callback into the hook; theme sync to iframe unchanged |
+| Product repo `components/preset-page-live-context.tsx` | Live preset state + `replaceState` |
+| Product repo `lib/sync-preset-social-meta.ts` | Updates document meta / OG / Twitter after URL changes |
+| Product repo `app/preset/[code]/opengraph-image.tsx` | Dynamic OG image; URL referenced from synced `og:image` |
+
+The product host lives in [morganfeeney/shadcnpreset](https://github.com/morganfeeney/shadcnpreset). This fork’s verify script only asserts the **v4** embed side.
+
 
 ## Open Graph and meta tags
 
@@ -70,19 +73,12 @@ Server `generateMetadata` and `opengraph-image.tsx` describe the **initial** loa
 
 ## Tests
 
-Vitest coverage for this integration lives under `apps/shadcnpreset/lib/*.test.ts`:
+Vitest coverage for the **product** half of this integration lives in the [shadcnpreset](https://github.com/morganfeeney/shadcnpreset) repo (e.g. postMessage type match, preset route parsing, social meta).
 
-| File | What it checks |
-|------|------------------|
-| `fork-message-constants.test.ts` | v4 `PRESET_CODE_SYNC_MESSAGE_TYPE` and shadcnpreset `SHADCNPRESET_PRESET_CODE_MESSAGE_TYPE` stay identical |
-| `preset-route.test.ts` | `/preset/[code]` path parsing |
-| `preset-meta.test.ts` | Shared meta description string |
-| `build-preset-social-meta.test.ts` | Page URL, branded title, and cache-busted `og:image` URL (no DOM) |
-
-Run:
+In **this** fork, after upstream merges:
 
 ```bash
-pnpm --filter shadcnpreset test
+pnpm verify:shadcnpreset-fork
 ```
 
 ## Merging upstream
