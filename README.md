@@ -1,5 +1,7 @@
 # shadcn-ui-fork
 
+Now archived. This used to be a dependency of [shadcnpreset](https://github.com/morganfeeney/shadcnpreset), but the dependency is no longer required.
+
 Fork of [shadcn/ui](https://github.com/shadcn-ui/ui) that hosts the **create/customizer** embedded by [shadcnpreset](https://github.com/morganfeeney/shadcnpreset).
 
 The product site, tools, and Figma plugin live in the [shadcnpreset](https://github.com/morganfeeney/shadcnpreset) repo. This fork keeps only create/v4 plus the embed hooks (`?embed=1`, `postMessage`).
