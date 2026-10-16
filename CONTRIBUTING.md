@@ -10,6 +10,7 @@ Product app changes belong in [morganfeeney/shadcnpreset](https://github.com/mor
 |------|-------------|
 | `apps/v4` | Create/customizer (iframe embed target) |
 | `packages/shadcn` | shadcn CLI and supporting packages |
+| `packages/registry` | `@shadcn/registry` (registry, preset encoding, install logic) |
 
 ## Development
 

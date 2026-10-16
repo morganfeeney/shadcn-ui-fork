@@ -27,4 +27,4 @@ export {
   generateRandomPreset,
   type PresetBase,
   type PresetConfig,
-} from "./preset"
+} from "@shadcn/registry/internal/preset/preset"
